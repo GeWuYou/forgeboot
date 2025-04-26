@@ -6,7 +6,7 @@
 kotlin-version = "2.0.0"
 kotlinxDatetime-version = "0.6.1"
 kotlinxSerializationJSON-version = "1.7.3"
-kotlinxCoroutines-version = "1.9.0"
+#kotlinxCoroutines-version = "1.9.0"
 axion-release-version = "1.18.7"
 spring-boot-version = "3.4.4"
 
@@ -15,16 +15,20 @@ slf4j-version = "2.0.17"
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
 kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime-version" }
 kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJSON-version" }
-kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines-version" }
-
+#kotlinxCoroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines-version" }
+kotlinxCoroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" }
+# kotlinx
+# 响应式协程库
+kotlinxCoroutines-reactor = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-reactor" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-version" }
 
+springBootStarter-aop = { group = "org.springframework.boot", name = "spring-boot-starter-aop" }
 springBootStarter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web" }
 springBootDependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-version" }
 
 # Libraries can be bundled together for easier import
 [bundles]
-kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines"]
+kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines-core"]
 
 [plugins]
 # 应用 Java 插件，提供基本的 Java 代码编译和构建能力

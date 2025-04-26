@@ -36,7 +36,6 @@ allprojects {
     ext {
         set(ProjectFlags.IS_ROOT_MODULE, false)
         set(ProjectFlags.USE_SPRING_BOOT_BOM, false)
-        set(ProjectFlags.USE_SPRING_BOOT_WEB, false)
     }
     afterEvaluate {
         if (project.getPropertyByBoolean(ProjectFlags.IS_ROOT_MODULE)) {
@@ -58,11 +57,6 @@ subprojects {
                 implementation(platform(libs.springBootDependencies.bom))
             }
         }
-        if (project.getPropertyByBoolean(ProjectFlags.USE_SPRING_BOOT_WEB)) {
-            dependencies {
-                compileOnly(libs.springBootStarter.web)
-            }
-        }
     }
     val libs = rootProject.libs
     apply {
@@ -70,7 +64,6 @@ subprojects {
         plugin(libs.plugins.maven.publish.get().pluginId)
         plugin(libs.plugins.kotlin.jvm.get().pluginId)
         plugin(libs.plugins.axionRelease.get().pluginId)
-//        plugin(libs.plugins.spring.dependency.management.get().pluginId)
         //导入仓库配置
         from(file("$configDir/repositories.gradle.kts"))
         // 导入源代码任务
@@ -91,6 +84,22 @@ subprojects {
                     password = System.getenv("GITHUB_TOKEN")
                 }
             }
+            val host = System.getenv("GEWUYOU_GITEA_HOST")
+            host?.let {
+                maven {
+                    isAllowInsecureProtocol = true
+                    name = "Gitea"
+                    url = uri("http://${it}/api/packages/gewuyou/maven")
+                    credentials(HttpHeaderCredentials::class.java) {
+                        name = "Authorization"
+                        value = "token ${System.getenv("GEWUYOU_GITEA_TOKEN")}"
+                    }
+                    authentication {
+                        create("header", HttpHeaderAuthentication::class.java)
+                    }
+                }
+            }
+
         }
         publications {
             create<MavenPublication>("mavenJava") {
