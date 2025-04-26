@@ -8,6 +8,7 @@
 object Modules {
 
     object Webmvc {
+        const val STARTER = ":forgeboot-webmvc"
         const val VERSION_STARTER = ":forgeboot-webmvc:forgeboot-webmvc-version-starter"
         const val LOGGER_STARTER = ":forgeboot-webmvc:forgeboot-webmvc-logger-starter"
     }

@@ -27,5 +27,6 @@ include(
     ":forgeboot-webmvc:forgeboot-webmvc-version-starter",
     ":forgeboot-webmvc:forgeboot-webmvc-logger-starter"
 )
-project(":forgeboot-webmvc:forgeboot-webmvc-version-starter").name = "forgeboot-webmvc-version-starter"
-project(":forgeboot-webmvc:forgeboot-webmvc-logger-starter").name = "forgeboot-webmvc-logger-starter"
+project(":forgeboot-webmvc").name = "forgeboot-webmvc-spring-boot-starter"
+project(":forgeboot-webmvc:forgeboot-webmvc-version-starter").name = "forgeboot-webmvc-version-spring-boot-starter"
+project(":forgeboot-webmvc:forgeboot-webmvc-logger-starter").name = "forgeboot-webmvc-logger-spring-boot-starter"
