@@ -53,13 +53,13 @@ allprojects {
 subprojects {
     version = rootProject.version
     afterEvaluate {
-        if(project.getPropertyByBoolean(ProjectFlags.USE_SPRING_BOOT_BOM)){
-            dependencies{
+        if (project.getPropertyByBoolean(ProjectFlags.USE_SPRING_BOOT_BOM)) {
+            dependencies {
                 implementation(platform(libs.springBootDependencies.bom))
             }
         }
-        if (project.getPropertyByBoolean(ProjectFlags.USE_SPRING_BOOT_WEB)){
-            dependencies{
+        if (project.getPropertyByBoolean(ProjectFlags.USE_SPRING_BOOT_WEB)) {
+            dependencies {
                 compileOnly(libs.springBootStarter.web)
             }
         }
@@ -71,13 +71,12 @@ subprojects {
         plugin(libs.plugins.kotlin.jvm.get().pluginId)
         plugin(libs.plugins.axionRelease.get().pluginId)
 //        plugin(libs.plugins.spring.dependency.management.get().pluginId)
-        // 导入仓库配置
+        //导入仓库配置
         from(file("$configDir/repositories.gradle.kts"))
         // 导入源代码任务
         from(file("$tasksDir/sourceTask.gradle.kts"))
-//        // 导入发布配置
-//        from(file("$configDir/publishing.gradle.kts"))
     }
+    //region publishing
     publishing {
         repositories {
             maven {
@@ -127,26 +126,23 @@ subprojects {
                 }
             }
         }
+    }
+    //endregion
+    dependencies {
 
-
-        dependencies {
-
-        }
-        configure<JavaPluginExtension> {
-            toolchain {
-                languageVersion.set(JavaLanguageVersion.of(21))
-            }
-        }
-        tasks.withType<Jar> {
-            isEnabled = true
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        }
-        tasks.named<Test>("test") {
-            useJUnitPlatform()
+    }
+    configure<JavaPluginExtension> {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
         }
     }
-
-
+    tasks.withType<Jar> {
+        isEnabled = true
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+    tasks.named<Test>("test") {
+        useJUnitPlatform()
+    }
 }
 fun Project.getPropertyByBoolean(key: String): Boolean {
     return properties[key]?.toString()?.toBoolean() ?: false

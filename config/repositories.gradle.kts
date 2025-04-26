@@ -1,6 +1,13 @@
 // This file is used to define the repositories used by the project.
 repositories {
     mavenLocal()
+    val host = System.getenv("GEWUYOU_GITEA_HOST")
+    host?.let {
+        maven{
+            url = uri("http://${host}/api/packages/gewuyou/maven")
+            isAllowInsecureProtocol = true
+        }
+    }
     maven {
         url = uri("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
     }
