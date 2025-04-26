@@ -1,0 +1,35 @@
+# Version catalog is a central place for you to declare and version dependencies
+# https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
+# https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
+
+[versions]
+kotlin-version = "2.0.0"
+kotlinxDatetime-version = "0.6.1"
+kotlinxSerializationJSON-version = "1.7.3"
+kotlinxCoroutines-version = "1.9.0"
+axion-release-version = "1.18.7"
+spring-boot-version = "3.4.4"
+[libraries]
+kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
+kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime-version" }
+kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJSON-version" }
+kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines-version" }
+
+
+# Libraries can be bundled together for easier import
+[bundles]
+kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines"]
+
+[plugins]
+# 应用 Java 插件，提供基本的 Java 代码编译和构建能力
+java = { id = "java" }
+kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-version" }
+axionRelease = { id = "pl.allegro.tech.build.axion-release", version.ref = "axion-release-version" }
+# 应用 Spring Boot 插件，提供 Spring Boot 应用的开发和运行能力
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot-version" }
+# 应用 Maven 发布插件，支持项目的构建产物发布到 Maven 仓库
+maven-publish = { id = "maven-publish" }
+# 引入 Kotlin 支持
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
+# 支持 Spring 的 Kotlin 插件
+kotlin-plugin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin-version" }
