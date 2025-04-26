@@ -1,5 +1,6 @@
 package com.gewuyou.forgeboot.webmvc.version.config
 
+import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.webmvc.version.mapping.ApiVersionRequestMappingHandlerMapping
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -23,6 +24,7 @@ open class VersionAutoConfiguration {
      */
     @Bean
     open fun apiVersionRequestMappingHandlerMapping(): ApiVersionRequestMappingHandlerMapping {
+        log.info("创建 API 版本请求映射处理程序映射")
         return ApiVersionRequestMappingHandlerMapping()
     }
 }

@@ -22,6 +22,8 @@ plugins {
 
 
 rootProject.name = "forgeboot"
+
+//region module webmvc
 include(
     "forgeboot-webmvc",
     ":forgeboot-webmvc:forgeboot-webmvc-version-starter",
@@ -30,3 +32,13 @@ include(
 project(":forgeboot-webmvc").name = "forgeboot-webmvc-spring-boot-starter"
 project(":forgeboot-webmvc:forgeboot-webmvc-version-starter").name = "forgeboot-webmvc-version-spring-boot-starter"
 project(":forgeboot-webmvc:forgeboot-webmvc-logger-starter").name = "forgeboot-webmvc-logger-spring-boot-starter"
+//endregion
+
+//region module core
+include(
+    "forgeboot-core",
+    ":forgeboot-core:forgeboot-core-extension"
+)
+project(":forgeboot-core").name = "forgeboot-core"
+project(":forgeboot-core:forgeboot-core-extension").name = "forgeboot-core-extension"
+//endregion

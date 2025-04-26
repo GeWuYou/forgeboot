@@ -8,8 +8,12 @@
 object Modules {
 
     object Webmvc {
-        const val STARTER = ":forgeboot-webmvc"
-        const val VERSION_STARTER = ":forgeboot-webmvc:forgeboot-webmvc-version-starter"
-        const val LOGGER_STARTER = ":forgeboot-webmvc:forgeboot-webmvc-logger-starter"
+        const val STARTER = ":forgeboot-webmvc-spring-boot-starter"
+        const val VERSION_STARTER = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-version-spring-boot-starter"
+        const val LOGGER_STARTER = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-logger-spring-boot-starter"
+    }
+    object Core{
+        const val ROOT = ":forgeboot-core"
+        const val EXTENSION = ":forgeboot-core:forgeboot-core-extension"
     }
 }
