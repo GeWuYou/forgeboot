@@ -1,27 +1,27 @@
-package com.gewuyou.forgeboot.i18n.exception;
+package com.gewuyou.forgeboot.i18n.exception
 
+import com.gewuyou.forgeboot.i18n.entity.ResponseInformation
 
-import com.gewuyou.forgeboot.i18n.entity.ResponseInformation;
 /**
  * i18n异常
  *
  * @author gewuyou
  * @since 2024-11-12 00:11:32
  */
-public class I18nBaseException extends RuntimeException {
+class I18nBaseException : RuntimeException {
     /**
-     *  响应信息对象，用于存储错误代码和国际化消息代码
+     * 响应信息对象，用于存储错误代码和国际化消息代码
      */
-    protected final transient ResponseInformation responseInformation;
+    @Transient
+    private val responseInformation: ResponseInformation
 
     /**
      * 构造函数
      *
      * @param responseInformation 响应信息对象，包含错误代码和国际化消息代码
      */
-    public I18nBaseException(ResponseInformation responseInformation) {
-        super();
-        this.responseInformation = responseInformation;
+    constructor(responseInformation: ResponseInformation) : super() {
+        this.responseInformation = responseInformation
     }
 
     /**
@@ -30,9 +30,8 @@ public class I18nBaseException extends RuntimeException {
      * @param responseInformation 响应信息对象，包含错误代码和国际化消息代码
      * @param cause               异常原因
      */
-    public I18nBaseException(ResponseInformation responseInformation, Throwable cause) {
-        super(cause);
-        this.responseInformation = responseInformation;
+    constructor(responseInformation: ResponseInformation, cause: Throwable?) : super(cause) {
+        this.responseInformation = responseInformation
     }
 
     /**
@@ -40,17 +39,14 @@ public class I18nBaseException extends RuntimeException {
      *
      * @return 错误代码
      */
-    public int getErrorCode() {
-        return responseInformation.getResponseCode();
-    }
+    val errorCode: Int
+        get() = responseInformation.responseCode
 
     /**
      * 获取国际化消息代码
      *
      * @return 国际化消息代码
      */
-    public String getErrorI18nMessageCode() {
-        return responseInformation.getResponseI8nMessageCode();
-    }
-
+    val errorI18nMessageCode: String
+        get() = responseInformation.responseI8nMessageCode
 }
