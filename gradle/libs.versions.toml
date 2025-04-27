@@ -24,6 +24,7 @@ slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-version" }
 
 springBootStarter-aop = { group = "org.springframework.boot", name = "spring-boot-starter-aop" }
 springBootStarter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web" }
+springBootStarter-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux" }
 springBootDependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-version" }
 
 # Libraries can be bundled together for easier import

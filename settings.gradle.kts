@@ -42,3 +42,10 @@ include(
 project(":forgeboot-core").name = "forgeboot-core"
 project(":forgeboot-core:forgeboot-core-extension").name = "forgeboot-core-extension"
 //endregion
+
+//region i18n
+include(
+    "forgeboot-i18n"
+)
+project(":forgeboot-i18n").name = "forgeboot-i18n-spring-boot-starter"
+//endregion
