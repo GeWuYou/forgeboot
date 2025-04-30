@@ -36,6 +36,7 @@ allprojects {
     ext {
         set(ProjectFlags.IS_ROOT_MODULE, false)
         set(ProjectFlags.USE_SPRING_BOOT_BOM, false)
+        set(ProjectFlags.USE_CONFIGURATION_PROCESSOR, false)
     }
     afterEvaluate {
         if (project.getPropertyByBoolean(ProjectFlags.IS_ROOT_MODULE)) {
@@ -55,6 +56,11 @@ subprojects {
         if (project.getPropertyByBoolean(ProjectFlags.USE_SPRING_BOOT_BOM)) {
             dependencies {
                 implementation(platform(libs.springBootDependencies.bom))
+            }
+        }
+        if(project.getPropertyByBoolean(ProjectFlags.USE_CONFIGURATION_PROCESSOR)){
+            dependencies {
+                annotationProcessor(libs.springBoot.configuration.processor)
             }
         }
     }

@@ -26,7 +26,7 @@ springBootStarter-aop = { group = "org.springframework.boot", name = "spring-boo
 springBootStarter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web" }
 springBootStarter-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux" }
 springBootDependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-version" }
-
+springBoot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot-version" }
 # Libraries can be bundled together for easier import
 [bundles]
 kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines-core"]
