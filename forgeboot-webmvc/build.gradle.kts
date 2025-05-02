@@ -4,6 +4,5 @@ extra {
 }
 
 dependencies {
-    api(project(Modules.Webmvc.VERSION_STARTER))
-    api(project(Modules.Webmvc.LOGGER_STARTER))
+
 }

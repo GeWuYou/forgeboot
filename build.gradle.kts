@@ -35,8 +35,6 @@ allprojects {
     // 设置全局属性
     ext {
         set(ProjectFlags.IS_ROOT_MODULE, false)
-        set(ProjectFlags.USE_SPRING_BOOT_BOM, false)
-        set(ProjectFlags.USE_CONFIGURATION_PROCESSOR, false)
     }
     afterEvaluate {
         if (project.getPropertyByBoolean(ProjectFlags.IS_ROOT_MODULE)) {
@@ -53,13 +51,20 @@ allprojects {
 subprojects {
     version = rootProject.version
     afterEvaluate {
-        if (project.getPropertyByBoolean(ProjectFlags.USE_SPRING_BOOT_BOM)) {
+        val isRootModule = project.getPropertyByBoolean(ProjectFlags.IS_ROOT_MODULE)
+        val isStarterModule = project.name.contains("starter")
+        if (isRootModule) {
             dependencies {
-                implementation(platform(libs.springBootDependencies.bom))
+                project.subprojects.forEach {
+                    if (!it.getPropertyByBoolean(ProjectFlags.IS_ROOT_MODULE)) {
+                        project.dependencies.add("api", project(it.path))
+                    }
+                }
             }
         }
-        if(project.getPropertyByBoolean(ProjectFlags.USE_CONFIGURATION_PROCESSOR)){
+        if (isStarterModule&&!isRootModule) {
             dependencies {
+                implementation(platform(libs.springBootDependencies.bom))
                 annotationProcessor(libs.springBoot.configuration.processor)
             }
         }

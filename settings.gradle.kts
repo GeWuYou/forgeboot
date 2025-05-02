@@ -49,3 +49,8 @@ include(
 )
 project(":forgeboot-i18n").name = "forgeboot-i18n-spring-boot-starter"
 //endregion
+
+include(
+    "forgeboot-webflux",
+)
+project(":forgeboot-webflux").name = "forgeboot-webflux-spring-boot-starter"
