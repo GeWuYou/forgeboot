@@ -65,6 +65,7 @@ subprojects {
         if (isStarterModule&&!isRootModule) {
             dependencies {
                 implementation(platform(libs.springBootDependencies.bom))
+                implementation(platform(libs.springCloudDependencies.bom))
                 annotationProcessor(libs.springBoot.configuration.processor)
             }
         }

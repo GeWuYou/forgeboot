@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author gewuyou
  * @since 2025-02-18 23:59:57
  */
-@ConfigurationProperties(prefix = "base-forge.i18n")
+@ConfigurationProperties(prefix = "forgeboot.i18n")
 public class I18nProperties {
     /**
      * 默认语言

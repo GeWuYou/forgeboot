@@ -43,14 +43,23 @@ project(":forgeboot-core").name = "forgeboot-core"
 project(":forgeboot-core:forgeboot-core-extension").name = "forgeboot-core-extension"
 //endregion
 
-//region i18n
+//region module i18n
 include(
     "forgeboot-i18n"
 )
 project(":forgeboot-i18n").name = "forgeboot-i18n-spring-boot-starter"
 //endregion
 
+//region module webflux
 include(
     "forgeboot-webflux",
 )
 project(":forgeboot-webflux").name = "forgeboot-webflux-spring-boot-starter"
+//endregion
+
+//region module trace
+include(
+    "forgeboot-trace"
+)
+project(":forgeboot-trace").name = "forgeboot-trace-spring-boot-starter"
+//endregion

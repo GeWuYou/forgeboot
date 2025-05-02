@@ -8,6 +8,7 @@ kotlinxDatetime-version = "0.6.1"
 kotlinxSerializationJSON-version = "1.7.3"
 #kotlinxCoroutines-version = "1.9.0"
 axion-release-version = "1.18.7"
+spring-cloud-version = "2024.0.1"
 spring-boot-version = "3.4.4"
 
 slf4j-version = "2.0.17"
@@ -22,11 +23,16 @@ kotlinxCoroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-co
 kotlinxCoroutines-reactor = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-reactor" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-version" }
 
+springBootDependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-version" }
 springBootStarter-aop = { group = "org.springframework.boot", name = "spring-boot-starter-aop" }
 springBootStarter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web" }
 springBootStarter-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux" }
-springBootDependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-version" }
 springBoot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot-version" }
+
+springCloudDependencies-bom = { module = "org.springframework.cloud:spring-cloud-dependencies", version.ref = "spring-cloud-version" }
+springCloudStarter-openfeign = { group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign" }
+
+reactor-core={group="io.projectreactor", name="reactor-core"}
 # Libraries can be bundled together for easier import
 [bundles]
 kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines-core"]
