@@ -28,6 +28,6 @@ open class VersionAutoConfiguration {
     @Bean
     open fun apiVersionRequestMappingHandlerMapping(versionProperties: VersionProperties): ApiVersionRequestMappingHandlerMapping {
         log.info("创建 API 版本请求映射处理程序映射")
-        return ApiVersionRequestMappingHandlerMapping(versionProperties)
+        return ApiVersionRequestMappingHandlerMapping(versionProperties).also { it.order = Int.MIN_VALUE }
     }
 }
