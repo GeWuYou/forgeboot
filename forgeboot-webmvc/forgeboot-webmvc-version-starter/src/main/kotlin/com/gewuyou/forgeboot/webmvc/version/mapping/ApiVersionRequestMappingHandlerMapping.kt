@@ -2,6 +2,7 @@ package com.gewuyou.forgeboot.webmvc.version.mapping
 
 
 import com.gewuyou.forgeboot.webmvc.version.annotation.ApiVersion
+import com.gewuyou.forgeboot.webmvc.version.config.entities.VersionProperties
 import org.springframework.core.annotation.AnnotatedElementUtils
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo
@@ -14,7 +15,9 @@ import java.lang.reflect.Method
  * @since 2025-02-04 20:30:44
  * @author gewuyou
  */
-class ApiVersionRequestMappingHandlerMapping : RequestMappingHandlerMapping() {
+class ApiVersionRequestMappingHandlerMapping(
+    private val versionProperties: VersionProperties
+) : RequestMappingHandlerMapping() {
     /**
      * 判断是否处理特定类型的Bean
      * 仅处理标注了 @RestController 注解的类
@@ -66,7 +69,7 @@ class ApiVersionRequestMappingHandlerMapping : RequestMappingHandlerMapping() {
             .map {
                 // 加上版本前缀
                 RequestMappingInfo
-                    .paths("/api/$it")
+                    .paths("${versionProperties.apiPrefix}/$it")
                     .build()
             }.reduce {
                 // 组合

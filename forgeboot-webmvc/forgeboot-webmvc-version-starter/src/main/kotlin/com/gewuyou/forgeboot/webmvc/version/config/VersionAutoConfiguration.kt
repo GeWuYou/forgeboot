@@ -1,7 +1,9 @@
 package com.gewuyou.forgeboot.webmvc.version.config
 
 import com.gewuyou.forgeboot.core.extension.log
+import com.gewuyou.forgeboot.webmvc.version.config.entities.VersionProperties
 import com.gewuyou.forgeboot.webmvc.version.mapping.ApiVersionRequestMappingHandlerMapping
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -12,6 +14,7 @@ import org.springframework.context.annotation.Configuration
  * @author gewuyou
  */
 @Configuration
+@EnableConfigurationProperties(VersionProperties::class)
 open class VersionAutoConfiguration {
     /**
      * 创建并配置一个 ApiVersionRequestMappingHandlerMapping 实例
@@ -23,8 +26,8 @@ open class VersionAutoConfiguration {
      * @return ApiVersionRequestMappingHandlerMapping 实例，用于处理基于 API 版本的请求映射
      */
     @Bean
-    open fun apiVersionRequestMappingHandlerMapping(): ApiVersionRequestMappingHandlerMapping {
+    open fun apiVersionRequestMappingHandlerMapping(versionProperties: VersionProperties): ApiVersionRequestMappingHandlerMapping {
         log.info("创建 API 版本请求映射处理程序映射")
-        return ApiVersionRequestMappingHandlerMapping()
+        return ApiVersionRequestMappingHandlerMapping(versionProperties)
     }
 }
