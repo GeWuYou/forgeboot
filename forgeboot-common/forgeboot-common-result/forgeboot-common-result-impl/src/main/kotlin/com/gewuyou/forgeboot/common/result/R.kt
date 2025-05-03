@@ -78,12 +78,13 @@ data class R<T>(
             info: ResponseInformation,
             data: T? = null,
             messageResolver: MessageResolver? = null,
+            i18bArgs: Array<Any>? = null,
             requestIdProvider: RequestIdProvider? = null,
             extenders: List<ResultExtender> = emptyList()
         ): R<T> {
             val msg = (messageResolver ?: DefaultMessageResolver).resolve(
                 info.responseI8nMessageCode,
-                info.responseI8nMessageArgs
+                i18bArgs
             )
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
             return R(info.responseCode, true, msg, data, reqId).also {
@@ -108,12 +109,13 @@ data class R<T>(
             info: ResponseInformation,
             data: T? = null,
             messageResolver: MessageResolver? = null,
+            i18bArgs: Array<Any>? = null,
             requestIdProvider: RequestIdProvider? = null,
             extenders: List<ResultExtender> = emptyList()
         ): R<T> {
             val msg = (messageResolver ?: DefaultMessageResolver).resolve(
                 info.responseI8nMessageCode,
-                info.responseI8nMessageArgs
+                i18bArgs
             )
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
             return R(info.responseCode, false, msg, data, reqId).also {
@@ -139,13 +141,13 @@ data class R<T>(
         fun <T> success(
             code: Int = 200,
             messageCode: String = "success",
-            args: Array<Any>? = null,
             data: T? = null,
+            i18bArgs: Array<Any>? = null,
             messageResolver: MessageResolver? = null,
             requestIdProvider: RequestIdProvider? = null,
             extenders: List<ResultExtender> = emptyList()
         ): R<T> {
-            val msg = (messageResolver ?: DefaultMessageResolver).resolve(messageCode, args)
+            val msg = (messageResolver ?: DefaultMessageResolver).resolve(messageCode, i18bArgs)
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
             return R(code, true, msg, data, reqId).also {
                 extenders.forEach { extender -> extender.extend(it.toMap()) }
@@ -170,13 +172,13 @@ data class R<T>(
         fun <T> failure(
             code: Int = 400,
             messageCode: String = "error",
-            args: Array<Any>? = null,
             data: T? = null,
+            i18bArgs: Array<Any>? = null,
             messageResolver: MessageResolver? = null,
             requestIdProvider: RequestIdProvider? = null,
             extenders: List<ResultExtender> = emptyList()
         ): R<T> {
-            val msg = (messageResolver ?: DefaultMessageResolver).resolve(messageCode, args)
+            val msg = (messageResolver ?: DefaultMessageResolver).resolve(messageCode, i18bArgs)
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
             return R(code, false, msg, data, reqId).also {
                 extenders.forEach { extender -> extender.extend(it.toMap()) }
