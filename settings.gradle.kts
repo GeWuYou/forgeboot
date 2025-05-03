@@ -63,3 +63,17 @@ include(
 )
 project(":forgeboot-trace").name = "forgeboot-trace-spring-boot-starter"
 //endregion
+
+//region module common
+include(
+    "forgeboot-common",
+    ":forgeboot-common:forgeboot-common-result",
+    ":forgeboot-common:forgeboot-common-result:forgeboot-common-result-api",
+    ":forgeboot-common:forgeboot-common-result:forgeboot-common-result-impl",
+//    ":forgeboot-common:forgeboot-common-result:forgeboot-common-result-extension",
+)
+project(":forgeboot-common").name = "forgeboot-common"
+project(":forgeboot-common:forgeboot-common-result").name = "forgeboot-common-result"
+project(":forgeboot-common:forgeboot-common-result:forgeboot-common-result-api").name = "forgeboot-common-result-api"
+project(":forgeboot-common:forgeboot-common-result:forgeboot-common-result-impl").name = "forgeboot-common-result-impl"
+//endregion

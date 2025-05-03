@@ -24,6 +24,19 @@ public class I18nProperties {
      */
     private String wildPathForLanguageFiles = "classpath*:i18n/**/messages";
 
+    /**
+     * 位置模式后缀
+     */
+    private String locationPatternSuffix = ".properties";
+
+    public String getLocationPatternSuffix() {
+        return locationPatternSuffix;
+    }
+
+    public void setLocationPatternSuffix(String locationPatternSuffix) {
+        this.locationPatternSuffix = locationPatternSuffix;
+    }
+
     public String getDefaultLocale() {
         return defaultLocale;
     }

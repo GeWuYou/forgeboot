@@ -1,11 +1,13 @@
 package com.gewuyou.forgeboot.trace.config
 
+import com.gewuyou.forgeboot.common.result.api.RequestIdProvider
 import com.gewuyou.forgeboot.trace.config.entities.TraceProperties
 import com.gewuyou.forgeboot.trace.decorator.RequestIdTaskDecorator
 import com.gewuyou.forgeboot.trace.filter.ReactiveRequestIdFilter
 import com.gewuyou.forgeboot.trace.filter.RequestIdFilter
 import com.gewuyou.forgeboot.trace.filter.WebClientRequestIdFilter
 import com.gewuyou.forgeboot.trace.interceptor.FeignRequestIdInterceptor
+import com.gewuyou.forgeboot.trace.provider.TraceRequestIdProvider
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -50,6 +52,16 @@ open class TraceAutoConfiguration {
     @ConditionalOnMissingBean
     open fun reactiveRequestIdFilter(traceProperties: TraceProperties): ReactiveRequestIdFilter =
         ReactiveRequestIdFilter(traceProperties)
+
+    /**
+     * 请求ID提供者（用于生成请求ID）
+     *
+     * 该提供者用于生成请求ID，默认为TraceRequestIdProvider
+     * @return RequestIdProvider实例
+     */
+    @Bean
+    @ConditionalOnMissingBean(RequestIdProvider::class)
+    open fun traceRequestIdProvider(): TraceRequestIdProvider = TraceRequestIdProvider()
 
     /**
      * Feign 拦截器（仅当 Feign 存在时生效）

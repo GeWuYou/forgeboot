@@ -16,4 +16,10 @@ object Modules {
         const val ROOT = ":forgeboot-core"
         const val EXTENSION = ":forgeboot-core:forgeboot-core-extension"
     }
+    object Common {
+        const val ROOT = ":forgeboot-common"
+        const val RESULT = ":forgeboot-common:forgeboot-common-result"
+        const val RESULT_IMPL = ":forgeboot-common:forgeboot-common-result:forgeboot-common-result-impl"
+        const val RESULT_API = ":forgeboot-common:forgeboot-common-result:forgeboot-common-result-api"
+    }
 }

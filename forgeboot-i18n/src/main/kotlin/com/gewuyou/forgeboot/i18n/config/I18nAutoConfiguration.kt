@@ -1,9 +1,12 @@
 package com.gewuyou.forgeboot.i18n.config
 
+import com.gewuyou.forgeboot.common.result.api.MessageResolver
 import com.gewuyou.forgeboot.i18n.filter.ReactiveLocaleResolver
 import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.i18n.config.entity.I18nProperties
+import com.gewuyou.forgeboot.i18n.resolver.I18nMessageResolver
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -28,9 +31,9 @@ import java.util.*
  */
 @Configuration
 @EnableConfigurationProperties(I18nProperties::class)
-open class I18nAutoConfiguration (
+open class I18nAutoConfiguration(
     private val i18nProperties: I18nProperties
-){
+) {
     /**
      * 配置并创建一个国际化的消息源
      *
@@ -55,6 +58,21 @@ open class I18nAutoConfiguration (
     }
 
     /**
+     * 创建并配置一个国际化的消息解析器
+     * 该方法通过Spring的条件注解有选择性地创建一个MessageResolver实例
+     * 主要用于解决国际化消息的解析问题
+     *
+     * @param forgebootI18nMessageSource 一个MessageSource实例，用于解析国际化消息
+     * @return 返回一个MessageResolver实例，用于在国际化的环境中解析消息
+     */
+    @Bean
+    @ConditionalOnMissingBean(MessageResolver::class)
+    open fun i18nMessageResolver(@Qualifier(MESSAGE_SOURCE_BEAN_NAME) forgebootI18nMessageSource: MessageSource): MessageResolver {
+        return I18nMessageResolver(forgebootI18nMessageSource)
+    }
+
+
+    /**
      * 扫描指定路径下的所有国际化属性文件路径
      *
      * 此方法会根据提供的基础路径，查找所有匹配的国际化属性文件，并将其路径添加到列表中返回
@@ -65,16 +83,17 @@ open class I18nAutoConfiguration (
      */
     private fun scanBaseNames(basePath: String): List<String> {
         val baseNames: MutableList<String> = ArrayList()
+        val suffix = i18nProperties.locationPatternSuffix
         log.info("开始扫描 I18n 文件 {}", basePath)
         try {
             val resources = PathMatchingResourcePatternResolver().getResources(
-                "$basePath*.properties"
+                "$basePath*$suffix"
             )
             for (resource in resources) {
                 val path = resource.uri.toString()
                 log.info("找到 I18n 文件路径: {}", path)
                 // 转换路径为 Spring 的 basename 格式（去掉 .properties 后缀）
-                val baseName = path.substring(0, path.lastIndexOf(".properties"))
+                val baseName = path.substring(0, path.lastIndexOf(suffix))
                 if (!baseNames.contains(baseName)) {
                     baseNames.add(baseName)
                 }
@@ -150,6 +169,6 @@ open class I18nAutoConfiguration (
         /**
          * 消息源 bean 的名称
          */
-        const val MESSAGE_SOURCE_BEAN_NAME: String = "i18nMessageSource"
+        const val MESSAGE_SOURCE_BEAN_NAME: String = "forgebootI18nMessageSource"
     }
 }
