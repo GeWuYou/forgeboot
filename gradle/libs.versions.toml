@@ -10,7 +10,7 @@ kotlinxSerializationJSON-version = "1.7.3"
 axion-release-version = "1.18.7"
 spring-cloud-version = "2024.0.1"
 spring-boot-version = "3.4.4"
-
+latest-release="latest.release"
 slf4j-version = "2.0.17"
 [libraries]
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
@@ -32,11 +32,21 @@ springBoot-configuration-processor = { group = "org.springframework.boot", name 
 springCloudDependencies-bom = { module = "org.springframework.cloud:spring-cloud-dependencies", version.ref = "spring-cloud-version" }
 springCloudStarter-openfeign = { group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign" }
 
+# Jackson
+jackson-core={group="com.fasterxml.jackson.core", name="jackson-core"}
+jackson-databind={group="com.fasterxml.jackson.core", name="jackson-databind"}
+jackson-annotations={group="com.fasterxml.jackson.core", name="jackson-annotations"}
+jackson-datatype-jsr310={group="com.fasterxml.jackson.datatype", name="jackson-datatype-jsr310"}
+jackson-module-kotlin={group="com.fasterxml.jackson.module", name="jackson-module-kotlin"}
+
 reactor-core={group="io.projectreactor", name="reactor-core"}
 # Libraries can be bundled together for easier import
+
 [bundles]
 kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines-core"]
-
+jacksonAll = [
+    "jackson-core", "jackson-databind", "jackson-annotations","jackson-datatype-jsr310", "jackson-module-kotlin"
+]
 [plugins]
 # 应用 Java 插件，提供基本的 Java 代码编译和构建能力
 java = { id = "java" }
