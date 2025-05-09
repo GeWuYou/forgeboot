@@ -40,6 +40,7 @@ open class VersionAutoConfiguration(
     }
     @PostConstruct
     fun injectCors() {
+        log.info("延迟注入跨域配置")
         mapping.corsConfigurationSource = corsConfigurationSource
     }
 }
