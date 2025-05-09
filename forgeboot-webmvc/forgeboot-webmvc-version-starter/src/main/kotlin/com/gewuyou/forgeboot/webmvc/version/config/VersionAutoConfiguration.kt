@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.cors.CorsConfigurationSource
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 /**
  *版本自动配置
@@ -20,7 +19,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 open class VersionAutoConfiguration(
     private val versionProperties: VersionProperties,
     private val corsConfigurationSource: CorsConfigurationSource
-) : WebMvcConfigurer {
+) {
     /**
      * 创建并配置一个 ApiVersionRequestMappingHandlerMapping 实例
      *
