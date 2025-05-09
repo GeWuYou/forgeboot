@@ -18,7 +18,7 @@ data class R<T>(
     val message: String,
     val data: T? = null,
     val requestId: String? = null,
-    val extra: Map<String, Any?> = emptyMap() // ✅ 扩展字段保存位置
+    val extra: Map<String, Any?> = emptyMap()
 ) {
     /**
      * 转换为可变 Map，包含 extra 中的字段
@@ -33,7 +33,7 @@ data class R<T>(
         if (!requestId.isNullOrBlank()) {
             map["requestId"] = requestId
         }
-        map.putAll(extra) // ✅ 扁平化合并
+        map.putAll(extra)
         return map
     }
 

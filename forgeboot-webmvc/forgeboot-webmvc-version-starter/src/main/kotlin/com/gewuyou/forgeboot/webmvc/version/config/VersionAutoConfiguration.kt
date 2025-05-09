@@ -6,6 +6,8 @@ import com.gewuyou.forgeboot.webmvc.version.mapping.ApiVersionRequestMappingHand
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 /**
  *版本自动配置
@@ -15,7 +17,10 @@ import org.springframework.context.annotation.Configuration
  */
 @Configuration
 @EnableConfigurationProperties(VersionProperties::class)
-open class VersionAutoConfiguration {
+open class VersionAutoConfiguration(
+    private val versionProperties: VersionProperties,
+    private val corsConfigurationSource: CorsConfigurationSource
+) : WebMvcConfigurer {
     /**
      * 创建并配置一个 ApiVersionRequestMappingHandlerMapping 实例
      *
@@ -26,8 +31,11 @@ open class VersionAutoConfiguration {
      * @return ApiVersionRequestMappingHandlerMapping 实例，用于处理基于 API 版本的请求映射
      */
     @Bean
-    open fun apiVersionRequestMappingHandlerMapping(versionProperties: VersionProperties): ApiVersionRequestMappingHandlerMapping {
+    open fun apiVersionRequestMappingHandlerMapping(): ApiVersionRequestMappingHandlerMapping {
         log.info("创建 API 版本请求映射处理程序映射")
-        return ApiVersionRequestMappingHandlerMapping(versionProperties).also { it.order = Int.MIN_VALUE }
+        return ApiVersionRequestMappingHandlerMapping(versionProperties).also {
+            it.order = Int.MIN_VALUE
+            it.corsConfigurationSource = corsConfigurationSource
+        }
     }
 }
