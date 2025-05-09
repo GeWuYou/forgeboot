@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author gewuyou
  * @since 2025-05-02 11:52:24
  */
-@ConfigurationProperties(prefix = "version")
+@ConfigurationProperties(prefix = "forgeboot.version")
 public class VersionProperties {
     /**
      * API前缀

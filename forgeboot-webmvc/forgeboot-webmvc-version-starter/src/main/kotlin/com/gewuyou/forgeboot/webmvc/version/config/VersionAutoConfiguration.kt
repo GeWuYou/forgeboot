@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 
 /**
  *版本自动配置
@@ -16,10 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource
  */
 @Configuration
 @EnableConfigurationProperties(VersionProperties::class)
-open class VersionAutoConfiguration(
-    private val versionProperties: VersionProperties,
-    private val corsConfigurationSource: CorsConfigurationSource,
-) {
+open class VersionAutoConfiguration {
     /**
      * 创建并配置一个 ApiVersionRequestMappingHandlerMapping 实例
      *
@@ -30,9 +28,13 @@ open class VersionAutoConfiguration(
      * @return ApiVersionRequestMappingHandlerMapping 实例，用于处理基于 API 版本的请求映射
      */
     @Bean
-    open fun apiVersionRequestMappingHandlerMapping(): ApiVersionRequestMappingHandlerMapping {
+    open fun apiVersionRequestMappingHandlerMapping(
+        versionProperties: VersionProperties,
+        corsConfigurationSource: CorsConfigurationSource,
+    ): RequestMappingHandlerMapping {
         log.info("创建 API 版本请求映射处理程序映射")
         return ApiVersionRequestMappingHandlerMapping(versionProperties).also {
+            it.order = Int.MIN_VALUE
             it.corsConfigurationSource = corsConfigurationSource
         }
     }
