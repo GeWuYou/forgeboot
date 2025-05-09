@@ -1,7 +1,7 @@
 // This file is used to define the repositories used by the project.
 repositories {
     mavenLocal()
-    val host = System.getenv("GEWUYOU_GITEA_HOST")
+    val host = System.getenv("GITEA_HOST")
     host?.let {
         maven{
             url = uri("http://${host}/api/packages/gewuyou/maven")

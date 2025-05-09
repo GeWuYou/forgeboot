@@ -105,7 +105,7 @@ subprojects {
                 }
             }
             // Gitea 仓库
-            val host = System.getenv("GEWUYOU_GITEA_HOST")
+            val host = System.getenv("GITEA_HOST")
             host?.let {
                 maven {
                     isAllowInsecureProtocol = true
@@ -113,7 +113,7 @@ subprojects {
                     url = uri("http://${it}/api/packages/gewuyou/maven")
                     credentials(HttpHeaderCredentials::class.java) {
                         name = "Authorization"
-                        value = "token ${System.getenv("GEWUYOU_GITEA_TOKEN")}"
+                        value = "token ${System.getenv("GITEA_TOKEN")}"
                     }
                     authentication {
                         create("header", HttpHeaderAuthentication::class.java)
