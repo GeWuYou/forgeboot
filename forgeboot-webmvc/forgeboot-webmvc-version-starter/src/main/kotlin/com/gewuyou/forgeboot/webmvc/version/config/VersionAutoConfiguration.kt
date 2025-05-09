@@ -3,7 +3,6 @@ package com.gewuyou.forgeboot.webmvc.version.config
 import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.webmvc.version.config.entities.VersionProperties
 import com.gewuyou.forgeboot.webmvc.version.mapping.ApiVersionRequestMappingHandlerMapping
-import jakarta.annotation.PostConstruct
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -19,9 +18,8 @@ import org.springframework.web.cors.CorsConfigurationSource
 @EnableConfigurationProperties(VersionProperties::class)
 open class VersionAutoConfiguration(
     private val versionProperties: VersionProperties,
-    private val corsConfigurationSource: CorsConfigurationSource
+    private val corsConfigurationSource: CorsConfigurationSource,
 ) {
-    private lateinit var mapping: ApiVersionRequestMappingHandlerMapping
     /**
      * 创建并配置一个 ApiVersionRequestMappingHandlerMapping 实例
      *
@@ -35,13 +33,7 @@ open class VersionAutoConfiguration(
     open fun apiVersionRequestMappingHandlerMapping(): ApiVersionRequestMappingHandlerMapping {
         log.info("创建 API 版本请求映射处理程序映射")
         return ApiVersionRequestMappingHandlerMapping(versionProperties).also {
-            it.order = Int.MIN_VALUE
-            mapping = it
+            it.corsConfigurationSource = corsConfigurationSource
         }
-    }
-    @PostConstruct
-    fun injectCors() {
-        log.info("延迟注入跨域配置")
-        mapping.corsConfigurationSource = corsConfigurationSource
     }
 }
