@@ -11,8 +11,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author gewuyou
  * @since 2025-05-02 11:52:24
  */
-@ConfigurationProperties(prefix = "forgeboot.version")
-public class VersionProperties {
+@ConfigurationProperties(prefix = "forgeboot.webmvc.version")
+public class WebMvcVersionProperties {
     /**
      * API前缀
      * <p>
@@ -20,11 +20,26 @@ public class VersionProperties {
      */
     private String apiPrefix = "/api";
 
+    /**
+     * API后缀
+     * <p>
+     * 定义了API的路由后缀，用于在URL中区分不同的API版本
+     */
+    private String apiSuffix = "";
+
     public String getApiPrefix() {
         return apiPrefix;
     }
 
     public void setApiPrefix(String apiPrefix) {
         this.apiPrefix = apiPrefix;
+    }
+
+    public String getApiSuffix() {
+        return apiSuffix;
+    }
+
+    public void setApiSuffix(String apiSuffix) {
+        this.apiSuffix = apiSuffix;
     }
 }

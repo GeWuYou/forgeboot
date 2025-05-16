@@ -1,7 +1,7 @@
 package com.gewuyou.forgeboot.webmvc.version.config
 
 import com.gewuyou.forgeboot.core.extension.log
-import com.gewuyou.forgeboot.webmvc.version.config.entities.VersionProperties
+import com.gewuyou.forgeboot.webmvc.version.config.entities.WebMvcVersionProperties
 import com.gewuyou.forgeboot.webmvc.version.mapping.ApiVersionRequestMappingHandlerMapping
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @author gewuyou
  */
 @Configuration
-@EnableConfigurationProperties(VersionProperties::class)
+@EnableConfigurationProperties(WebMvcVersionProperties::class)
 open class VersionAutoConfiguration {
     /**
      * 创建并配置一个 ApiVersionRequestMappingHandlerMapping 实例
@@ -29,11 +29,11 @@ open class VersionAutoConfiguration {
      */
     @Bean
     open fun apiVersionRequestMappingHandlerMapping(
-        versionProperties: VersionProperties,
+        webMvcVersionProperties: WebMvcVersionProperties,
         corsConfigurationSource: CorsConfigurationSource,
     ): RequestMappingHandlerMapping {
         log.info("创建 API 版本请求映射处理程序映射")
-        return ApiVersionRequestMappingHandlerMapping(versionProperties).also {
+        return ApiVersionRequestMappingHandlerMapping(webMvcVersionProperties).also {
             it.order = Int.MIN_VALUE
             it.corsConfigurationSource = corsConfigurationSource
         }
