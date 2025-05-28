@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.axionRelease)
     // Kotlin Spring 支持
     alias(libs.plugins.kotlin.plugin.spring)
+    // Kotlin kapt 支持
+    alias (libs.plugins.kotlin.kapt)
 }
 
 // 配置 SCM 版本插件
@@ -15,7 +17,7 @@ scmVersion {
     tag {
         prefix.set("")  // 不加 v，生成 1.0.1 而不是 v1.0.1
     }
-    versionIncrementer("incrementMinorIfNotOnRelease")
+    versionIncrementer("incrementPatch")
     hooks {
         pre(
             "fileUpdate", mapOf(
@@ -58,13 +60,13 @@ allprojects {
 // 子项目配置
 subprojects {
     version = rootProject.version
+
     afterEvaluate {
         val isRootModule = project.getPropertyByBoolean(ProjectFlags.IS_ROOT_MODULE)
-        val isStarterModule = project.name.contains("starter")
         val parentProject = project.parent
         // 让父项目引入子项目
         parentProject?.dependencies?.add("api", project(project.path))
-        if (isStarterModule && !isRootModule) {
+        if (!isRootModule) {
             // Starter 模块依赖配置
             dependencies {
                 implementation(platform(libs.springBootDependencies.bom))
@@ -81,19 +83,19 @@ subprojects {
         plugin(libs.plugins.maven.publish.get().pluginId)
         plugin(libs.plugins.kotlin.jvm.get().pluginId)
         plugin(libs.plugins.axionRelease.get().pluginId)
+        plugin(libs.plugins.kotlin.kapt.get().pluginId)
         // 导入仓库配置
         from(file("$configDir/repositories.gradle.kts"))
         // 导入源代码任务
         from(file("$tasksDir/sourceTask.gradle.kts"))
     }
-
     // 发布配置
     publishing {
         repositories {
             // 本地仓库
             maven {
                 name = "localRepo"
-                url = uri("file://D:/Maven/mvn_repository")
+                url = uri("file://D:/Config/Jrebel/.jrebel/.m2/repository")
             }
             // GitHub Packages 仓库
             maven {

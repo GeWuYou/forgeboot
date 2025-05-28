@@ -26,12 +26,18 @@ rootProject.name = "forgeboot"
 //region module webmvc
 include(
     "forgeboot-webmvc",
-    ":forgeboot-webmvc:forgeboot-webmvc-version-starter",
-    ":forgeboot-webmvc:forgeboot-webmvc-logger-starter"
+    ":forgeboot-webmvc:version",
+    ":forgeboot-webmvc:logger",
+    ":forgeboot-webmvc:exception",
+    ":forgeboot-webmvc:dto",
+    ":forgeboot-webmvc:validation"
 )
 project(":forgeboot-webmvc").name = "forgeboot-webmvc-spring-boot-starter"
-project(":forgeboot-webmvc:forgeboot-webmvc-version-starter").name = "forgeboot-webmvc-version-spring-boot-starter"
-project(":forgeboot-webmvc:forgeboot-webmvc-logger-starter").name = "forgeboot-webmvc-logger-spring-boot-starter"
+project(":forgeboot-webmvc:version").name = "forgeboot-webmvc-version-spring-boot-starter"
+project(":forgeboot-webmvc:logger").name = "forgeboot-webmvc-logger-spring-boot-starter"
+project(":forgeboot-webmvc:exception").name = "forgeboot-webmvc-exception-spring-boot-starter"
+project(":forgeboot-webmvc:dto").name = "forgeboot-webmvc-dto"
+project(":forgeboot-webmvc:validation").name = "forgeboot-validation"
 //endregion
 
 //region module core
@@ -45,35 +51,33 @@ project(":forgeboot-core:forgeboot-core-extension").name = "forgeboot-core-exten
 
 //region module i18n
 include(
-    "forgeboot-i18n"
+    "forgeboot-i18n",
+    ":forgeboot-i18n:forgeboot-i18n-api",
+    ":forgeboot-i18n:forgeboot-i18n-impl",
+    ":forgeboot-i18n:forgeboot-i18n-autoconfigure"
 )
 project(":forgeboot-i18n").name = "forgeboot-i18n-spring-boot-starter"
+project(":forgeboot-i18n:forgeboot-i18n-api").name = "forgeboot-i18n-api"
+project(":forgeboot-i18n:forgeboot-i18n-impl").name = "forgeboot-i18n-impl"
+project(":forgeboot-i18n:forgeboot-i18n-autoconfigure").name = "forgeboot-i18n-autoconfigure"
 //endregion
 
 //region module webflux
-include(
-    "forgeboot-webflux",
-)
-project(":forgeboot-webflux").name = "forgeboot-webflux-spring-boot-starter"
+//include(
+//    "forgeboot-webflux",
+//)
+//project(":forgeboot-webflux").name = "forgeboot-webflux-spring-boot-starter"
 //endregion
 
 //region module trace
 include(
-    "forgeboot-trace"
+    "forgeboot-trace",
+    ":forgeboot-trace:forgeboot-trace-api",
+    ":forgeboot-trace:forgeboot-trace-impl",
+    ":forgeboot-trace:forgeboot-trace-autoconfigure",
 )
 project(":forgeboot-trace").name = "forgeboot-trace-spring-boot-starter"
-//endregion
-
-//region module common
-include(
-    "forgeboot-common",
-    ":forgeboot-common:forgeboot-common-result",
-    ":forgeboot-common:forgeboot-common-result:forgeboot-common-result-api",
-    ":forgeboot-common:forgeboot-common-result:forgeboot-common-result-impl",
-//    ":forgeboot-common:forgeboot-common-result:forgeboot-common-result-extension",
-)
-project(":forgeboot-common").name = "forgeboot-common"
-project(":forgeboot-common:forgeboot-common-result").name = "forgeboot-common-result"
-project(":forgeboot-common:forgeboot-common-result:forgeboot-common-result-api").name = "forgeboot-common-result-api"
-project(":forgeboot-common:forgeboot-common-result:forgeboot-common-result-impl").name = "forgeboot-common-result-impl"
+project(":forgeboot-trace:forgeboot-trace-api").name = "forgeboot-trace-api"
+project(":forgeboot-trace:forgeboot-trace-impl").name = "forgeboot-trace-impl"
+project(":forgeboot-trace:forgeboot-trace-autoconfigure").name = "forgeboot-trace-autoconfigure"
 //endregion

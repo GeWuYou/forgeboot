@@ -9,12 +9,6 @@ repositories {
         }
     }
     maven {
-        url = uri("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
-    }
-    maven {
-        url = uri("https://raw.githubusercontent.com/eurotech/kura_addons/mvn-repo/")
-    }
-    maven {
         url = uri("https://maven.aliyun.com/repository/public/")
     }
     maven {

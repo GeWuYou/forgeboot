@@ -10,7 +10,7 @@ kotlinxSerializationJSON-version = "1.7.3"
 axion-release-version = "1.18.7"
 spring-cloud-version = "2024.0.1"
 spring-boot-version = "3.4.4"
-latest-release="latest.release"
+latest-release = "latest.release"
 slf4j-version = "2.0.17"
 [libraries]
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
@@ -27,25 +27,26 @@ springBootDependencies-bom = { module = "org.springframework.boot:spring-boot-de
 springBootStarter-aop = { group = "org.springframework.boot", name = "spring-boot-starter-aop" }
 springBootStarter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web" }
 springBootStarter-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux" }
+springBootStarter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
 springBoot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot-version" }
 
 springCloudDependencies-bom = { module = "org.springframework.cloud:spring-cloud-dependencies", version.ref = "spring-cloud-version" }
 springCloudStarter-openfeign = { group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign" }
 
 # Jackson
-jackson-core={group="com.fasterxml.jackson.core", name="jackson-core"}
-jackson-databind={group="com.fasterxml.jackson.core", name="jackson-databind"}
-jackson-annotations={group="com.fasterxml.jackson.core", name="jackson-annotations"}
-jackson-datatype-jsr310={group="com.fasterxml.jackson.datatype", name="jackson-datatype-jsr310"}
-jackson-module-kotlin={group="com.fasterxml.jackson.module", name="jackson-module-kotlin"}
+jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind" }
+jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations" }
+jackson-datatype-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310" }
+jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin" }
 
-reactor-core={group="io.projectreactor", name="reactor-core"}
+reactor-core = { group = "io.projectreactor", name = "reactor-core" }
 # Libraries can be bundled together for easier import
 
 [bundles]
 kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines-core"]
 jacksonAll = [
-    "jackson-core", "jackson-databind", "jackson-annotations","jackson-datatype-jsr310", "jackson-module-kotlin"
+    "jackson-core", "jackson-databind", "jackson-annotations", "jackson-datatype-jsr310", "jackson-module-kotlin"
 ]
 [plugins]
 # 应用 Java 插件，提供基本的 Java 代码编译和构建能力
@@ -63,3 +64,5 @@ maven-publish = { id = "maven-publish" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
 # 支持 Spring 的 Kotlin 插件
 kotlin-plugin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin-version" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt" }
+forgeboot-i18n-keygen = { id = "i18n-key-gen" }
