@@ -22,4 +22,16 @@ object Modules {
         const val RESULT_IMPL = ":forgeboot-common:forgeboot-common-result:forgeboot-common-result-impl"
         const val RESULT_API = ":forgeboot-common:forgeboot-common-result:forgeboot-common-result-api"
     }
+    object I18N {
+        const val STARTER = ":forgeboot-i18n-spring-boot-starter"
+        const val API = ":forgeboot-i18n-spring-boot-starter:forgeboot-i18n-api"
+        const val IMPL = ":forgeboot-i18n-spring-boot-starter:forgeboot-i18n-impl"
+        const val AUTOCONFIGURE = ":forgeboot-i18n-spring-boot-starter:forgeboot-i18n-autoconfigure"
+    }
+    object TRACE{
+        const val STARTER = ":forgeboot-trace-spring-boot-starter"
+        const val API = ":forgeboot-trace-spring-boot-starter:forgeboot-trace-api"
+        const val IMPL = ":forgeboot-trace-spring-boot-starter:forgeboot-trace-impl"
+        const val AUTOCONFIGURE = ":forgeboot-trace-spring-boot-starter:forgeboot-trace-autoconfigure"
+    }
 }
