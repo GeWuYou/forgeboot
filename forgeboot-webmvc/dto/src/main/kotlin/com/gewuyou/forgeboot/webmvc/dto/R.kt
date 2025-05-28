@@ -1,11 +1,47 @@
-package com.gewuyou.forgeboot.common.result
+package com.gewuyou.forgeboot.webmvc.dto
 
-import com.gewuyou.forgeboot.common.result.api.MessageResolver
-import com.gewuyou.forgeboot.common.result.api.RequestIdProvider
-import com.gewuyou.forgeboot.common.result.api.ResponseInformation
-import com.gewuyou.forgeboot.common.result.api.ResultExtender
-import com.gewuyou.forgeboot.common.result.impl.DefaultMessageResolver
-import com.gewuyou.forgeboot.common.result.impl.DefaultRequestIdProvider
+
+import com.gewuyou.forgeboot.i18n.api.MessageResolver
+import com.gewuyou.forgeboot.i18n.api.ResponseInformation
+import com.gewuyou.forgeboot.trace.api.RequestIdProvider
+
+
+/**
+ *默认请求ID提供商
+ *
+ * @since 2025-05-03 16:22:18
+ * @author gewuyou
+ */
+val DefaultRequestIdProvider : RequestIdProvider = RequestIdProvider{""}
+
+/**
+ *默认消息解析器
+ *
+ * @since 2025-05-03 16:21:43
+ * @author gewuyou
+ */
+val DefaultMessageResolver : MessageResolver  = MessageResolver { code, _ -> code }
+
+/**
+ * 结果扩展器
+ *
+ * 用于扩展结果映射，通过实现此接口，可以自定义逻辑以向结果映射中添加、修改或删除元素
+ * 主要用于在某个处理流程结束后，对结果数据进行额外的处理或装饰
+ *
+ * @since 2025-05-03 16:08:55
+ * @author gewuyou
+ */
+fun interface ResultExtender {
+    /**
+     * 扩展结果映射
+     *
+     * 实现此方法以执行扩展逻辑，可以访问并修改传入的结果映射
+     * 例如，可以用于添加额外的信息，修改现有值，或者根据某些条件删除条目
+     *
+     * @param resultMap 一个包含结果数据的可变映射，可以在此方法中对其进行修改
+     */
+    fun extend(resultMap: MutableMap<String, Any?>)
+}
 
 /**
  * 统一响应封装类
@@ -18,7 +54,7 @@ data class R<T>(
     val message: String,
     val data: T? = null,
     val requestId: String? = null,
-    val extra: Map<String, Any?> = emptyMap()
+    val extra: Map<String, Any?> = emptyMap(),
 ) {
     /**
      * 转换为可变 Map，包含 extra 中的字段
@@ -66,7 +102,7 @@ data class R<T>(
             messageResolver: MessageResolver? = null,
             i18bArgs: Array<Any>? = null,
             requestIdProvider: RequestIdProvider? = null,
-            extenders: List<ResultExtender> = emptyList()
+            extenders: List<ResultExtender> = emptyList(),
         ): R<T> {
             val msg = (messageResolver ?: DefaultMessageResolver).resolve(info.responseI8nMessageCode, i18bArgs)
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
@@ -91,7 +127,7 @@ data class R<T>(
             messageResolver: MessageResolver? = null,
             i18bArgs: Array<Any>? = null,
             requestIdProvider: RequestIdProvider? = null,
-            extenders: List<ResultExtender> = emptyList()
+            extenders: List<ResultExtender> = emptyList(),
         ): R<T> {
             val msg = (messageResolver ?: DefaultMessageResolver).resolve(info.responseI8nMessageCode, i18bArgs)
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
@@ -118,7 +154,7 @@ data class R<T>(
             i18nArgs: Array<Any>? = null,
             messageResolver: MessageResolver? = null,
             requestIdProvider: RequestIdProvider? = null,
-            extenders: List<ResultExtender> = emptyList()
+            extenders: List<ResultExtender> = emptyList(),
         ): R<T> {
             val msg = (messageResolver ?: DefaultMessageResolver).resolve(messageCode, i18nArgs)
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
@@ -145,7 +181,7 @@ data class R<T>(
             i18nArgs: Array<Any>? = null,
             messageResolver: MessageResolver? = null,
             requestIdProvider: RequestIdProvider? = null,
-            extenders: List<ResultExtender> = emptyList()
+            extenders: List<ResultExtender> = emptyList(),
         ): R<T> {
             val msg = (messageResolver ?: DefaultMessageResolver).resolve(messageCode, i18nArgs)
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
