@@ -9,20 +9,16 @@ object Modules {
 
     object Webmvc {
         const val STARTER = ":forgeboot-webmvc-spring-boot-starter"
-        const val VERSION_STARTER = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-version-spring-boot-starter"
-        const val LOGGER_STARTER = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-logger-spring-boot-starter"
+        const val DTO = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-dto"
+        const val VALIDATION = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-validation"
+        const val VERSION = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-version-spring-boot-starter"
+        const val LOGGER = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-logger-spring-boot-starter"
     }
     object Core{
         const val ROOT = ":forgeboot-core"
         const val EXTENSION = ":forgeboot-core:forgeboot-core-extension"
     }
-    object Common {
-        const val ROOT = ":forgeboot-common"
-        const val RESULT = ":forgeboot-common:forgeboot-common-result"
-        const val RESULT_IMPL = ":forgeboot-common:forgeboot-common-result:forgeboot-common-result-impl"
-        const val RESULT_API = ":forgeboot-common:forgeboot-common-result:forgeboot-common-result-api"
-    }
-    object I18N {
+    object I18n {
         const val STARTER = ":forgeboot-i18n-spring-boot-starter"
         const val API = ":forgeboot-i18n-spring-boot-starter:forgeboot-i18n-api"
         const val IMPL = ":forgeboot-i18n-spring-boot-starter:forgeboot-i18n-impl"
