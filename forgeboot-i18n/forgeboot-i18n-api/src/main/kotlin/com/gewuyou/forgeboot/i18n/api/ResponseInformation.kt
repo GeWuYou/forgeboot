@@ -18,4 +18,10 @@ interface ResponseInformation {
      * @return 响应信息 code
      */
     val responseI8nMessageCode: String
+
+    /**
+     * 获取i18n响应信息参数
+     * @return 响应信息 参数数组
+     */
+    val responseI8nMessageArgs: Array<Any>?
 }

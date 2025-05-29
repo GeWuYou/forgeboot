@@ -1,5 +1,6 @@
 package com.gewuyou.forgeboot.i18n.impl.exception
 
+import com.gewuyou.forgeboot.i18n.api.ResponseInformation
 
 
 /**
@@ -64,6 +65,6 @@ open class I18nBaseException : RuntimeException {
      *
      * @return 国际化消息参数数组
      */
-    val errorI18nMessageArgs: Array<Any>
-        get() = responseInformation.args
+    val errorI18nMessageArgs: Array<Any>?
+        get() = responseInformation.responseI8nMessageArgs
 }
