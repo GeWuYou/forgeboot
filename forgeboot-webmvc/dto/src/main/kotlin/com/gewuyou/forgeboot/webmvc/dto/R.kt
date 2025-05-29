@@ -4,6 +4,7 @@ package com.gewuyou.forgeboot.webmvc.dto
 import com.gewuyou.forgeboot.i18n.api.MessageResolver
 import com.gewuyou.forgeboot.i18n.api.ResponseInformation
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
+import com.gewuyou.forgeboot.webmvc.dto.i18n.I18nKeys
 
 
 /**
@@ -22,6 +23,71 @@ val DefaultRequestIdProvider : RequestIdProvider = RequestIdProvider{""}
  */
 val DefaultMessageResolver : MessageResolver  = MessageResolver { code, _ -> code }
 
+/**
+ * 默认成功i18n响应信息对象
+ *
+ * 提供标准的成功响应定义，包含国际化支持
+ * 响应码为200，表示操作成功
+ * i18n消息码用于查找本地化文本
+ *
+ * @since 2025-05-03 16:23:00
+ * @author gewuyou
+ */
+val defaultOkI18nResponseInformation: ResponseInformation = object : ResponseInformation {
+    /**
+     * 获取响应码
+     * @return 响应码
+     */
+    override val responseCode: Int
+        get() = 200
+
+    /**
+     * 获取i18n响应信息code
+     * @return 响应信息 code
+     */
+    override val responseI8nMessageCode: String
+        get() = I18nKeys.Forgeboot.Webmvc.Dto.RESULT_RESPONSEINFO_OK
+
+    /**
+     * 获取i18n响应信息参数
+     * @return 响应信息 参数数组
+     */
+    override val responseI8nMessageArgs: Array<Any>?
+        get() = arrayOf()
+}
+
+/**
+ * 默认失败i18n响应信息对象
+ *
+ * 提供标准的失败响应定义，包含国际化支持
+ * 响应码为400，表示请求错误
+ * i18n消息码用于查找本地化文本
+ *
+ * @since 2025-05-03 16:23:15
+ * @author gewuyou
+ */
+val defaultFailureI18nResponseInformation: ResponseInformation = object : ResponseInformation {
+    /**
+     * 获取响应码
+     * @return 响应码
+     */
+    override val responseCode: Int
+        get() = 400
+
+    /**
+     * 获取i18n响应信息code
+     * @return 响应信息 code
+     */
+    override val responseI8nMessageCode: String
+        get() = I18nKeys.Forgeboot.Webmvc.Dto.RESULT_RESPONSEINFO_FAIL
+
+    /**
+     * 获取i18n响应信息参数
+     * @return 响应信息 参数数组
+     */
+    override val responseI8nMessageArgs: Array<Any>?
+        get() = arrayOf()
+}
 /**
  * 结果扩展器
  *
@@ -91,20 +157,18 @@ data class R<T>(
          * @param info 响应信息对象
          * @param data 响应数据
          * @param messageResolver 消息解析器
-         * @param i18bArgs 国际化参数
          * @param requestIdProvider 请求ID提供者
          * @param extenders 扩展信息提供者列表
          * @return 成功响应对象
          */
         fun <T> success(
-            info: ResponseInformation,
+            info: ResponseInformation = defaultOkI18nResponseInformation,
             data: T? = null,
             messageResolver: MessageResolver? = null,
-            i18bArgs: Array<Any>? = null,
             requestIdProvider: RequestIdProvider? = null,
             extenders: List<ResultExtender> = emptyList(),
         ): R<T> {
-            val msg = (messageResolver ?: DefaultMessageResolver).resolve(info.responseI8nMessageCode, i18bArgs)
+            val msg = (messageResolver ?: DefaultMessageResolver).resolve(info.responseI8nMessageCode, info.responseI8nMessageArgs)
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
             val extra = buildExtraMap(extenders)
             return R(info.responseCode, true, msg, data, reqId, extra)
@@ -116,20 +180,18 @@ data class R<T>(
          * @param info 响应信息对象
          * @param data 响应数据
          * @param messageResolver 消息解析器
-         * @param i18bArgs 国际化参数
          * @param requestIdProvider 请求ID提供者
          * @param extenders 扩展信息提供者列表
          * @return 失败响应对象
          */
         fun <T> failure(
-            info: ResponseInformation,
+            info: ResponseInformation = defaultFailureI18nResponseInformation,
             data: T? = null,
             messageResolver: MessageResolver? = null,
-            i18bArgs: Array<Any>? = null,
             requestIdProvider: RequestIdProvider? = null,
             extenders: List<ResultExtender> = emptyList(),
         ): R<T> {
-            val msg = (messageResolver ?: DefaultMessageResolver).resolve(info.responseI8nMessageCode, i18bArgs)
+            val msg = (messageResolver ?: DefaultMessageResolver).resolve(info.responseI8nMessageCode, info.responseI8nMessageArgs)
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
             val extra = buildExtraMap(extenders)
             return R(info.responseCode, false, msg, data, reqId, extra)

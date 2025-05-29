@@ -22,13 +22,13 @@ open class PageQueryReq<T> {
     /**
      * 当前页码(默认1)
      */
-    @field:Min(1, message = I18nKeys.Forgeboot.Dto.PAGEQUERY_CURRENTPAGE_MIN )
+    @field:Min(1, message = I18nKeys.Forgeboot.Webmvc.Dto.PAGE_QUERY_CURRENT_PAGE_MIN )
     var currentPage: Int = 1
 
     /**
      * 每页条数(默认10)
      */
-    @field:Min(1, message = I18nKeys.Forgeboot.Dto.PAGEQUERY_PAGESIZE_MIN)
+    @field:Min(1, message = I18nKeys.Forgeboot.Webmvc.Dto.PAGE_QUERY_PAGE_SIZE_MIN)
     var pageSize: Int = 10
 
     /**

@@ -12,4 +12,6 @@ dependencies {
 }
 i18nKeyGen {
     rootPackage.set("com.gewuyou.forgeboot.webmvc.dto.i18n")
+    level.set(3)
+    readPath.set("src/main/resources/i18n/${project.name}")
 }
