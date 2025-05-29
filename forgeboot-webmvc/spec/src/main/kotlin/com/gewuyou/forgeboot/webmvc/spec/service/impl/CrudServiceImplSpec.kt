@@ -77,7 +77,7 @@ abstract class CrudServiceImplSpec<Entity : Any, Id : Any, Filter : Any>(
      *
      * @param id 要删除的实体的唯一标识符
      */
-    override fun delete(id: Id) {
+    override fun deleteById(id: Id) {
         repository.deleteById(id)
     }
 
@@ -86,7 +86,7 @@ abstract class CrudServiceImplSpec<Entity : Any, Id : Any, Filter : Any>(
      *
      * @param ids 要删除的实体 ID 列表
      */
-    override fun delete(ids: List<Id>) {
+    override fun deleteByIds(ids: List<Id>) {
         repository.deleteAllById(ids)
     }
 
@@ -95,7 +95,7 @@ abstract class CrudServiceImplSpec<Entity : Any, Id : Any, Filter : Any>(
      *
      * @param entity 要删除的实体对象
      */
-    override fun delete(entity: Entity) {
+    override fun deleteByOne(entity: Entity) {
         repository.delete(entity)
     }
 
@@ -104,7 +104,7 @@ abstract class CrudServiceImplSpec<Entity : Any, Id : Any, Filter : Any>(
      *
      * @param entities 要删除的实体列表
      */
-    override fun delete(entities: List<Entity>) {
+    override fun deleteByAll(entities: List<Entity>) {
         repository.deleteAll(entities)
     }
 

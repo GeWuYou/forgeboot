@@ -51,28 +51,28 @@ interface CrudServiceSpec<Entity: Any, Id: Any, Filter: Any> {
      *
      * @param id 要删除的实体的ID
      */
-    fun delete(id: Id)
+    fun deleteById(id: Id)
 
     /**
      * 批量删除实体
      *
      * @param ids 要删除的实体的ID列表
      */
-    fun delete(ids: List<Id>)
+    fun deleteByIds(ids: List<Id>)
 
     /**
      * 删除一个实体
      *
      * @param entity 要删除的实体
      */
-    fun delete(entity: Entity)
+    fun deleteByOne(entity: Entity)
 
     /**
      * 批量删除实体
      *
      * @param entities 要删除的实体列表
      */
-    fun delete(entities: List<Entity>)
+    fun deleteByAll(entities: List<Entity>)
 
     /**
      * 根据ID检查实体是否存在
