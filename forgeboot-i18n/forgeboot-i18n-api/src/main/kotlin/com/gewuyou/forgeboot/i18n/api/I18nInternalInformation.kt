@@ -6,7 +6,7 @@ package com.gewuyou.forgeboot.i18n.api
  * @author gewuyou
  * @since 2024-11-26 17:14:15
  */
-interface InternalInformation {
+interface I18nInternalInformation {
     /**
      * 获取i18n响应信息code
      * @return 响应信息 code
