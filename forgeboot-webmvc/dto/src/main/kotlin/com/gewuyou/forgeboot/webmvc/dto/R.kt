@@ -1,112 +1,39 @@
 package com.gewuyou.forgeboot.webmvc.dto
 
-
-import com.gewuyou.forgeboot.i18n.api.MessageResolver
-import com.gewuyou.forgeboot.i18n.api.ResponseInformation
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
-import com.gewuyou.forgeboot.webmvc.dto.i18n.I18nKeys
 
-
-/**
- *默认请求ID提供商
- *
- * @since 2025-05-03 16:22:18
- * @author gewuyou
- */
-val DefaultRequestIdProvider : RequestIdProvider = RequestIdProvider{""}
-
-/**
- *默认消息解析器
- *
- * @since 2025-05-03 16:21:43
- * @author gewuyou
- */
-val DefaultMessageResolver : MessageResolver  = MessageResolver { code, _ -> code }
-
-/**
- * 默认成功i18n响应信息对象
- *
- * 提供标准的成功响应定义，包含国际化支持
- * 响应码为200，表示操作成功
- * i18n消息码用于查找本地化文本
- *
- * @since 2025-05-03 16:23:00
- * @author gewuyou
- */
-val defaultOkI18nResponseInformation: ResponseInformation = object : ResponseInformation {
+// 默认成功响应信息
+val defaultOkResponseInformation = object : ResponseInformation {
     /**
-     * 获取响应码
-     * @return 响应码
+     * 响应状态码，用于表示响应的状态
      */
-    override val responseCode: Int
-        get() = 200
+    override fun responseStateCode(): String {
+        return "200"
+    }
 
     /**
-     * 获取i18n响应信息code
-     * @return 响应信息 code
+     * 响应消息，用于提供更详细的响应信息
      */
-    override val responseI8nMessageCode: String
-        get() = I18nKeys.Forgeboot.Webmvc.Dto.RESULT_RESPONSEINFO_OK
-
-    /**
-     * 获取i18n响应信息参数
-     * @return 响应信息 参数数组
-     */
-    override val responseI8nMessageArgs: Array<Any>?
-        get() = arrayOf()
+    override fun responseMessage(): String {
+        return "success"
+    }
 }
 
-/**
- * 默认失败i18n响应信息对象
- *
- * 提供标准的失败响应定义，包含国际化支持
- * 响应码为400，表示请求错误
- * i18n消息码用于查找本地化文本
- *
- * @since 2025-05-03 16:23:15
- * @author gewuyou
- */
-val defaultFailureI18nResponseInformation: ResponseInformation = object : ResponseInformation {
+// 默认失败响应信息
+val defaultFailureResponseInformation = object : ResponseInformation {
     /**
-     * 获取响应码
-     * @return 响应码
+     * 响应状态码，用于表示响应的状态
      */
-    override val responseCode: Int
-        get() = 400
+    override fun responseStateCode(): String {
+        return "400"
+    }
 
     /**
-     * 获取i18n响应信息code
-     * @return 响应信息 code
+     * 响应消息，用于提供更详细的响应信息
      */
-    override val responseI8nMessageCode: String
-        get() = I18nKeys.Forgeboot.Webmvc.Dto.RESULT_RESPONSEINFO_FAIL
-
-    /**
-     * 获取i18n响应信息参数
-     * @return 响应信息 参数数组
-     */
-    override val responseI8nMessageArgs: Array<Any>?
-        get() = arrayOf()
-}
-/**
- * 结果扩展器
- *
- * 用于扩展结果映射，通过实现此接口，可以自定义逻辑以向结果映射中添加、修改或删除元素
- * 主要用于在某个处理流程结束后，对结果数据进行额外的处理或装饰
- *
- * @since 2025-05-03 16:08:55
- * @author gewuyou
- */
-fun interface ResultExtender {
-    /**
-     * 扩展结果映射
-     *
-     * 实现此方法以执行扩展逻辑，可以访问并修改传入的结果映射
-     * 例如，可以用于添加额外的信息，修改现有值，或者根据某些条件删除条目
-     *
-     * @param resultMap 一个包含结果数据的可变映射，可以在此方法中对其进行修改
-     */
-    fun extend(resultMap: MutableMap<String, Any?>)
+    override fun responseMessage(): String {
+        return "failure"
+    }
 }
 
 /**
@@ -115,35 +42,13 @@ fun interface ResultExtender {
  * @since 2025-05-03 16:04:42
  */
 data class R<T>(
-    val code: Int,
-    val success: Boolean,
-    val message: String,
-    val data: T? = null,
-    val requestId: String? = null,
-    val extra: Map<String, Any?> = emptyMap(),
-) {
-    /**
-     * 转换为可变 Map，包含 extra 中的字段
-     */
-    fun toMutableFlatMap(): MutableMap<String, Any?> {
-        val map = mutableMapOf(
-            "code" to code,
-            "success" to success,
-            "message" to message,
-            "data" to data
-        )
-        if (!requestId.isNullOrBlank()) {
-            map["requestId"] = requestId
-        }
-        map.putAll(extra)
-        return map
-    }
-
-    /**
-     * 转换为不可变 Map，包含 extra 中的字段
-     */
-    fun toFlatMap(): Map<String, Any?> = toMutableFlatMap().toMap()
-
+    override val code: String,
+    override val success: Boolean,
+    override val message: String,
+    override val data: T? = null,
+    override val requestId: String? = null,
+    override val extra: Map<String, Any?> = emptyMap(),
+) : BaseResult<T>(code, success, message, data, requestId, extra) {
     companion object {
         private fun buildExtraMap(extenders: List<ResultExtender>): Map<String, Any?> {
             return mutableMapOf<String, Any?>().apply {
@@ -156,22 +61,19 @@ data class R<T>(
          *
          * @param info 响应信息对象
          * @param data 响应数据
-         * @param messageResolver 消息解析器
          * @param requestIdProvider 请求ID提供者
          * @param extenders 扩展信息提供者列表
          * @return 成功响应对象
          */
         fun <T> success(
-            info: ResponseInformation = defaultOkI18nResponseInformation,
+            info: ResponseInformation = defaultOkResponseInformation,
             data: T? = null,
-            messageResolver: MessageResolver? = null,
             requestIdProvider: RequestIdProvider? = null,
             extenders: List<ResultExtender> = emptyList(),
         ): R<T> {
-            val msg = (messageResolver ?: DefaultMessageResolver).resolve(info.responseI8nMessageCode, info.responseI8nMessageArgs)
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
             val extra = buildExtraMap(extenders)
-            return R(info.responseCode, true, msg, data, reqId, extra)
+            return R(info.responseStateCode(), true, info.responseMessage(), data, reqId, extra)
         }
 
         /**
@@ -179,76 +81,63 @@ data class R<T>(
          *
          * @param info 响应信息对象
          * @param data 响应数据
-         * @param messageResolver 消息解析器
          * @param requestIdProvider 请求ID提供者
          * @param extenders 扩展信息提供者列表
          * @return 失败响应对象
          */
         fun <T> failure(
-            info: ResponseInformation = defaultFailureI18nResponseInformation,
+            info: ResponseInformation = defaultFailureResponseInformation,
             data: T? = null,
-            messageResolver: MessageResolver? = null,
             requestIdProvider: RequestIdProvider? = null,
             extenders: List<ResultExtender> = emptyList(),
         ): R<T> {
-            val msg = (messageResolver ?: DefaultMessageResolver).resolve(info.responseI8nMessageCode, info.responseI8nMessageArgs)
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
             val extra = buildExtraMap(extenders)
-            return R(info.responseCode, false, msg, data, reqId, extra)
+            return R(info.responseStateCode(), false, info.responseMessage(), data, reqId, extra)
         }
 
         /**
          * 创建成功响应对象
          *
          * @param code 响应码
-         * @param messageCode 消息码
+         * @param message 消息
          * @param data 响应数据
-         * @param i18nArgs 国际化参数
-         * @param messageResolver 消息解析器
          * @param requestIdProvider 请求ID提供者
          * @param extenders 扩展信息提供者列表
          * @return 成功响应对象
          */
         fun <T> success(
-            code: Int = 200,
-            messageCode: String = "success",
+            code: String = "200",
+            message: String = "success",
             data: T? = null,
-            i18nArgs: Array<Any>? = null,
-            messageResolver: MessageResolver? = null,
             requestIdProvider: RequestIdProvider? = null,
             extenders: List<ResultExtender> = emptyList(),
         ): R<T> {
-            val msg = (messageResolver ?: DefaultMessageResolver).resolve(messageCode, i18nArgs)
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
             val extra = buildExtraMap(extenders)
-            return R(code, true, msg, data, reqId, extra)
+            return R(code, true, message, data, reqId, extra)
         }
 
         /**
          * 创建失败响应对象
          *
          * @param code 响应码
-         * @param messageCode 消息码
+         * @param message 消息
          * @param data 响应数据
-         * @param i18nArgs 国际化参数
-         * @param messageResolver 消息解析器
          * @param requestIdProvider 请求ID提供者
          * @param extenders 扩展信息提供者列表
          * @return 失败响应对象
          */
         fun <T> failure(
-            code: Int = 400,
-            messageCode: String = "error",
+            code: String = "400",
+            message: String = "failure",
             data: T? = null,
-            i18nArgs: Array<Any>? = null,
-            messageResolver: MessageResolver? = null,
             requestIdProvider: RequestIdProvider? = null,
             extenders: List<ResultExtender> = emptyList(),
         ): R<T> {
-            val msg = (messageResolver ?: DefaultMessageResolver).resolve(messageCode, i18nArgs)
             val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
             val extra = buildExtraMap(extenders)
-            return R(code, false, msg, data, reqId, extra)
+            return R(code, false, message, data, reqId, extra)
         }
     }
 }
