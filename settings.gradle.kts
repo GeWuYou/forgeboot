@@ -38,7 +38,7 @@ project(":forgeboot-webmvc:version").name = "forgeboot-webmvc-version-spring-boo
 project(":forgeboot-webmvc:logger").name = "forgeboot-webmvc-logger-spring-boot-starter"
 project(":forgeboot-webmvc:exception").name = "forgeboot-webmvc-exception-spring-boot-starter"
 project(":forgeboot-webmvc:dto").name = "forgeboot-webmvc-dto"
-project(":forgeboot-webmvc:validation").name = "forgeboot-validation"
+project(":forgeboot-webmvc:validation").name = "forgeboot-webmvc-validation"
 project(":forgeboot-webmvc:spec").name = "forgeboot-webmvc-spec"
 //endregion
 
