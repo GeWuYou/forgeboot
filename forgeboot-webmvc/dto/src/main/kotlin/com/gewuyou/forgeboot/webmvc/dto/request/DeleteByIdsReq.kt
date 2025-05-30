@@ -1,7 +1,6 @@
 package com.gewuyou.forgeboot.webmvc.dto.request
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.gewuyou.forgeboot.webmvc.dto.i18n.I18nKeys
 import jakarta.validation.constraints.NotEmpty
 
 /**
@@ -23,6 +22,6 @@ class DeleteByIdsReq<T>(
      *
      * @param ids 实体的唯一标识符列表，用于指定哪些实体应当被删除
      */
-    @field:NotEmpty(message = I18nKeys.Forgeboot.Webmvc.Dto.DELETE_IDS_NOT_EMPTY)
+    @field:NotEmpty(message = "The list of Ids requested to be removed cannot be empty!")
     var ids: List<T>,
 )

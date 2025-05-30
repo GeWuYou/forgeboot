@@ -3,7 +3,6 @@ package com.gewuyou.forgeboot.webmvc.dto.request
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.gewuyou.forgeboot.webmvc.dto.SortCondition
 import com.gewuyou.forgeboot.webmvc.dto.enums.SortDirection
-import com.gewuyou.forgeboot.webmvc.dto.i18n.I18nKeys
 import jakarta.validation.constraints.Min
 import java.time.LocalDateTime
 
@@ -22,13 +21,13 @@ open class PageQueryReq<T> {
     /**
      * 当前页码(默认1)
      */
-    @field:Min(1, message = I18nKeys.Forgeboot.Webmvc.Dto.PAGE_QUERY_CURRENT_PAGE_MIN )
+    @field:Min(1)
     var currentPage: Int = 1
 
     /**
      * 每页条数(默认10)
      */
-    @field:Min(1, message = I18nKeys.Forgeboot.Webmvc.Dto.PAGE_QUERY_PAGE_SIZE_MIN)
+    @field:Min(1)
     var pageSize: Int = 10
 
     /**
