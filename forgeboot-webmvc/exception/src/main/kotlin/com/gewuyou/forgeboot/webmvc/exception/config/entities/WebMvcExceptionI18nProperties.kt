@@ -1,5 +1,6 @@
 package com.gewuyou.forgeboot.webmvc.exception.config.entities
 
+import com.gewuyou.forgeboot.webmvc.extension.i18n.I18nKeys
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 /**
@@ -8,21 +9,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  * @author gewuyou
  * @since 2025-05-13 11:06:46
  */
-@ConfigurationProperties("forgeboot.webmvc.exception.default")
-class WebMvcExceptionProperties {
-    companion object {
-        const val ERROR_MESSAGE_ILLEGAL_PARAMETERS = "Illegal parameters, please check the input!"
-        const val ERROR_MESSAGE_INTERNAL_SERVER =
-            "If there is an internal execution error, please report the request ID of this request!"
-    }
-
-    /**
-     * 是否启用国际化
-     *
-     * @param enable 是否启用国际化
-     */
-    var enable: Boolean = false
-
+@ConfigurationProperties("forgeboot.webmvc.exception.i18n")
+class WebMvcExceptionI18nProperties {
     /**
      * 设置其他通用外部异常的错误代码
      *
@@ -36,8 +24,7 @@ class WebMvcExceptionProperties {
      *
      * @param otherGeneralExternalExceptionErrorMessage 其他通用外部异常的错误消息
      */
-    var otherGeneralExternalExceptionErrorMessage: String =
-        ERROR_MESSAGE_INTERNAL_SERVER
+    var otherGeneralExternalExceptionErrorMessage: String = I18nKeys.Forgeboot.Webmvc.Exception.INVALID_SERVER_ERROR
 
     /**
      * 设置默认验证异常的错误代码
@@ -52,14 +39,14 @@ class WebMvcExceptionProperties {
      *
      * @param defaultValidationExceptionErrorMessage 默认验证异常的错误消息
      */
-    var defaultValidationExceptionErrorMessage: String = ERROR_MESSAGE_ILLEGAL_PARAMETERS
+    var defaultValidationExceptionErrorMessage: String = I18nKeys.Forgeboot.Webmvc.Exception.ILLEGAL_PARAMETER
 
     /**
      * 设置默认验证异常的字段错误消息
      *
      * @param defaultValidationExceptionFieldErrorMessage 默认验证异常的字段错误消息
      */
-    var defaultValidationExceptionFieldErrorMessage: String = ERROR_MESSAGE_ILLEGAL_PARAMETERS
+    var defaultValidationExceptionFieldErrorMessage: String = I18nKeys.Forgeboot.Webmvc.Exception.ILLEGAL_PARAMETER
 
     /**
      * 设置默认无效参数异常的错误代码
@@ -73,7 +60,7 @@ class WebMvcExceptionProperties {
      *
      * @param defaultInvalidParameterErrorMessage 默认无效参数异常的错误消息
      */
-    var defaultInvalidParameterErrorMessage: String = ERROR_MESSAGE_ILLEGAL_PARAMETERS
+    var defaultInvalidParameterErrorMessage: String = I18nKeys.Forgeboot.Webmvc.Exception.ILLEGAL_PARAMETER
 
     /**
      * 设置默认内部服务器错误异常的错误代码
@@ -88,6 +75,5 @@ class WebMvcExceptionProperties {
      *
      * @param defaultInternalServerErrorMessage 默认内部服务器错误异常的错误消息
      */
-    var defaultInternalServerErrorMessage: String =
-        ERROR_MESSAGE_INTERNAL_SERVER
+    var defaultInternalServerErrorMessage: String = I18nKeys.Forgeboot.Webmvc.Exception.INVALID_SERVER_ERROR
 }

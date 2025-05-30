@@ -2,14 +2,10 @@ package com.gewuyou.forgeboot.webmvc.exception.handler
 
 
 import com.gewuyou.forgeboot.core.extension.log
-import com.gewuyou.forgeboot.i18n.api.MessageResolver
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
 import com.gewuyou.forgeboot.webmvc.dto.R
 import com.gewuyou.forgeboot.webmvc.exception.config.entities.WebMvcExceptionProperties
 import com.gewuyou.forgeboot.webmvc.exception.core.GlobalException
-import com.gewuyou.forgeboot.webmvc.exception.core.InternalException
-
-
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -28,7 +24,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice
 class GlobalExceptionHandler(
     private val webMvcExceptionProperties: WebMvcExceptionProperties,
-    private val messageResolver: MessageResolver,
     private val requestIdProvider: RequestIdProvider,
 ) {
     /**
@@ -44,9 +39,9 @@ class GlobalExceptionHandler(
     fun handleOtherException(e: Exception): R<String> {
         log.error("other exception:", e)
         return R.failure(
-            webMvcExceptionProperties.otherGeneralExternalExceptionErrorCode,
+            webMvcExceptionProperties.otherGeneralExternalExceptionErrorCode.toString(),
             webMvcExceptionProperties.otherGeneralExternalExceptionErrorMessage,
-            null, null, messageResolver, requestIdProvider
+            null, requestIdProvider
         )
     }
 
@@ -64,31 +59,25 @@ class GlobalExceptionHandler(
         // 返回字段错误
         for (fieldError in ex.bindingResult.fieldErrors) {
             return R.failure(
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.value().toString(),
                 fieldError.defaultMessage ?: webMvcExceptionProperties.defaultValidationExceptionFieldErrorMessage,
                 null,
-                null,
-                messageResolver,
                 requestIdProvider
             )
         }
         // 返回全局错误
         for (objectError in ex.bindingResult.globalErrors) {
             return R.failure(
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.value().toString(),
                 objectError.defaultMessage ?: webMvcExceptionProperties.defaultValidationExceptionErrorMessage,
                 null,
-                null,
-                messageResolver,
                 requestIdProvider
             )
         }
         return R.failure(
-            webMvcExceptionProperties.defaultValidationExceptionErrorCode,
+            webMvcExceptionProperties.defaultValidationExceptionErrorCode.toString(),
             webMvcExceptionProperties.defaultValidationExceptionErrorMessage,
             null,
-            null,
-            messageResolver,
             requestIdProvider
         )
     }
@@ -106,16 +95,14 @@ class GlobalExceptionHandler(
     fun handleConstraintViolationException(ex: ConstraintViolationException): R<String> {
         for (constraintViolation in ex.constraintViolations) {
             return R.failure(
-                HttpStatus.BAD_REQUEST.value(), constraintViolation.message,
-                null, null, messageResolver, requestIdProvider
+                HttpStatus.BAD_REQUEST.value().toString(), constraintViolation.message,
+                null, requestIdProvider
             )
         }
         return R.failure(
-            webMvcExceptionProperties.defaultInvalidParameterErrorCode,
+            webMvcExceptionProperties.defaultInvalidParameterErrorCode.toString(),
             webMvcExceptionProperties.defaultInvalidParameterErrorMessage,
             null,
-            null,
-            messageResolver,
             requestIdProvider
         )
     }
@@ -132,34 +119,9 @@ class GlobalExceptionHandler(
     @ExceptionHandler(GlobalException::class)
     fun handleGlobalException(e: GlobalException): R<String> {
         return R.failure(
-            e.errorCode, e.errorI18nMessageCode,
-            null, e.errorI18nMessageArgs, messageResolver, requestIdProvider
-        )
-    }
-
-    /**
-     * 内部异常处理器
-     *
-     * 用于处理内部异常（InternalException），记录异常信息并返回默认的内部服务器错误信息
-     *
-     * @param e 异常
-     * @return 返回的结果
-     */
-    @ExceptionHandler(InternalException::class)
-    fun handleGlobalException(e: InternalException): R<String> {
-        log.error("内部异常: 异常信息: {}", e.errorMessage, e)
-        e.internalInformation?.responseI8nMessageCode?.let {
-            log.error(
-                "i18nMessage: {}", messageResolver.resolve(it, e.internalInformation.responseI8nMessageArgs)
-            )
-        }
-        return R.failure(
-            webMvcExceptionProperties.defaultInternalServerErrorCode,
-            webMvcExceptionProperties.defaultInternalServerErrorMessage,
-            null,
-            null,
-            messageResolver,
-            requestIdProvider
+            e.responseInformation.responseStateCode(),
+            e.responseInformation.responseMessage(),
+            null, requestIdProvider
         )
     }
 }
