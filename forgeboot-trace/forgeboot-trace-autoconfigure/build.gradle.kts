@@ -1,5 +1,6 @@
 
 dependencies {
+    implementation(project(Modules.Core.EXTENSION))
     compileOnly(platform(libs.springBootDependencies.bom))
     compileOnly(platform(libs.springCloudDependencies.bom))
     compileOnly(libs.springBootStarter.web)
