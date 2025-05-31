@@ -7,7 +7,6 @@ import com.gewuyou.forgeboot.i18n.impl.config.I18nProperties
 import com.gewuyou.forgeboot.i18n.impl.filter.ReactiveLocaleResolver
 import com.gewuyou.forgeboot.i18n.impl.resolver.I18nMessageResolver
 import jakarta.servlet.http.HttpServletRequest
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -39,12 +38,11 @@ open class I18nAutoConfiguration(
      * 配置并创建一个国际化的消息源
      *
      * 此方法首先会扫描指定路径下所有的国际化属性文件，然后将这些文件路径设置到消息源中
-     * 如果项目中还没有名为 [MESSAGE_SOURCE_BEAN_NAME] 的消息源 bean，则会创建一个
      *
      * @return MessageSource 国际化消息源
      */
-    @Bean(name = [MESSAGE_SOURCE_BEAN_NAME])
-    @ConditionalOnMissingBean(name = [MESSAGE_SOURCE_BEAN_NAME])
+    @Bean
+    @ConditionalOnMissingBean
     open fun messageSource(): MessageSource {
         log.info("开始加载 I18n 配置...")
         val messageSource = ReloadableResourceBundleMessageSource()
@@ -63,13 +61,13 @@ open class I18nAutoConfiguration(
      * 该方法通过Spring的条件注解有选择性地创建一个MessageResolver实例
      * 主要用于解决国际化消息的解析问题
      *
-     * @param forgebootI18nMessageSource 一个MessageSource实例，用于解析国际化消息
+     * @param i18nMessageSource 一个MessageSource实例，用于解析国际化消息
      * @return 返回一个MessageResolver实例，用于在国际化的环境中解析消息
      */
     @Bean
     @ConditionalOnMissingBean(MessageResolver::class)
-    open fun i18nMessageResolver(@Qualifier(MESSAGE_SOURCE_BEAN_NAME) forgebootI18nMessageSource: MessageSource): MessageResolver {
-        return I18nMessageResolver(forgebootI18nMessageSource)
+    open fun i18nMessageResolver(i18nMessageSource: MessageSource): MessageResolver {
+        return I18nMessageResolver(i18nMessageSource)
     }
 
 
@@ -164,12 +162,5 @@ open class I18nAutoConfiguration(
     open fun createReactiveLocaleResolver(i18nProperties: I18nProperties): ReactiveLocaleResolver {
         log.info("创建 WebFlux 区域设置解析器...")
         return ReactiveLocaleResolver(i18nProperties)
-    }
-
-    companion object {
-        /**
-         * 消息源 bean 的名称
-         */
-        const val MESSAGE_SOURCE_BEAN_NAME: String = "forgebootI18nMessageSource"
     }
 }
