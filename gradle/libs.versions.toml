@@ -11,6 +11,7 @@ axion-release-version = "1.18.7"
 spring-cloud-version = "2024.0.1"
 spring-boot-version = "3.4.4"
 slf4j-version = "2.0.17"
+map-struct-version="1.6.3"
 [libraries]
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
 kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime-version" }
@@ -42,6 +43,8 @@ jackson-datatype-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "ja
 jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin" }
 
 reactor-core = { group = "io.projectreactor", name = "reactor-core" }
+#org
+org-mapstruct = { group = "org.mapstruct", name = "mapstruct", version.ref = "map-struct-version" }
 # Libraries can be bundled together for easier import
 
 [bundles]
