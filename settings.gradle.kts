@@ -29,6 +29,7 @@ include(
     ":forgeboot-webmvc:version",
     ":forgeboot-webmvc:logger",
     ":forgeboot-webmvc:exception",
+    ":forgeboot-webmvc:exception-i18n",
     ":forgeboot-webmvc:dto",
     ":forgeboot-webmvc:validation",
     ":forgeboot-webmvc:spec"
@@ -37,6 +38,7 @@ project(":forgeboot-webmvc").name = "forgeboot-webmvc-spring-boot-starter"
 project(":forgeboot-webmvc:version").name = "forgeboot-webmvc-version-spring-boot-starter"
 project(":forgeboot-webmvc:logger").name = "forgeboot-webmvc-logger-spring-boot-starter"
 project(":forgeboot-webmvc:exception").name = "forgeboot-webmvc-exception-spring-boot-starter"
+ project(":forgeboot-webmvc:exception-i18n").name = "forgeboot-webmvc-exception-i18n-spring-boot-starter"
 project(":forgeboot-webmvc:dto").name = "forgeboot-webmvc-dto"
 project(":forgeboot-webmvc:validation").name = "forgeboot-webmvc-validation"
 project(":forgeboot-webmvc:spec").name = "forgeboot-webmvc-spec"

@@ -9,7 +9,12 @@ plugins {
     // Kotlin Spring 支持
     alias(libs.plugins.kotlin.plugin.spring)
     // Kotlin kapt 支持
-    alias (libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.kapt)
+    id(libs.plugins.kotlin.jvm.get().pluginId)
+}
+java {
+    withSourcesJar()
+    withJavadocJar()
 }
 
 // 配置 SCM 版本插件
@@ -59,8 +64,6 @@ allprojects {
 
 // 子项目配置
 subprojects {
-    version = rootProject.version
-
     afterEvaluate {
         val isRootModule = project.getPropertyByBoolean(ProjectFlags.IS_ROOT_MODULE)
         val parentProject = project.parent
@@ -77,6 +80,24 @@ subprojects {
     }
     // 应用插件和配置
     val libs = rootProject.libs
+    plugins.withId(libs.plugins.java.get().pluginId) {
+        extensions.configure<JavaPluginExtension> {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+    plugins.withId(libs.plugins.forgeboot.i18n.keygen.get().pluginId) {
+        tasks.named("kotlinSourcesJar") {
+            dependsOn("generateI18nKeys")
+        }
+        tasks.named<Jar>("sourcesJar") {
+            dependsOn("generateI18nKeys")
+        }
+
+    }
+
+    version = rootProject.version
+
     apply {
         plugin(libs.plugins.java.get().pluginId)
         plugin(libs.plugins.javaLibrary.get().pluginId)
@@ -86,8 +107,6 @@ subprojects {
         plugin(libs.plugins.kotlin.kapt.get().pluginId)
         // 导入仓库配置
         from(file("$configDir/repositories.gradle.kts"))
-        // 导入源代码任务
-        from(file("$tasksDir/sourceTask.gradle.kts"))
     }
     // 发布配置
     publishing {
