@@ -13,7 +13,7 @@ interface ResponseInformation {
     /**
      * 响应状态码，用于表示响应的状态
      */
-    fun responseStateCode(): String
+    fun responseStateCode(): Int
 
     /**
      * 响应消息，用于提供更详细的响应信息

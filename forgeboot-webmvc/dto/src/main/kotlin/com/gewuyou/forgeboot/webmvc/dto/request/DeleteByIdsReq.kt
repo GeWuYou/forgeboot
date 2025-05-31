@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotEmpty
  * @since 2025-01-18 17:39:18
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-class DeleteByIdsReq<T>(
+open class DeleteByIdsReq<T>(
     /**
      * 待删除的实体id列表
      *

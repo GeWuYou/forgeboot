@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.gewuyou.forgeboot.webmvc.dto.SortCondition
 import com.gewuyou.forgeboot.webmvc.dto.enums.SortDirection
 import jakarta.validation.constraints.Min
-import java.time.LocalDateTime
+import java.time.Instant
 
 /**
  * 分页查询条件请求实体类
@@ -58,13 +58,12 @@ open class PageQueryReq<T> {
     /**
      * 开始日期
      */
-    var startDate: LocalDateTime? = null
+    var startDate: Instant? = null
 
     /**
      * 结束日期
      */
-    var endDate: LocalDateTime? = null
-
+    var endDate: Instant? = null
     /**
      * 是否启用
      */

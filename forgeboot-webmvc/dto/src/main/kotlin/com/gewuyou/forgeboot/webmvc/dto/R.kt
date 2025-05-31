@@ -7,8 +7,8 @@ val defaultOkResponseInformation = object : ResponseInformation {
     /**
      * 响应状态码，用于表示响应的状态
      */
-    override fun responseStateCode(): String {
-        return "200"
+    override fun responseStateCode(): Int {
+        return 200
     }
 
     /**
@@ -24,8 +24,8 @@ val defaultFailureResponseInformation = object : ResponseInformation {
     /**
      * 响应状态码，用于表示响应的状态
      */
-    override fun responseStateCode(): String {
-        return "400"
+    override fun responseStateCode(): Int {
+        return 400
     }
 
     /**
@@ -42,7 +42,7 @@ val defaultFailureResponseInformation = object : ResponseInformation {
  * @since 2025-05-03 16:04:42
  */
 data class R<T>(
-    override val code: String,
+    override val code: Int,
     override val success: Boolean,
     override val message: String,
     override val data: T? = null,
@@ -107,7 +107,7 @@ data class R<T>(
          * @return 成功响应对象
          */
         fun <T> success(
-            code: String = "200",
+            code: Int = 200,
             message: String = "success",
             data: T? = null,
             requestIdProvider: RequestIdProvider? = null,
@@ -129,7 +129,7 @@ data class R<T>(
          * @return 失败响应对象
          */
         fun <T> failure(
-            code: String = "400",
+            code: Int = 400,
             message: String = "failure",
             data: T? = null,
             requestIdProvider: RequestIdProvider? = null,
