@@ -1,4 +1,4 @@
-package com.gewuyou.forgeboot.webmvc.exception.config.entities
+package com.gewuyou.forgeboot.webmvc.exception.i18n.config.entities
 
 import com.gewuyou.forgeboot.webmvc.extension.i18n.I18nKeys
 import org.springframework.boot.context.properties.ConfigurationProperties

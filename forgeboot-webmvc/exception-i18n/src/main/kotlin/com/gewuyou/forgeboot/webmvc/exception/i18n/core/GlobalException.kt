@@ -1,4 +1,4 @@
-package com.gewuyou.forgeboot.webmvc.exception.core
+package com.gewuyou.forgeboot.webmvc.exception.i18n.core
 
 import com.gewuyou.forgeboot.i18n.api.I18nResponseInformation
 import com.gewuyou.forgeboot.i18n.impl.exception.I18nBaseException
@@ -10,7 +10,7 @@ import com.gewuyou.forgeboot.i18n.impl.exception.I18nBaseException
  * @author gewuyou
  * @since 2024-11-23 16:45:10
  */
-open class I18nGlobalException : I18nBaseException {
+open class GlobalException : I18nBaseException {
     /**
      * 构造函数：初始化全局异常
      *

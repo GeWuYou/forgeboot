@@ -1,13 +1,13 @@
-package com.gewuyou.forgeboot.webmvc.exception.handler
+package com.gewuyou.forgeboot.webmvc.exception.i18n.handler
 
 
 import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.i18n.api.MessageResolver
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
 import com.gewuyou.forgeboot.webmvc.dto.I18nResult
-import com.gewuyou.forgeboot.webmvc.exception.config.entities.WebMvcExceptionI18nProperties
-import com.gewuyou.forgeboot.webmvc.exception.core.I18nGlobalException
-import com.gewuyou.forgeboot.webmvc.exception.core.I18nInternalException
+import com.gewuyou.forgeboot.webmvc.exception.i18n.config.entities.WebMvcExceptionI18nProperties
+import com.gewuyou.forgeboot.webmvc.exception.i18n.core.GlobalException
+import com.gewuyou.forgeboot.webmvc.exception.core.InternalException
 
 
 import jakarta.validation.ConstraintViolationException
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
  * @since 2024-04-13 上午12:22:18
  */
 @RestControllerAdvice
-class I18nGlobalExceptionHandler(
+class GlobalExceptionHandler(
     private val webMvcExceptionI18nProperties: WebMvcExceptionI18nProperties,
     private val messageResolver: MessageResolver,
     private val requestIdProvider: RequestIdProvider,
@@ -129,8 +129,8 @@ class I18nGlobalExceptionHandler(
      * @return 返回的结果
      * @since 2024/4/13 下午1:56
      */
-    @ExceptionHandler(I18nGlobalException::class)
-    fun handleGlobalException(e: I18nGlobalException): I18nResult<String> {
+    @ExceptionHandler(GlobalException::class)
+    fun handleGlobalException(e: GlobalException): I18nResult<String> {
         return I18nResult.failure(
             e.errorCode, e.errorI18nMessageCode,
             null, e.errorI18nMessageArgs, messageResolver, requestIdProvider
@@ -145,8 +145,8 @@ class I18nGlobalExceptionHandler(
      * @param e 异常
      * @return 返回的结果
      */
-    @ExceptionHandler(I18nInternalException::class)
-    fun handleGlobalException(e: I18nInternalException): I18nResult<String> {
+    @ExceptionHandler(InternalException::class)
+    fun handleGlobalException(e: InternalException): I18nResult<String> {
         log.error("内部异常: 异常信息: {}", e.errorMessage, e)
         e.i18nInternalInformation?.responseI8nMessageCode?.let {
             log.error(

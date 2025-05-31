@@ -9,7 +9,7 @@ import com.gewuyou.forgeboot.i18n.api.I18nInternalInformation
  * @author gewuyou
  * @since 2024-11-24 21:14:03
  */
-open class I18nInternalException : RuntimeException {
+open class InternalException : RuntimeException {
     /**
      * 错误信息
      */
