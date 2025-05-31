@@ -7,6 +7,7 @@ import com.gewuyou.forgeboot.webmvc.dto.extension.toPageable
 import com.gewuyou.forgeboot.webmvc.dto.request.PageQueryReq
 import com.gewuyou.forgeboot.webmvc.spec.repository.CrudRepositorySpec
 import com.gewuyou.forgeboot.webmvc.spec.service.CrudServiceSpec
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
 
 
@@ -40,10 +41,22 @@ abstract class CrudServiceImplSpec<Entity : Any, Id : Any, Filter : Any>(
         return repository
             .findAll(
                 buildSpecification(query),
-                query.toPageable()
+                resolvePageable(query)
             )
             .toPageResult()
     }
+
+    /**
+     * 将分页请求解析为 Pageable 对象。
+     * 子类可重写此方法来自定义分页逻辑（例如默认排序）。
+     *
+     * @param query 分页查询请求
+     * @return 分页参数
+     */
+    protected open fun resolvePageable(query: PageQueryReq<Filter>): Pageable {
+        return query.toPageable()
+    }
+
 
     /**
      * 构建 JPA Specification 查询条件。
@@ -154,7 +167,7 @@ abstract class CrudServiceImplSpec<Entity : Any, Id : Any, Filter : Any>(
     ): PageResult<V> {
         val page = repository.findAll(
             buildSpecification(query),
-            query.toPageable()
+            resolvePageable(query)
         )
         return page.toPageResult().map(mapping)
     }
