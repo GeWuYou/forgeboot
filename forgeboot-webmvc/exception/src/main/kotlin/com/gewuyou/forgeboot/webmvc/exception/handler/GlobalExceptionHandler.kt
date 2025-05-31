@@ -39,7 +39,7 @@ class GlobalExceptionHandler(
     fun handleOtherException(e: Exception): R<String> {
         log.error("other exception:", e)
         return R.failure(
-            webMvcExceptionProperties.otherGeneralExternalExceptionErrorCode.toString(),
+            webMvcExceptionProperties.otherGeneralExternalExceptionErrorCode,
             webMvcExceptionProperties.otherGeneralExternalExceptionErrorMessage,
             null, requestIdProvider
         )
@@ -59,7 +59,7 @@ class GlobalExceptionHandler(
         // 返回字段错误
         for (fieldError in ex.bindingResult.fieldErrors) {
             return R.failure(
-                HttpStatus.BAD_REQUEST.value().toString(),
+                HttpStatus.BAD_REQUEST.value(),
                 fieldError.defaultMessage ?: webMvcExceptionProperties.defaultValidationExceptionFieldErrorMessage,
                 null,
                 requestIdProvider
@@ -68,14 +68,14 @@ class GlobalExceptionHandler(
         // 返回全局错误
         for (objectError in ex.bindingResult.globalErrors) {
             return R.failure(
-                HttpStatus.BAD_REQUEST.value().toString(),
+                HttpStatus.BAD_REQUEST.value(),
                 objectError.defaultMessage ?: webMvcExceptionProperties.defaultValidationExceptionErrorMessage,
                 null,
                 requestIdProvider
             )
         }
         return R.failure(
-            webMvcExceptionProperties.defaultValidationExceptionErrorCode.toString(),
+            webMvcExceptionProperties.defaultValidationExceptionErrorCode,
             webMvcExceptionProperties.defaultValidationExceptionErrorMessage,
             null,
             requestIdProvider
@@ -95,12 +95,12 @@ class GlobalExceptionHandler(
     fun handleConstraintViolationException(ex: ConstraintViolationException): R<String> {
         for (constraintViolation in ex.constraintViolations) {
             return R.failure(
-                HttpStatus.BAD_REQUEST.value().toString(), constraintViolation.message,
+                HttpStatus.BAD_REQUEST.value(), constraintViolation.message,
                 null, requestIdProvider
             )
         }
         return R.failure(
-            webMvcExceptionProperties.defaultInvalidParameterErrorCode.toString(),
+            webMvcExceptionProperties.defaultInvalidParameterErrorCode,
             webMvcExceptionProperties.defaultInvalidParameterErrorMessage,
             null,
             requestIdProvider

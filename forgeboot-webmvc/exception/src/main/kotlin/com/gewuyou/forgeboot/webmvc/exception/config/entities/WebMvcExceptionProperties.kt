@@ -8,12 +8,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  * @author gewuyou
  * @since 2025-05-13 11:06:46
  */
-@ConfigurationProperties("forgeboot.webmvc.exception.default")
+@ConfigurationProperties("forgeboot.webmvc.exception")
 class WebMvcExceptionProperties {
     companion object {
-        const val ERROR_MESSAGE_ILLEGAL_PARAMETERS = "Illegal parameters, please check the input!"
-        const val ERROR_MESSAGE_INTERNAL_SERVER =
-            "If there is an internal execution error, please report the request ID of this request!"
+        const val ERROR_MESSAGE_INVALID_PARAMETERS = "Invalid parameters. Please verify your input."
+        const val ERROR_MESSAGE_INTERNAL_SERVER = "Internal server error. Please report the request ID for troubleshooting."
+
     }
 
     /**
@@ -52,14 +52,14 @@ class WebMvcExceptionProperties {
      *
      * @param defaultValidationExceptionErrorMessage 默认验证异常的错误消息
      */
-    var defaultValidationExceptionErrorMessage: String = ERROR_MESSAGE_ILLEGAL_PARAMETERS
+    var defaultValidationExceptionErrorMessage: String = ERROR_MESSAGE_INVALID_PARAMETERS
 
     /**
      * 设置默认验证异常的字段错误消息
      *
      * @param defaultValidationExceptionFieldErrorMessage 默认验证异常的字段错误消息
      */
-    var defaultValidationExceptionFieldErrorMessage: String = ERROR_MESSAGE_ILLEGAL_PARAMETERS
+    var defaultValidationExceptionFieldErrorMessage: String = ERROR_MESSAGE_INVALID_PARAMETERS
 
     /**
      * 设置默认无效参数异常的错误代码
@@ -73,7 +73,7 @@ class WebMvcExceptionProperties {
      *
      * @param defaultInvalidParameterErrorMessage 默认无效参数异常的错误消息
      */
-    var defaultInvalidParameterErrorMessage: String = ERROR_MESSAGE_ILLEGAL_PARAMETERS
+    var defaultInvalidParameterErrorMessage: String = ERROR_MESSAGE_INVALID_PARAMETERS
 
     /**
      * 设置默认内部服务器错误异常的错误代码
