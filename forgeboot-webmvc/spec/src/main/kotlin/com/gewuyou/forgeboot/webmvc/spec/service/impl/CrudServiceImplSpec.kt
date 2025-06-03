@@ -1,5 +1,6 @@
 package com.gewuyou.forgeboot.webmvc.spec.service.impl
 
+import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.webmvc.dto.PageResult
 import com.gewuyou.forgeboot.webmvc.dto.extension.map
 import com.gewuyou.forgeboot.webmvc.dto.extension.toPageResult
@@ -200,5 +201,32 @@ abstract class CrudServiceImplSpec<Entity : Any, Id : Any, Filter : Any>(
      */
     override fun saveAll(entities: List<Entity>): List<Entity> {
         return repository.saveAll(entities)
+    }
+
+     /**
+      * 标记实体为软删除状态。
+      *
+      * 此方法应在子类中实现，用于定义如何将实体标记为已删除（例如设置一个 deleted 字段）。
+      * 软删除不会从数据库中物理移除记录，而是将其标记为已删除状态，以便保留历史数据。
+      *
+      * @param entity 实体对象，表示要标记为删除状态的对象
+      */
+    protected abstract fun setDeleted(entity: Entity)
+    /**
+     * 执行软删除操作。
+     *
+     * 该方法会根据提供的 ID 查找实体。如果找到该实体，则调用 [setDeleted] 方法将其标记为删除状态，
+     * 然后通过 [update] 方法保存更改；如果没有找到实体，则记录一条错误日志。
+     *
+     * 软删除机制可以保留历史数据，同时避免敏感信息的直接删除，确保数据可追溯且安全。
+     *
+     * @param id 实体的唯一标识符，用于查找需要删除的实体
+     */
+    override fun softDelete(id: Id) {
+        val exist: Entity? = findById(id)
+        exist?.let {
+            setDeleted(it)
+            update(it)
+        } ?: log.error("删除失败，找不到该租户")
     }
 }

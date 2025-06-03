@@ -75,6 +75,16 @@ interface CrudServiceSpec<Entity: Any, Id: Any, Filter: Any> {
     fun deleteByAll(entities: List<Entity>)
 
     /**
+     * 软删除
+     *
+     * 本函数用于标记实体为删除状态，而不是真正从数据库中移除
+     * 这种方法可以保留历史数据，同时避免数据泄露
+     *
+     * @param id 实体的唯一标识符
+     */
+    fun softDelete(id: Id)
+
+    /**
      * 根据ID检查实体是否存在
      *
      * @param id 实体的ID
