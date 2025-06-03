@@ -1,4 +1,4 @@
-package com.gewuyou.forgeboot.i18n.impl.config
+package com.gewuyou.forgeboot.i18n.api.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

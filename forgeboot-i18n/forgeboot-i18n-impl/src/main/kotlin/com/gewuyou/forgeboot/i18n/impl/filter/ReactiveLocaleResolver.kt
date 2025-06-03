@@ -2,7 +2,7 @@ package com.gewuyou.forgeboot.i18n.impl.filter
 
 
 import com.gewuyou.forgeboot.i18n.api.WebFluxLocaleResolver
-import com.gewuyou.forgeboot.i18n.impl.config.I18nProperties
+import com.gewuyou.forgeboot.i18n.api.config.I18nProperties
 
 import org.slf4j.LoggerFactory
 import org.springframework.context.i18n.LocaleContextHolder

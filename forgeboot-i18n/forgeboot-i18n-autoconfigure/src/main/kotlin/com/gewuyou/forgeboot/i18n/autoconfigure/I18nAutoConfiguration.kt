@@ -3,7 +3,7 @@ package com.gewuyou.forgeboot.i18n.autoconfigure
 
 import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.i18n.api.MessageResolver
-import com.gewuyou.forgeboot.i18n.impl.config.I18nProperties
+import com.gewuyou.forgeboot.i18n.api.config.I18nProperties
 import com.gewuyou.forgeboot.i18n.impl.filter.ReactiveLocaleResolver
 import com.gewuyou.forgeboot.i18n.impl.resolver.I18nMessageResolver
 import jakarta.servlet.http.HttpServletRequest
