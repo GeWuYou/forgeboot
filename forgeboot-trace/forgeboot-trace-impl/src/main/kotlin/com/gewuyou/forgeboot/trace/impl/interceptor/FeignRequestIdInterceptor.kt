@@ -3,7 +3,7 @@ package com.gewuyou.forgeboot.trace.impl.interceptor
 
 
 import com.gewuyou.forgeboot.core.extension.log
-import com.gewuyou.forgeboot.trace.impl.config.TraceProperties
+import com.gewuyou.forgeboot.trace.api.config.TraceProperties
 import com.gewuyou.forgeboot.trace.impl.util.RequestIdUtil
 import feign.RequestInterceptor
 import feign.RequestTemplate

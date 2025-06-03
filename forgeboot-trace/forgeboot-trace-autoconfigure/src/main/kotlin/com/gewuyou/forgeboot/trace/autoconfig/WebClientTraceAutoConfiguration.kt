@@ -1,7 +1,7 @@
 package com.gewuyou.forgeboot.trace.autoconfig
 
 import com.gewuyou.forgeboot.core.extension.log
-import com.gewuyou.forgeboot.trace.impl.config.TraceProperties
+import com.gewuyou.forgeboot.trace.api.config.TraceProperties
 import com.gewuyou.forgeboot.trace.impl.filter.WebClientRequestIdFilter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass

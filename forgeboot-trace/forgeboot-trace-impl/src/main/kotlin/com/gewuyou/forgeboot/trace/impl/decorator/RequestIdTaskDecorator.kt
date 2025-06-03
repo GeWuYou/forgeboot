@@ -1,6 +1,6 @@
 package com.gewuyou.forgeboot.trace.impl.decorator
 
-import com.gewuyou.forgeboot.trace.impl.config.TraceProperties
+import com.gewuyou.forgeboot.trace.api.config.TraceProperties
 import org.slf4j.MDC
 import org.springframework.core.task.TaskDecorator
 

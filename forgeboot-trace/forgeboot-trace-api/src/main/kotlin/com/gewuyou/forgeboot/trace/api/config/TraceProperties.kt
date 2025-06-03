@@ -1,4 +1,4 @@
-package com.gewuyou.forgeboot.trace.impl.config
+package com.gewuyou.forgeboot.trace.api.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

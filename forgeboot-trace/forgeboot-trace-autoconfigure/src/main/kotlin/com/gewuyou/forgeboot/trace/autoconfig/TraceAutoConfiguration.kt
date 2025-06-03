@@ -3,7 +3,7 @@ package com.gewuyou.forgeboot.trace.autoconfig
 
 import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
-import com.gewuyou.forgeboot.trace.impl.config.TraceProperties
+import com.gewuyou.forgeboot.trace.api.config.TraceProperties
 import com.gewuyou.forgeboot.trace.impl.decorator.RequestIdTaskDecorator
 import com.gewuyou.forgeboot.trace.impl.filter.ReactiveRequestIdFilter
 import com.gewuyou.forgeboot.trace.impl.filter.RequestIdFilter
