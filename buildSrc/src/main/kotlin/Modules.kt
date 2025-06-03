@@ -30,4 +30,10 @@ object Modules {
         const val IMPL = ":forgeboot-trace-spring-boot-starter:forgeboot-trace-impl"
         const val AUTOCONFIGURE = ":forgeboot-trace-spring-boot-starter:forgeboot-trace-autoconfigure"
     }
+    object  Banner {
+        const val STARTER = ":forgeboot-banner"
+        const val API = ":forgeboot-banner:forgeboot-banner-api"
+        const val IMPL = ":forgeboot-banner:forgeboot-banner-impl"
+        const val AUTOCONFIGURE = ":forgeboot-banner:forgeboot-banner-autoconfigure"
+    }
 }
