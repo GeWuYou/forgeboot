@@ -41,7 +41,6 @@ version = scmVersion.version
 
 // 配置目录路径
 val configDir = "$rootDir/config/"
-val tasksDir = "$configDir/tasks/"
 
 // 全局项目配置
 allprojects {
@@ -189,7 +188,14 @@ subprojects {
             languageVersion.set(JavaLanguageVersion.of(21))
         }
     }
-
+    tasks.named<Jar>("jar") {
+        manifest {
+            attributes(
+                "Implementation-Title" to project.name,
+                "Implementation-Version" to project.version
+            )
+        }
+    }
     // 任务配置
     tasks.withType<Jar> {
         isEnabled = true
