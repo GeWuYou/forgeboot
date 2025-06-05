@@ -32,4 +32,8 @@ open class BaseResult<T>(
     }
 
     fun toFlatMap(): Map<String, Any?> = toMutableFlatMap().toMap()
+
+    override fun toString(): String {
+        return "BaseResult(code=$code, success=$success, message='$message', data=$data, requestId=$requestId, extra=$extra)"
+    }
 }
