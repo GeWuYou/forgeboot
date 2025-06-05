@@ -1,7 +1,9 @@
-
+plugins {
+    alias(libs.plugins.kotlin.plugin.spring)
+}
 dependencies {
-    implementation(project(Modules.Core.EXTENSION))
-    compileOnly(platform(libs.springBootDependencies.bom))
+    implementation(platform(libs.springBootDependencies.bom))
+    implementation(libs.springBoot.autoconfigure)
     compileOnly(platform(libs.springCloudDependencies.bom))
     compileOnly(libs.springBootStarter.web)
     compileOnly(libs.springBootStarter.webflux)

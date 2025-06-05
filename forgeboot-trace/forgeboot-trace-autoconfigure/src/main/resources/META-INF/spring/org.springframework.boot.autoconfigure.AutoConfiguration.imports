@@ -1,3 +1,1 @@
 com.gewuyou.forgeboot.trace.autoconfig.TraceAutoConfiguration
-com.gewuyou.forgeboot.trace.autoconfig.WebClientTraceAutoConfiguration
-com.gewuyou.forgeboot.trace.autoconfig.FeignTraceAutoConfiguration

@@ -21,10 +21,4 @@ class TraceProperties {
      * MDC（Mapped Diagnostic Context）中用于存储请求ID的键名，默认为"requestId"。
      */
     var requestIdMdcKey: String = "requestId"
-
-    /**
-     * 配置忽略日志记录的路径模式，通常用于静态资源文件，
-     * 默认忽略以.css、.js、.png等结尾的静态资源请求。
-     */
-    var ignorePatten = arrayOf(".*\\.(css|js|png|jpg|jpeg|gif|svg)")
 }

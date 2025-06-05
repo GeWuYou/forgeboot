@@ -1,7 +1,8 @@
 dependencies {
-    implementation(project(Modules.Core.EXTENSION))
+    implementation(platform(libs.springBootDependencies.bom))
+    api(project(Modules.Core.EXTENSION))
+    api(project(Modules.Context.STARTER))
     compileOnly(project(Modules.TRACE.API))
-    compileOnly(platform(libs.springBootDependencies.bom))
     compileOnly(platform(libs.springCloudDependencies.bom))
     compileOnly(libs.springBootStarter.webflux)
     compileOnly(libs.springBootStarter.web)
