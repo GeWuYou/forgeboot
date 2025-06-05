@@ -7,6 +7,12 @@
  */
 object Modules {
 
+    object Context{
+        const val STARTER = ":forgeboot-context-spring-boot-starter"
+        const val API = ":forgeboot-context-spring-boot-starter:forgeboot-context-api"
+        const val IMPL = ":forgeboot-context-spring-boot-starter:forgeboot-context-impl"
+        const val AUTOCONFIGURE = ":forgeboot-context-spring-boot-starter:forgeboot-context-autoconfigure"
+    }
     object Webmvc {
         const val STARTER = ":forgeboot-webmvc-spring-boot-starter"
         const val DTO = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-dto"
