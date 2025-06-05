@@ -85,4 +85,9 @@ open class PageQueryReq<T> {
     fun isDateRangeValid(): Boolean {
         return startDate == null || endDate == null || !startDate!!.isAfter(endDate)
     }
+
+    override fun toString(): String {
+        return "PageQueryReq(currentPage=$currentPage, pageSize=$pageSize, sortBy='$sortBy', sortDirection=$sortDirection, sortConditions=$sortConditions, keyword=$keyword, filter=$filter, startDate=$startDate, endDate=$endDate, enabled=$enabled, deleted=$deleted)"
+    }
+
 }

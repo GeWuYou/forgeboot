@@ -109,4 +109,7 @@ open class PageResult<T> {
          */
         fun <T> empty(): PageResult<T> = PageResult()
     }
+    override fun toString(): String {
+        return "PageResult(records=$records, totalRecords=$totalRecords, totalPages=$totalPages, currentPage=$currentPage, pageSize=$pageSize, hasPrevious=$hasPrevious, hasNext=$hasNext)"
+    }
 }
