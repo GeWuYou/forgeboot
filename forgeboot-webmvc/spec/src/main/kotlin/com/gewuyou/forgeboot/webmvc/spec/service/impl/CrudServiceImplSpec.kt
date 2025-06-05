@@ -1,6 +1,5 @@
 package com.gewuyou.forgeboot.webmvc.spec.service.impl
 
-import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.webmvc.dto.PageResult
 import com.gewuyou.forgeboot.webmvc.dto.extension.map
 import com.gewuyou.forgeboot.webmvc.dto.extension.toPageResult
@@ -227,6 +226,6 @@ abstract class CrudServiceImplSpec<Entity : Any, Id : Any, Filter : Any>(
         exist?.let {
             setDeleted(it)
             update(it)
-        } ?: log.error("删除失败，找不到该租户")
+        }
     }
 }
