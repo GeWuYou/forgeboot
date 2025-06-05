@@ -3,8 +3,10 @@ plugins{
 }
 dependencies {
     implementation(project(Modules.Core.EXTENSION))
-    api(project(Modules.TRACE.STARTER))
     implementation(project(Modules.Webmvc.DTO))
+    implementation(platform(libs.springBootDependencies.bom))
+    implementation(libs.springBoot.autoconfigure)
+    api(project(Modules.TRACE.STARTER))
     compileOnly(libs.springBootStarter.validation)
     compileOnly(libs.springBootStarter.web)
     kapt(libs.springBoot.configuration.processor)
