@@ -1,41 +1,73 @@
-// The settings file is the entry point of every Gradle build.
-// Its primary purpose is to define the subprojects.
-// It is also used for some aspects of project-wide configuration, like managing plugins, dependencies, etc.
-// https://docs.gradle.org/current/userguide/settings_file_basics.html
 
+/**
+ * This settings.gradle.kts file configures the Gradle build for the forgeboot project.
+ * It sets up dependency resolution, plugins, and includes all relevant subprojects.
+ */
+
+// Configures the dependency resolution management across all subprojects
 dependencyResolutionManagement {
-    // Use Maven Central as the default repository (where Gradle will download dependencies) in all subprojects.
+    /**
+     * Use Maven Central as the default repository (where Gradle will download dependencies)
+     * The @Suppress annotation is used to bypass warnings about unstable API usage.
+     */
     @Suppress("UnstableApiUsage")
     repositories {
         mavenCentral()
     }
 }
 
+// Applies necessary plugins for the build process
 plugins {
-    // Use the Foojay Toolchains plugin to automatically download JDKs required by subprojects.
+    /**
+     * Use the Foojay Toolchains plugin to automatically download JDKs required by subprojects.
+     * This ensures consistent Java versions across different environments.
+     */
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
-// Include the `app` and `utils` subprojects in the build.
-// If there are changes in only one of the projects, Gradle will rebuild only the one that has changed.
-// Learn more about structuring projects with Gradle - https://docs.gradle.org/8.7/userguide/multi_project_builds.html
-
-
+// Sets the root project name
 rootProject.name = "forgeboot"
+
+//region module context
+/**
+ * Includes and configures projects related to 'forgeboot-context'
+ * This module appears to be focused on contextual functionality within the application.
+ */
+include(
+    "forgeboot-context",
+    ":forgeboot-context:forgeboot-context-api",
+    ":forgeboot-context:forgeboot-context-impl",
+    ":forgeboot-context:forgeboot-context-autoconfigure",
+)
+project(":forgeboot-context").name = "forgeboot-context-spring-boot-starter"
+project(":forgeboot-context:forgeboot-context-api").name = "forgeboot-context-api"
+project(":forgeboot-context:forgeboot-context-impl").name = "forgeboot-context-impl"
+project(":forgeboot-context:forgeboot-context-autoconfigure").name = "forgeboot-context-autoconfigure"
+//endregion
+
 //region module banner
+/**
+ * Includes and configures projects related to 'forgeboot-banner'
+ * This module likely deals with banners or startup messages in the application.
+ */
 include(
     "forgeboot-banner",
     ":forgeboot-banner:forgeboot-banner-api",
     ":forgeboot-banner:forgeboot-banner-impl",
     ":forgeboot-banner:forgeboot-banner-launcher",
 )
- project(":forgeboot-banner").name = "forgeboot-banner"
- project(":forgeboot-banner:forgeboot-banner-api").name = "forgeboot-banner-api"
- project(":forgeboot-banner:forgeboot-banner-impl").name = "forgeboot-banner-impl"
- project(":forgeboot-banner:forgeboot-banner-launcher").name = "forgeboot-banner-launcher"
+project(":forgeboot-banner").name = "forgeboot-banner"
+project(":forgeboot-banner:forgeboot-banner-api").name = "forgeboot-banner-api"
+project(":forgeboot-banner:forgeboot-banner-impl").name = "forgeboot-banner-impl"
+project(":forgeboot-banner:forgeboot-banner-launcher").name = "forgeboot-banner-launcher"
 //endregion
 
 //region module webmvc
+/**
+ * Includes and configures projects related to 'forgeboot-webmvc'
+ * This module seems to handle Spring WebMVC-related functionalities like logging,
+ * exceptions, DTO handling, validation, etc.
+ */
 include(
     "forgeboot-webmvc",
     ":forgeboot-webmvc:version",
@@ -57,6 +89,10 @@ project(":forgeboot-webmvc:spec").name = "forgeboot-webmvc-spec"
 //endregion
 
 //region module core
+/**
+ * Includes and configures projects related to 'forgeboot-core'
+ * This module represents foundational components of the application.
+ */
 include(
     "forgeboot-core",
     ":forgeboot-core:forgeboot-core-extension"
@@ -66,6 +102,10 @@ project(":forgeboot-core:forgeboot-core-extension").name = "forgeboot-core-exten
 //endregion
 
 //region module i18n
+/**
+ * Includes and configures projects related to 'forgeboot-i18n'
+ * This module handles internationalization (i18n) support.
+ */
 include(
     "forgeboot-i18n",
     ":forgeboot-i18n:forgeboot-i18n-api",
@@ -78,14 +118,12 @@ project(":forgeboot-i18n:forgeboot-i18n-impl").name = "forgeboot-i18n-impl"
 project(":forgeboot-i18n:forgeboot-i18n-autoconfigure").name = "forgeboot-i18n-autoconfigure"
 //endregion
 
-//region module webflux
-//include(
-//    "forgeboot-webflux",
-//)
-//project(":forgeboot-webflux").name = "forgeboot-webflux-spring-boot-starter"
-//endregion
 
 //region module trace
+/**
+ * Includes and configures projects related to 'forgeboot-trace'
+ * This module handles distributed tracing functionality.
+ */
 include(
     "forgeboot-trace",
     ":forgeboot-trace:forgeboot-trace-api",
