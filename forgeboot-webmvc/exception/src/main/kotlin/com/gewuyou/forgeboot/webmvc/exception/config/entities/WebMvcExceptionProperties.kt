@@ -17,13 +17,6 @@ class WebMvcExceptionProperties {
     }
 
     /**
-     * 是否启用国际化
-     *
-     * @param enable 是否启用国际化
-     */
-    var enable: Boolean = false
-
-    /**
      * 设置其他通用外部异常的错误代码
      *
      * @param otherGeneralExternalExceptionErrorCode 其他通用外部异常的错误代码
