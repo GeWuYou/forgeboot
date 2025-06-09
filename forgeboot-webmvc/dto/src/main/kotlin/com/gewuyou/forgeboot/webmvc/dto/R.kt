@@ -117,6 +117,27 @@ data class R<T>(
             val extra = buildExtraMap(extenders)
             return R(code, true, message, data, reqId, extra)
         }
+        /**
+         * 创建成功响应对象
+         *
+         * @param code 响应码
+         * @param message 消息
+         * @param data 响应数据
+         * @param requestIdProvider 请求ID提供者
+         * @param extenders 扩展信息提供者列表
+         * @return 成功响应对象
+         */
+        fun <T> success(
+            data: T? = null,
+            code: Int = 200,
+            message: String = "success",
+            requestIdProvider: RequestIdProvider? = null,
+            extenders: List<ResultExtender> = emptyList(),
+        ): R<T> {
+            val reqId = (requestIdProvider ?: DefaultRequestIdProvider).getRequestId()
+            val extra = buildExtraMap(extenders)
+            return R(code, true, message, data, reqId, extra)
+        }
 
         /**
          * 创建失败响应对象

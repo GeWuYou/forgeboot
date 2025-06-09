@@ -99,25 +99,42 @@ fun <T, S> PageQueryReq<T>.getPredicates(
 ): MutableList<Predicate> {
     val predicates = mutableListOf<Predicate>()
 
-    // 添加开始日期条件
+    // 添加开始日期条件（容错）
     startDate?.let {
-        predicates.add(builder.greaterThanOrEqualTo(root.get(createAtName), it))
+        try {
+            predicates.add(builder.greaterThanOrEqualTo(root.get(createAtName), it))
+        } catch (_: IllegalArgumentException) {
+            // 字段不存在，忽略
+        }
     }
 
-    // 添加结束日期条件
+    // 添加结束日期条件（容错）
     endDate?.let {
-        predicates.add(builder.lessThanOrEqualTo(root.get(createAtName), it))
+        try {
+            predicates.add(builder.lessThanOrEqualTo(root.get(createAtName), it))
+        } catch (_: IllegalArgumentException) {
+            // 字段不存在，忽略
+        }
     }
 
-    // 添加是否启用条件
+    // 添加是否启用条件（通常字段存在，可不做容错）
     enabled?.let {
-        predicates.add(builder.equal(root.get<Boolean>(enabledName), it))
+        try {
+            predicates.add(builder.equal(root.get<Boolean>(enabledName), it))
+        } catch (_: IllegalArgumentException) {
+            // 可选容错
+        }
     }
 
-    // 添加是否删除条件
+    // 添加是否删除条件（通常字段存在，可不做容错）
     deleted.let {
-        predicates.add(builder.equal(root.get<Boolean>(deletedName), it))
+        try {
+            predicates.add(builder.equal(root.get<Boolean>(deletedName), it))
+        } catch (_: IllegalArgumentException) {
+            // 可选容错
+        }
     }
+
 
     return predicates
 }
