@@ -3,6 +3,8 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
+jjwt-version = "0.12.6"
+gradleMavenPublishPlugin-version="0.32.0"
 kotlin-version = "2.0.0"
 kotlinxDatetime-version = "0.6.1"
 kotlinxSerializationJSON-version = "1.7.3"
@@ -10,8 +12,11 @@ kotlinxSerializationJSON-version = "1.7.3"
 axion-release-version = "1.18.7"
 spring-cloud-version = "2024.0.1"
 spring-boot-version = "3.4.4"
+spring-framework-version = "6.2.5"
 slf4j-version = "2.0.17"
 map-struct-version="1.6.3"
+caffeine-version="3.2.1"
+redisson-version="3.50.0"
 [libraries]
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
 kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime-version" }
@@ -27,11 +32,17 @@ slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-version" }
 springBootDependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-version" }
 springBootStarter-aop = { group = "org.springframework.boot", name = "spring-boot-starter-aop" }
 springBootStarter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web" }
+springBootStarter-security = { group = "org.springframework.boot", name = "spring-boot-starter-security" }
 springBootStarter-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux" }
 springBootStarter-jpa = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa" }
 springBootStarter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
+springBootStarter-redis = { group = "org.springframework.boot", name = "spring-boot-starter-data-redis" }
+
+redisson-springBootStarter= { group = "org.redisson", name = "redisson-spring-boot-starter", version.ref = "redisson-version" }
 springBoot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot-version" }
 springBoot-autoconfigure = { group = "org.springframework.boot", name = "spring-boot-autoconfigure" }
+
+springExpression = { group = "org.springframework", name = "spring-expression",  version.ref = "spring-framework-version" }
 
 springCloudDependencies-bom = { module = "org.springframework.cloud:spring-cloud-dependencies", version.ref = "spring-cloud-version" }
 springCloudStarter-openfeign = { group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign" }
@@ -47,11 +58,19 @@ reactor-core = { group = "io.projectreactor", name = "reactor-core" }
 #org
 org-mapstruct = { group = "org.mapstruct", name = "mapstruct", version.ref = "map-struct-version" }
 # Libraries can be bundled together for easier import
-
+# jwt
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt-version" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt-version" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt-version" }
+# com
+com-github-benManes-caffeine = { module = "com.github.ben-manes.caffeine:caffeine",version.ref = "caffeine-version" }
 [bundles]
 kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines-core"]
 jacksonAll = [
     "jackson-core", "jackson-databind", "jackson-annotations", "jackson-datatype-jsr310", "jackson-module-kotlin"
+]
+jjwtAll = [
+    "jjwt-api", "jjwt-impl", "jjwt-jackson"
 ]
 [plugins]
 # 应用 Java 插件，提供基本的 Java 代码编译和构建能力
@@ -71,3 +90,5 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
 kotlin-plugin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin-version" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt" }
 forgeboot-i18n-keygen = { id = "i18n-key-gen" }
+gradleMavenPublishPlugin={id="com.vanniktech.maven.publish", version.ref="gradleMavenPublishPlugin-version"}
+
