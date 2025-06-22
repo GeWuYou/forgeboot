@@ -4,6 +4,7 @@ package com.gewuyou.forgeboot.trace.autoconfig
 import com.gewuyou.forgeboot.context.api.ContextFieldContributor
 import com.gewuyou.forgeboot.context.api.entities.FieldDef
 import com.gewuyou.forgeboot.context.api.enums.Scope
+import com.gewuyou.forgeboot.context.impl.ContextHolder
 import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
 import com.gewuyou.forgeboot.trace.api.config.TraceProperties
@@ -24,7 +25,7 @@ import java.util.UUID
 @Configuration
 @EnableConfigurationProperties(TraceProperties::class)
 class TraceAutoConfiguration(
-    private val traceProperties: TraceProperties
+    private val traceProperties: TraceProperties,
 ) {
     /**
      * 请求ID提供者（用于生成请求ID）
@@ -34,9 +35,9 @@ class TraceAutoConfiguration(
      */
     @Bean
     @ConditionalOnMissingBean(RequestIdProvider::class)
-    fun traceRequestIdProvider(): TraceRequestIdProvider {
+    fun traceRequestIdProvider(contextHolder: ContextHolder): TraceRequestIdProvider {
         log.info("TraceRequestIdProvider 已创建！")
-        return TraceRequestIdProvider(traceProperties)
+        return TraceRequestIdProvider(traceProperties,contextHolder)
     }
     @Bean
     fun requestContributor() = ContextFieldContributor {

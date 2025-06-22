@@ -4,6 +4,7 @@ plugins {
 dependencies {
     implementation(platform(libs.springBootDependencies.bom))
     implementation(libs.springBoot.autoconfigure)
+    implementation(project(Modules.Context.STARTER))
     compileOnly(platform(libs.springCloudDependencies.bom))
     compileOnly(libs.springBootStarter.web)
     compileOnly(libs.springBootStarter.webflux)
