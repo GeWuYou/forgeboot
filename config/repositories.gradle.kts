@@ -2,12 +2,11 @@
 repositories {
     mavenLocal()
     val host = System.getenv("GITEA_HOST")
-    host?.let {
-        maven{
-            url = uri("http://${host}/api/packages/gewuyou/maven")
-            isAllowInsecureProtocol = true
-        }
-    }
+//    host?.let {
+//        maven{
+//            url = uri("${host}/api/packages/gewuyou/maven")
+//        }
+//    }
     maven {
         url = uri("https://maven.aliyun.com/repository/public/")
     }
