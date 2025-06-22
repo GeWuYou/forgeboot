@@ -21,7 +21,16 @@ interface Context<K, V> {
      * @param key 要查找的键
      * @return 对应的值，如果不存在则返回 null
      */
-    fun get(key: K): V?
+    fun retrieve(key: K): V?
+
+    /**
+     * 根据指定的键和类型从上下文中获取对应的值。
+     *
+     * @param key  要查找的键
+     * @param type 要转换的目标类型
+     * @return 对应类型的值，如果不存在或类型不匹配则返回 null
+     */
+    fun <T> retrieveByType(key: K, type: Class<T>): T?
 
     /**
      * 获取当前上下文的一个快照，包含所有键值对。

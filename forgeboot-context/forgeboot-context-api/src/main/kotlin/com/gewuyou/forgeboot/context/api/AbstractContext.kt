@@ -26,7 +26,7 @@ abstract class AbstractContext<K, V>:  Context<K, V> {
      * @param key 要查找的键
      * @return 对应的值，如果不存在则返回 null
      */
-    override fun get(key: K): V? {
+    override fun retrieve(key: K): V? {
         return local.get()[key]
     }
 

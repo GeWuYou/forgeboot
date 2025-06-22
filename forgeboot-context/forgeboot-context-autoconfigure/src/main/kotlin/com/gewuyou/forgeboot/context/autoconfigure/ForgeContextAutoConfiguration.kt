@@ -1,17 +1,26 @@
 package com.gewuyou.forgeboot.context.autoconfigure
 
 
-import com.gewuyou.forgeboot.context.api.*
-import com.gewuyou.forgeboot.context.impl.*
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.gewuyou.forgeboot.context.api.ContextFieldContributor
+import com.gewuyou.forgeboot.context.api.ContextProcessor
+import com.gewuyou.forgeboot.context.api.FieldRegistry
+import com.gewuyou.forgeboot.context.impl.ContextHolder
+import com.gewuyou.forgeboot.context.impl.DefaultFieldRegistry
 import com.gewuyou.forgeboot.context.impl.filter.ContextServletFilter
 import com.gewuyou.forgeboot.context.impl.filter.ContextWebFilter
-import com.gewuyou.forgeboot.context.impl.processor.*
-
-
+import com.gewuyou.forgeboot.context.impl.processor.GeneratorProcessor
+import com.gewuyou.forgeboot.context.impl.processor.HeaderProcessor
+import com.gewuyou.forgeboot.context.impl.processor.MdcProcessor
+import com.gewuyou.forgeboot.context.impl.processor.ReactorProcessor
+import com.gewuyou.forgeboot.core.serialization.serializer.ValueSerializer
+import com.gewuyou.forgeboot.core.serialization.serializer.impl.serializer.JacksonValueSerializer
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.web.reactive.function.client.WebClientCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.boot.autoconfigure.condition.*
-import org.springframework.boot.web.reactive.function.client.WebClientCustomizer
 import org.springframework.core.task.TaskDecorator
 import org.springframework.web.reactive.function.client.ClientRequest
 
@@ -26,6 +35,17 @@ import org.springframework.web.reactive.function.client.ClientRequest
  */
 @Configuration
 class ForgeContextAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun valueSerializer(objectMapper: ObjectMapper): ValueSerializer{
+        return JacksonValueSerializer(objectMapper)
+    }
+    @Bean
+    @ConditionalOnMissingBean
+    fun contextHolder(valueSerializer: ValueSerializer): ContextHolder {
+        return ContextHolder(valueSerializer)
+    }
     /* ───────────────────────────────────────────────────────────────
        0️⃣ 通用 Bean：不依赖 Web / Feign / Reactor 等外部包
     ─────────────────────────────────────────────────────────────── */
@@ -171,13 +191,14 @@ class ForgeContextAutoConfiguration {
          * 拦截器会在每次 Feign 请求发起前，将当前上下文字段写入 HTTP 请求头。
          *
          * @param registry 字段注册表
+         * @param contextHolder 上下文持有者
          * @return 构建完成的 feign.RequestInterceptor 实例
          */
         @Bean
         @ConditionalOnMissingBean
-        fun feignInterceptor(registry: FieldRegistry) =
+        fun feignInterceptor(registry: FieldRegistry,contextHolder: ContextHolder) =
             feign.RequestInterceptor { tpl ->
-                val ctx = StringContextHolder.snapshot()
+                val ctx = contextHolder.snapshot()
                 registry.all().forEach { def ->
                     ctx[def.key]?.let { tpl.header(def.header, it) }
                 }
@@ -200,20 +221,21 @@ class ForgeContextAutoConfiguration {
          * 通过装饰线程池任务，确保异步任务继承调用线程的上下文状态。
          *
          * @param processors 所有处理器列表
+         * @param contextHolder 上下文持有者
          * @return 构建完成的 TaskDecorator 实例
          */
         @Bean
-        fun contextTaskDecorator(processors: List<ContextProcessor>) =
+        fun contextTaskDecorator(processors: List<ContextProcessor>,contextHolder: ContextHolder) =
             TaskDecorator { delegate ->
-                val snap = StringContextHolder.snapshot()
+                val snap = contextHolder.snapshot()
                 Runnable {
                     try {
-                        snap.forEach(StringContextHolder::put)
+                        snap.forEach(contextHolder::put)
                         processors.forEach { it.inject(Unit, snap.toMutableMap()) }
                         delegate.run()
                     } finally {
                         processors.forEach { it.inject(Unit, mutableMapOf()) }
-                        StringContextHolder.clear()
+                        contextHolder.clear()
                     }
                 }
             }
@@ -234,13 +256,13 @@ class ForgeContextAutoConfiguration {
          * 注册 WebClientCustomizer，用于定制 WebClient 的请求行为。
          *
          * 在每次请求发出前，将当前上下文字段写入 HTTP 请求头。
-         *
+         *@param contextHolder 上下文持有者
          * @return 构建完成的 WebClientCustomizer 实例
          */
         @Bean
-        fun contextWebClientCustomizer() = WebClientCustomizer { builder ->
+        fun contextWebClientCustomizer(contextHolder: ContextHolder) = WebClientCustomizer { builder ->
             builder.filter { req, next ->
-                val ctx = StringContextHolder.snapshot()
+                val ctx = contextHolder.snapshot()
                 val mutated = ClientRequest.from(req).apply {
                     registry.all().forEach { def ->
                         ctx[def.key]?.let { value -> header(def.header, value) }

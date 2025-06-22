@@ -1,7 +1,7 @@
 package com.gewuyou.forgeboot.context.impl.filter
 
 import com.gewuyou.forgeboot.context.api.ContextProcessor
-import com.gewuyou.forgeboot.context.impl.StringContextHolder
+import com.gewuyou.forgeboot.context.impl.ContextHolder
 import com.gewuyou.forgeboot.context.impl.processor.ReactorProcessor
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
@@ -22,7 +22,8 @@ import reactor.core.publisher.Mono
  */
 class ContextWebFilter(
     private val contextProcessors: List<ContextProcessor>,
-    private val reactorProc: ReactorProcessor
+    private val reactorProc: ReactorProcessor,
+    private val contextHolder: ContextHolder
 ) : WebFilter {
     /**
      * 执行过滤逻辑，在请求链中插入上下文管理操作。
@@ -42,12 +43,12 @@ class ContextWebFilter(
         exchange: ServerWebExchange,
         chain: WebFilterChain,
     ): Mono<Void> {
-        // 从 StringContextHolder 快照获取当前上下文并转换为可变 Map
-        val ctx = StringContextHolder.snapshot().toMutableMap()
+        // 从 ContextHolder 快照获取当前上下文并转换为可变 Map
+        val ctx = contextHolder.snapshot().toMutableMap()
         // 遍历所有 ContextProcessor，从请求中提取上下文信息到 ctx
         contextProcessors.forEach { it.extract(exchange, ctx) }
-        // 将上下文写入 StringContextHolder（ThreadLocal）
-        ctx.forEach(StringContextHolder::put)
+        // 将上下文写入 ContextHolder（ThreadLocal）
+        ctx.forEach(contextHolder::put)
         // 使用 MdcProcessor 将上下文注入到 MDC 中
         contextProcessors.forEach { it.inject(Unit, ctx) }
         // 构建新的 ServerWebExchange 实例
@@ -60,7 +61,7 @@ class ContextWebFilter(
             .doFinally {
                 // 清理 ThreadLocal + MDC 上下文
                 contextProcessors.forEach { it.inject(Unit, mutableMapOf()) }
-                StringContextHolder.clear()
+                contextHolder.clear()
             }
     }
 }

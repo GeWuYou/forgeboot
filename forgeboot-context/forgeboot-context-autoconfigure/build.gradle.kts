@@ -10,4 +10,5 @@ dependencies {
     compileOnly(libs.springBootStarter.web)
     compileOnly(libs.springBootStarter.webflux)
     compileOnly(libs.springCloudStarter.openfeign)
+    api(project(Modules.Core.SERIALIZATION))
 }
