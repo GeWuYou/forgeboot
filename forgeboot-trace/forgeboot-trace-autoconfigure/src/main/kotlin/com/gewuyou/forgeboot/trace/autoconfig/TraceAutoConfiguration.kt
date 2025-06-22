@@ -28,10 +28,11 @@ class TraceAutoConfiguration(
     private val traceProperties: TraceProperties,
 ) {
     /**
-     * 请求ID提供者（用于生成请求ID）
+     * 创建请求ID提供者Bean
      *
-     * 该提供者用于生成请求ID，默认为TraceRequestIdProvider
-     * @return RequestIdProvider实例
+     * 用于生成分布式请求链路追踪所需的唯一请求标识
+     * @param contextHolder 上下文持有者，用于跨组件传递请求上下文
+     * @return 初始化完成的TraceRequestIdProvider实例
      */
     @Bean
     @ConditionalOnMissingBean(RequestIdProvider::class)
@@ -39,13 +40,24 @@ class TraceAutoConfiguration(
         log.info("TraceRequestIdProvider 已创建！")
         return TraceRequestIdProvider(traceProperties,contextHolder)
     }
+
+    /**
+     * 创建请求上下文贡献者Bean
+     *
+     * 定义请求上下文中需要维护的字段定义集合
+     * @return ContextFieldContributor实例，包含完整的上下文字段定义
+     */
     @Bean
     fun requestContributor() = ContextFieldContributor {
         setOf(
             FieldDef(
-                header = traceProperties.requestIdHeaderName,          // 请求-响应头名
-                key = traceProperties.requestIdMdcKey,             // ctx/MDC 键
-                generator = { UUID.randomUUID().toString() }, // 如果前端没带，用这个生成
+                // 请求-响应头名
+                header = traceProperties.requestIdHeaderName,
+                // ctx/MDC 键
+                key = traceProperties.requestIdMdcKey,
+                // 前端未携带时的生成策略
+                generator = { UUID.randomUUID().toString() },
+                // 作用域范围
                 scopes = setOf(Scope.HEADER, Scope.MDC, Scope.REACTOR)
             )
         )
