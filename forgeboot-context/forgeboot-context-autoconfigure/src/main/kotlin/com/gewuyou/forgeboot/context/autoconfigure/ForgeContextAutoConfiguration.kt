@@ -145,7 +145,8 @@ class ForgeContextAutoConfiguration {
         fun contextWebFilter(
             chain: List<ContextProcessor>,
             reactorProcessor: ReactorProcessor,
-        ) = ContextWebFilter(chain, reactorProcessor)
+            contextHolder: ContextHolder
+        ) = ContextWebFilter(chain, reactorProcessor,contextHolder)
     }
 
     /* ───────────────────────────────────────────────────────────────
@@ -170,8 +171,8 @@ class ForgeContextAutoConfiguration {
          */
         @Bean
         @ConditionalOnMissingBean
-        fun contextServletFilter(chain: List<ContextProcessor>) =
-            ContextServletFilter(chain)
+        fun contextServletFilter(chain: List<ContextProcessor>,contextHolder: ContextHolder) =
+            ContextServletFilter(chain,contextHolder)
     }
 
     /* ───────────────────────────────────────────────────────────────
