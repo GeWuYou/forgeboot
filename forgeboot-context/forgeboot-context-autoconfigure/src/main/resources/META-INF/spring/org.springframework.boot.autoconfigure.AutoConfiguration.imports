@@ -1,1 +1,8 @@
-com.gewuyou.forgeboot.context.autoconfigure.ForgeContextAutoConfiguration
+com.gewuyou.forgeboot.context.autoconfigure.ContextCommonAutoConfiguration
+com.gewuyou.forgeboot.context.autoconfigure.ContextProcessorAutoConfiguration
+com.gewuyou.forgeboot.context.autoconfigure.ContextReactorAutoConfiguration
+com.gewuyou.forgeboot.context.autoconfigure.ContextServletAutoConfiguration
+com.gewuyou.forgeboot.context.autoconfigure.ContextWebFluxAutoConfiguration
+com.gewuyou.forgeboot.context.autoconfigure.ContextFeignAutoConfiguration
+com.gewuyou.forgeboot.context.autoconfigure.ContextTaskDecoratorAutoConfiguration
+com.gewuyou.forgeboot.context.autoconfigure.ContextWebClientAutoConfiguration
