@@ -36,11 +36,30 @@ import org.springframework.web.reactive.function.client.ClientRequest
 @Configuration
 class ForgeContextAutoConfiguration {
 
+    /**
+     * 创建 ValueSerializer Bean，用于在缺少其他实现时提供默认的值序列化器。
+     *
+     * 该方法定义了一个 JacksonValueSerializer 实例作为默认的 ValueSerializer 实现，
+     * 负责使用 Jackson 库对上下文字段值进行序列化和反序列化操作。
+     *
+     * @param objectMapper 提供 JSON 序列化支持的 ObjectMapper 实例
+     * @return 构建完成的 ValueSerializer 实例
+     */
     @Bean
     @ConditionalOnMissingBean
-    fun valueSerializer(objectMapper: ObjectMapper): ValueSerializer{
+    fun valueSerializer(objectMapper: ObjectMapper): ValueSerializer {
         return JacksonValueSerializer(objectMapper)
     }
+
+    /**
+     * 创建 ContextHolder Bean，用于在缺少其他实现时提供默认的上下文持有者。
+     *
+     * 该方法定义了一个 ContextHolder 实例作为默认的上下文管理器，
+     * 负责存储、传递和清理当前线程的上下文字段数据。
+     *
+     * @param valueSerializer 提供值序列化支持的 ValueSerializer 实例
+     * @return 构建完成的 ContextHolder 实例
+     */
     @Bean
     @ConditionalOnMissingBean
     fun contextHolder(valueSerializer: ValueSerializer): ContextHolder {
