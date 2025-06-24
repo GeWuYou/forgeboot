@@ -11,6 +11,7 @@ plugins {
     // Kotlin kapt 支持
     alias(libs.plugins.kotlin.kapt)
     id(libs.plugins.kotlin.jvm.get().pluginId)
+    alias(libs.plugins.gradleMavenPublishPlugin)
 }
 java {
     withSourcesJar()
@@ -58,7 +59,7 @@ allprojects {
             }
         }
     }
-    project.group = "com.gewuyou.forgeboot"
+    project.group = "io.github.gewuyou"
 }
 
 // 子项目配置
@@ -104,8 +105,14 @@ subprojects {
         plugin(libs.plugins.kotlin.jvm.get().pluginId)
         plugin(libs.plugins.axionRelease.get().pluginId)
         plugin(libs.plugins.kotlin.kapt.get().pluginId)
+        plugin(libs.plugins.gradleMavenPublishPlugin.get().pluginId)
         // 导入仓库配置
         from(file("$configDir/repositories.gradle.kts"))
+    }
+    // 中央仓库
+    mavenPublishing {
+        publishToMavenCentral("DEFAULT", true)
+        signAllPublications()
     }
     // 发布配置
     publishing {
@@ -128,9 +135,8 @@ subprojects {
             val host = System.getenv("GITEA_HOST")
             host?.let {
                 maven {
-                    isAllowInsecureProtocol = true
                     name = "Gitea"
-                    url = uri("http://${it}/api/packages/gewuyou/maven")
+                    url = uri("${it}/api/packages/gewuyou/maven")
                     credentials(HttpHeaderCredentials::class.java) {
                         name = "Authorization"
                         value = "token ${System.getenv("GITEA_TOKEN")}"
@@ -204,9 +210,88 @@ subprojects {
     tasks.named<Test>("test") {
         useJUnitPlatform()
     }
+
+
+}
+/**
+ * 注册一个 Gradle 任务用于清理项目中的无用文件。
+ *
+ * 该任务会清理以下内容：
+ * - gradlew 和 gradlew.bat（Gradle 包装器脚本）
+ * - gradle-wrapper.jar 和 gradle-wrapper.properties（Gradle 包装器库和配置）
+ * - .gradle 和 gradle 目录（Gradle 缓存和配置目录）
+ * - src/main/resources/application.properties（开发环境配置文件）
+ * - src/test 目录（测试资源）
+ */
+tasks.register<CleanUselessFilesTask>("cleanUselessFiles") {
+    group = "project"
+    description = "删除根目录及子模块的无用文件"
+
+    includedProjectPaths.set(rootProject.subprojects.map { it.projectDir.absolutePath })
 }
 
-// 获取项目布尔属性的辅助函数
+/**
+ * 获取项目的布尔属性值。
+ *
+ * 用于从项目属性中获取指定键对应的布尔值，如果未设置或无法解析为布尔值，则返回默认值 false。
+ *
+ * @param key 属性键名
+ * @return 属性对应的布尔值，若不存在或无效则返回 false
+ */
 fun Project.getPropertyByBoolean(key: String): Boolean {
     return properties[key]?.toString()?.toBoolean() ?: false
+}
+
+/**
+ * CleanUselessFilesTask 是一个 Gradle 自定义任务类，用于清理项目中的无用文件。
+ *
+ * 该任务会遍历所有子项目，并删除预定义的无用文件和目录。
+ */
+abstract class CleanUselessFilesTask : DefaultTask() {
+
+    /**
+     * 获取需要清理的项目路径列表。
+     *
+     * 每个路径代表一个项目的根目录，任务将基于这些目录查找并删除无用文件。
+     */
+    @get:Input
+    abstract val includedProjectPaths: ListProperty<String>
+
+    /**
+     * 执行清理操作的主要方法。
+     *
+     * 此方法会构建待删除文件列表，并逐个检查是否存在并删除，最后输出删除结果。
+     */
+    @TaskAction
+    fun clean() {
+        val targets = mutableListOf<File>()
+
+        // 构建需要清理的文件和目录列表
+        includedProjectPaths.get().forEach { path ->
+            val projectDir = File(path)
+            targets.add(projectDir.resolve("gradlew"))
+            targets.add(projectDir.resolve("gradlew.bat"))
+            targets.add(projectDir.resolve("gradle/wrapper/gradle-wrapper.jar"))
+            targets.add(projectDir.resolve("gradle/wrapper/gradle-wrapper.properties"))
+            targets.add(projectDir.resolve(".gradle"))
+            targets.add(projectDir.resolve("gradle"))
+            targets.add(projectDir.resolve("src/main/resources/application.properties"))
+            targets.add(projectDir.resolve("src/test"))
+            targets.add(projectDir.resolve("HELP.md"))
+            targets.add(projectDir.resolve("settings.gradle.kts"))
+        }
+
+        // 执行删除操作并统计结果
+        var count = 0
+        targets.filter { it.exists() }.forEach {
+            logger.lifecycle("删除：${it.absolutePath}")
+            count++
+            it.deleteRecursively()
+        }
+        if (count > 0) {
+            logger.lifecycle("已删除 $count 个无用文件。")
+        } else {
+            logger.lifecycle("无无用文件。")
+        }
+    }
 }

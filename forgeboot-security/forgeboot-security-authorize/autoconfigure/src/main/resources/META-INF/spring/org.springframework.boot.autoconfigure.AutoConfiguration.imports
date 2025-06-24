@@ -1,0 +1,4 @@
+com.gewuyou.forgeboot.security.authorize.autoconfigure.ForgeSecurityAuthorizeCoreConfiguration
+com.gewuyou.forgeboot.security.authorize.autoconfigure.ReactiveAuthorizeSecurityConfiguration
+com.gewuyou.forgeboot.security.authorize.autoconfigure.ForgeSecurityAuthorizeAutoConfiguration
+com.gewuyou.forgeboot.security.authorize.autoconfigure.ServletAuthorizeSecurityConfiguration

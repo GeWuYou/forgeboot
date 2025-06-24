@@ -1,4 +1,3 @@
-
 /**
  * This settings.gradle.kts file configures the Gradle build for the forgeboot project.
  * It sets up dependency resolution, plugins, and includes all relevant subprojects.
@@ -95,10 +94,12 @@ project(":forgeboot-webmvc:spec").name = "forgeboot-webmvc-spec"
  */
 include(
     "forgeboot-core",
-    ":forgeboot-core:forgeboot-core-extension"
+    ":forgeboot-core:forgeboot-core-extension",
+    ":forgeboot-core:forgeboot-core-serialization",
 )
 project(":forgeboot-core").name = "forgeboot-core"
 project(":forgeboot-core:forgeboot-core-extension").name = "forgeboot-core-extension"
+project(":forgeboot-core:forgeboot-core-serialization").name = "forgeboot-core-serialization"
 //endregion
 
 //region module i18n
@@ -118,7 +119,6 @@ project(":forgeboot-i18n:forgeboot-i18n-impl").name = "forgeboot-i18n-impl"
 project(":forgeboot-i18n:forgeboot-i18n-autoconfigure").name = "forgeboot-i18n-autoconfigure"
 //endregion
 
-
 //region module trace
 /**
  * Includes and configures projects related to 'forgeboot-trace'
@@ -134,4 +134,54 @@ project(":forgeboot-trace").name = "forgeboot-trace-spring-boot-starter"
 project(":forgeboot-trace:forgeboot-trace-api").name = "forgeboot-trace-api"
 project(":forgeboot-trace:forgeboot-trace-impl").name = "forgeboot-trace-impl"
 project(":forgeboot-trace:forgeboot-trace-autoconfigure").name = "forgeboot-trace-autoconfigure"
+//endregion
+
+//region module security
+/**
+ * Includes and configures projects related to 'forgeboot-security'
+ * This module handles security-related functionality.
+ */
+include(
+    "forgeboot-security",
+    ":forgeboot-security:forgeboot-security-core",
+
+    ":forgeboot-security:forgeboot-security-authenticate",
+    ":forgeboot-security:forgeboot-security-authenticate:api",
+    ":forgeboot-security:forgeboot-security-authenticate:impl",
+    ":forgeboot-security:forgeboot-security-authenticate:autoconfigure",
+
+    ":forgeboot-security:forgeboot-security-authorize",
+    ":forgeboot-security:forgeboot-security-authorize:api",
+    ":forgeboot-security:forgeboot-security-authorize:impl",
+    ":forgeboot-security:forgeboot-security-authorize:autoconfigure"
+)
+project(":forgeboot-security").name = "forgeboot-security-spring-boot-starter"
+project(":forgeboot-security:forgeboot-security-core").name = "forgeboot-security-core"
+
+project(":forgeboot-security:forgeboot-security-authenticate").name =
+    "forgeboot-security-authenticate-spring-boot-starter"
+project(":forgeboot-security:forgeboot-security-authenticate:api").name = "forgeboot-security-authenticate-api"
+project(":forgeboot-security:forgeboot-security-authenticate:impl").name = "forgeboot-security-authenticate-impl"
+project(":forgeboot-security:forgeboot-security-authenticate:autoconfigure").name =
+    "forgeboot-security-authenticate-autoconfigure"
+
+project(":forgeboot-security:forgeboot-security-authorize").name = "forgeboot-security-authorize-spring-boot-starter"
+project(":forgeboot-security:forgeboot-security-authorize:api").name = "forgeboot-security-authorize-api"
+project(":forgeboot-security:forgeboot-security-authorize:impl").name = "forgeboot-security-authorize-impl"
+project(":forgeboot-security:forgeboot-security-authorize:autoconfigure").name =
+    "forgeboot-security-authorize-autoconfigure"
+
+//endregion
+
+//region module  cache
+include(
+    "forgeboot-cache",
+    ":forgeboot-cache:forgeboot-cache-api",
+    ":forgeboot-cache:forgeboot-cache-impl",
+    ":forgeboot-cache:forgeboot-cache-autoconfigure"
+    )
+project(":forgeboot-cache").name = "forgeboot-cache-spring-boot-starter"
+project(":forgeboot-cache:forgeboot-cache-api").name = "forgeboot-cache-api"
+project(":forgeboot-cache:forgeboot-cache-impl").name = "forgeboot-cache-impl"
+project(":forgeboot-cache:forgeboot-cache-autoconfigure").name = "forgeboot-cache-autoconfigure"
 //endregion
