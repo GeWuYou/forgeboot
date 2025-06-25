@@ -1,6 +1,6 @@
 package com.gewuyou.forgeboot.security.authorize.autoconfigure
 
-import com.gewuyou.forgeboot.security.authorize.api.config.SecurityAuthorizeProperties
+import com.gewuyou.forgeboot.security.authorize.api.core.config.SecurityAuthorizeProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration
 
