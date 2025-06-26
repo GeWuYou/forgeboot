@@ -6,10 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties
  * Security 授权配置属性类，用于定义安全相关的可配置项
  *
  * 该类通过@ConfigurationProperties绑定配置前缀"forgeboot.security.authorize"，
- * 提供了默认异常响应消息和API密钥启用状态的配置支持。
+ * 提供了默认异常响应消息、单Token控制及相关路径模式的配置支持。
  *
  * @property defaultExceptionResponse 当访问被拒绝时返回的默认提示信息
- * @property apiKey API密钥相关配置属性对象
+ * @property singleToken 单Token配置属性对象，包含启用状态、匹配路径及是否使用授权管理器
  *
  * @since 2025-06-15 19:26:20
  * @author gewuyou
@@ -22,21 +22,28 @@ class SecurityAuthorizeProperties {
     var defaultExceptionResponse: String = "Sorry, you don't have access to the resource!"
 
     /**
-     * API密钥相关配置属性对象，包含是否启用API密钥验证的开关
+     * 单Token配置属性实例，用于定义Token相关的行为和路径匹配规则
      */
-    var apiKey: ApiKeyProperties = ApiKeyProperties()
+    var singleToken: SingleTokenProperties = SingleTokenProperties()
 
     /**
-     * API密钥功能的子配置类，用于控制API密钥验证的启用状态
+     * 单Token配置内部类，封装与Token验证行为相关的配置项
      *
-     * @property enabled 是否启用API密钥验证功能，默认为false
+     * 用于控制特定路径下的Token验证行为，包括启用状态、路径匹配模式以及是否使用授权管理器。
      */
-    class ApiKeyProperties {
+    class SingleTokenProperties {
         /**
          * 控制是否启用API密钥验证功能，默认值为false
          */
         var enabled: Boolean = false
-        var pathPatterns: List<String> = listOf("/api/**")
+        /**
+         * 指定是否通过Spring Security的AuthorizationManager进行权限决策，默认为true
+         */
         var useAuthorizationManager: Boolean = true
+
+        /**
+         * 定义需要应用Token验证的请求路径模式列表
+         */
+        var pathPatterns: List<String> = listOf("/api/**")
     }
 }

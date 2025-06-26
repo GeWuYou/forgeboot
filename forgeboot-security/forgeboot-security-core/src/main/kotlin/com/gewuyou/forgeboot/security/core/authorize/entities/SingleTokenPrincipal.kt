@@ -11,7 +11,7 @@ import org.springframework.security.core.GrantedAuthority
  * @since 2025-06-25 13:11:37
  * @author gewuyou
  */
-data class ApiKeyPrincipal (
+data class SingleTokenPrincipal (
     val principal: String,
     val authorities: List<GrantedAuthority>
 )
