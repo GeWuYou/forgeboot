@@ -56,8 +56,8 @@ class ReactiveSingleTokenAuthenticationFilter(
         override fun convert(exchange: ServerWebExchange): Mono<Authentication>? {
             val headerValue = exchange.request.headers.getFirst(HttpHeaders.AUTHORIZATION)
             return if (headerValue?.startsWith(SecurityConstants.BEARER_PREFIX, ignoreCase = true) == true) {
-                val apiKey = headerValue.removePrefix(SecurityConstants.BEARER_PREFIX).trim()
-                Mono.just(SingleTokenAuthenticationToken(apiKey, null))
+                val singleToken = headerValue.removePrefix(SecurityConstants.BEARER_PREFIX).trim()
+                Mono.just(SingleTokenAuthenticationToken(singleToken, null))
             } else {
                 Mono.empty()
             }

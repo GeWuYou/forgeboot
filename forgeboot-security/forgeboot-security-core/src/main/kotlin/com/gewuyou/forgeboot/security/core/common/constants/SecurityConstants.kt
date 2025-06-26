@@ -15,6 +15,11 @@ object SecurityConstants {
     const val AUTHORIZATION_HEADER = "Authorization"
 
     /**
+     * HTTP请求头中用于携带刷新令牌的字段名称
+     */
+    const val REFRESH_TOKEN_HEADER="X-Refresh-Token"
+
+    /**
      * Bearer Token前缀，用于在请求头中标识Token类型
      */
     const val BEARER_PREFIX = "Bearer "

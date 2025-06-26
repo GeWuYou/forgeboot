@@ -40,7 +40,7 @@ class SingleTokenAuthenticationFilter() : OncePerRequestFilter() {
         if (header?.startsWith(SecurityConstants.BEARER_PREFIX) == true) {
             val token = header.removePrefix(SecurityConstants.BEARER_PREFIX).trim()
             // 构造未认证的 token 放入上下文
-            val authentication = SingleTokenAuthenticationToken(token, null)
+            val authentication = SingleTokenAuthenticationToken.unauthenticated(token)
             SecurityContextHolder.getContext().authentication = authentication
         }
         chain.doFilter(request, response)

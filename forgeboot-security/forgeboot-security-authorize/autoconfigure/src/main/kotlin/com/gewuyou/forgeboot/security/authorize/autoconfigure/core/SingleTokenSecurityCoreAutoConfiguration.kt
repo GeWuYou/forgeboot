@@ -1,6 +1,6 @@
 package com.gewuyou.forgeboot.security.authorize.autoconfigure.core
 
-import com.gewuyou.forgeboot.security.authorize.api.core.service.SingleTokenService
+import com.gewuyou.forgeboot.security.authorize.api.core.validator.SingleTokenValidator
 import com.gewuyou.forgeboot.security.authorize.impl.core.provider.SingleTokenAuthenticationProvider
 import com.gewuyou.forgeboot.security.core.authorize.entities.SingleTokenPrincipal
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -16,20 +16,19 @@ import org.springframework.security.authentication.AuthenticationProvider
  */
 @Configuration(proxyBeanMethods = false)
 class SingleTokenSecurityCoreAutoConfiguration {
-
     /**
-     * 提供一个默认的 SingleTokenService Bean，用于验证令牌并返回用户主体信息。
+     * 提供一个默认的 SingleTokenValidator Bean，用于验证单点登录令牌。
      *
      * 如果上下文中尚未定义此类 Bean，则使用此默认实现。
      * 默认实现会在调用 validate 方法时抛出 UnsupportedOperationException，
-     * 提示使用者应提供自定义的 SingleTokenService 实现。
+     * 提示使用者应提供自定义的 SingleTokenValidator 实现。
      *
-     * @return 返回一个 SingleTokenService 接口的默认实现
+     * @return 返回一个 SingleTokenValidator 接口的默认实现
      */
     @Bean
     @ConditionalOnMissingBean
-    fun singleTokenService(): SingleTokenService {
-        return object : SingleTokenService {
+    fun singleTokenValidator(): SingleTokenValidator<SingleTokenPrincipal> {
+        return object : SingleTokenValidator<SingleTokenPrincipal> {
             /**
              * 验证给定的 token 并返回对应的用户主体信息。
              *
@@ -43,18 +42,21 @@ class SingleTokenSecurityCoreAutoConfiguration {
         }
     }
 
+
     /**
      * 注册 SingleTokenAuthenticationProvider Bean，用于 Spring Security 的认证流程。
      *
-     * 该认证提供者依赖于 SingleTokenService 来完成实际的令牌验证工作。
-     * 如果上下文中尚未定义同名 Bean，则注册该 Bean。
+     * 该方法创建并返回一个 SingleTokenAuthenticationProvider 实例，
+     * 用于在 Spring Security 框架中处理基于单点令牌的认证逻辑。
+     * 如果上下文中尚未定义同名 Bean，则进行注册。
      *
-     * @param singleTokenService 用于令牌验证的服务实例
-     * @return 返回配置好的 SingleTokenAuthenticationProvider 实例
+     * @param singleTokenValidator 提供的 SingleTokenValidator 实例，
+     *                             用于执行具体的令牌验证逻辑
+     * @return 返回配置好的 AuthenticationProvider 实现类实例
      */
     @Bean("singleTokenAuthenticationProvider")
     @ConditionalOnMissingBean
-    fun singleTokenAuthenticationProvider(singleTokenService: SingleTokenService): AuthenticationProvider {
-        return SingleTokenAuthenticationProvider(singleTokenService)
+    fun singleTokenAuthenticationProvider(singleTokenValidator: SingleTokenValidator<SingleTokenPrincipal>): AuthenticationProvider {
+        return SingleTokenAuthenticationProvider(singleTokenValidator)
     }
 }
