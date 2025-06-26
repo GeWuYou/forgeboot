@@ -10,7 +10,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * 基于单 Token 认证的安全配置定制器
  *
  * 该类用于在 Spring Security 的过滤器链中注册并配置 API 密钥身份验证逻辑，
- * 仅当当前安全链标识符匹配 API_KEY_CHAIN_ID 时生效。
+ * 仅当当前安全链标识符匹配 SINGLE_TOKEN_CHAIN_ID 时生效。
  *
  * @property singleTokenAuthenticationFilter 处理 API 密钥身份验证请求的过滤器实例
  * @since 2025-06-25 16:09:38
@@ -30,7 +30,7 @@ class SingleTokenHttpSecurityCustomizer(
      * @return Boolean 返回 true 表示支持该 chainId，否则不支持
      */
     override fun supports(chainId: String): Boolean {
-        return SecurityConstants.API_KEY_CHAIN_ID == chainId
+        return SecurityConstants.SINGLE_TOKEN_CHAIN_ID == chainId
     }
 
     /**

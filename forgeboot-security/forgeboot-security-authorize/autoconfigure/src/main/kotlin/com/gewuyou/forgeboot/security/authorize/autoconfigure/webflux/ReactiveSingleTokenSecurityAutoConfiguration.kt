@@ -113,7 +113,7 @@ class ReactiveSingleTokenSecurityAutoConfiguration(
         val combinedMatcher: ServerWebExchangeMatcher =
             ServerWebExchangeMatchers.matchers(*matchers.toTypedArray())
         return registrar.buildChain(
-            SecurityConstants.API_KEY_CHAIN_ID,
+            SecurityConstants.SINGLE_TOKEN_CHAIN_ID,
             http,
             combinedMatcher
         ) { config ->

@@ -110,7 +110,7 @@ class ServletSingleTokenSecurityAutoConfiguration(
          * 调用注册器构建安全链，指定链 ID、HttpSecurity 对象和请求匹配器
          */
         return registrar.buildChain(
-            SecurityConstants.API_KEY_CHAIN_ID,
+            SecurityConstants.SINGLE_TOKEN_CHAIN_ID,
             http,
             combinedMatcher
         ) { config ->

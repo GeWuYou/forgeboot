@@ -22,13 +22,13 @@ class SingleTokenServerHttpSecurityCustomizer(
      * 判断当前定制器是否支持处理指定的安全链配置。
      *
      * 该方法用于标识此定制器是否适用于给定 chainId 所代表的安全配置场景。
-     * 在本实现中，仅当 chainId 与预定义的 API_KEY_CHAIN_ID 匹配时返回 true。
+     * 在本实现中，仅当 chainId 与预定义的 SINGLE_TOKEN_CHAIN_ID 匹配时返回 true。
      *
      * @param chainId 安全链的唯一标识符，用于区分不同的安全配置场景
      * @return Boolean 返回 true 表示支持该 chainId，否则不支持
      */
     override fun supports(chainId: String): Boolean {
-        return SecurityConstants.API_KEY_CHAIN_ID == chainId
+        return SecurityConstants.SINGLE_TOKEN_CHAIN_ID == chainId
     }
 
     /**
