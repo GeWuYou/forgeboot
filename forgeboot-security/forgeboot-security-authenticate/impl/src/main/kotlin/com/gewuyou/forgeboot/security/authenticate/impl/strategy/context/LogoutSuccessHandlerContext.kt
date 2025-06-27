@@ -14,6 +14,6 @@ class LogoutSuccessHandlerContext(
 ) : AbstractHandlerContext<LogoutSuccessStrategy, LogoutSuccessHandler>(
     strategies,
     "登出处理器",
-    { it.supportedLoginType() },
+    { it.supportedLoginTypes() },
     { it }
 )

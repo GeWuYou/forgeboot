@@ -15,6 +15,6 @@ class AuthenticationSuccessHandlerContext(
     strategies,
     "认证成功处理器"
     ,
-    { it.supportedLoginType() },
+    { it.supportedLoginTypes() },
     { it }
 )

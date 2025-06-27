@@ -2,12 +2,12 @@ package com.gewuyou.forgeboot.security.authenticate.impl.provider.impl
 
 import com.gewuyou.forgeboot.security.authenticate.api.exception.ForgeBootAuthenticationException
 import com.gewuyou.forgeboot.security.authenticate.api.service.UserCacheService
-import com.gewuyou.forgeboot.security.authenticate.api.service.UserDetailsService
 import com.gewuyou.forgeboot.security.authenticate.impl.constants.ForgeBootSecurityAuthenticationResponseInformation
 import com.gewuyou.forgeboot.security.authenticate.impl.provider.AbstractPrincipalCredentialsAuthenticationProvider
 import com.gewuyou.forgeboot.security.core.common.token.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 
 /**
@@ -25,9 +25,9 @@ import org.springframework.security.crypto.password.PasswordEncoder
  */
 class UsernamePasswordAuthenticationProvider(
     userCacheService: UserCacheService,
-    userDetailsService: UserDetailsService,
+    private val userDetailsService: UserDetailsService,
     private val passwordEncoder: PasswordEncoder
-) : AbstractPrincipalCredentialsAuthenticationProvider(userCacheService, userDetailsService) {
+) : AbstractPrincipalCredentialsAuthenticationProvider(userCacheService) {
 
     /**
      * 验证用户提供的凭证是否有效。
@@ -73,5 +73,26 @@ class UsernamePasswordAuthenticationProvider(
      */
     override fun supports(authentication: Class<*>): Boolean {
         return UsernamePasswordAuthenticationToken::class.java.isAssignableFrom(authentication)
+    }
+
+    /**
+     * 从数据源获取用户信息
+     *
+     * @param principal 用户标识
+     * @return UserDetails 用户详细信息
+     * @throws ForgeBootAuthenticationException 当 principal 为空或加载失败时抛出异常
+     */
+    override fun retrieveUser(principal: String): UserDetails {
+        if (principal.isBlank()) {
+            ForgeBootAuthenticationException(ForgeBootSecurityAuthenticationResponseInformation.PRINCIPAL_NOT_PROVIDED)
+        }
+        return try {
+            userDetailsService.loadUserByUsername(principal)
+        } catch (e: Exception) {
+            throw ForgeBootAuthenticationException(
+                ForgeBootSecurityAuthenticationResponseInformation.INTERNAL_SERVER_ERROR,
+                e
+            )
+        }
     }
 }

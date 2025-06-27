@@ -22,7 +22,7 @@ abstract class AbstractHandlerContext<T : Any, H : Any>(
     /**
      * 提取策略对应类型的函数，用于确定每个策略的标识
      */
-    extractType: (T) -> String,
+    extractType: (T) -> Set<String>,
     /**
      * 提取策略对应处理器的函数，用于获取实际可执行的处理器逻辑
      */
@@ -41,22 +41,21 @@ abstract class AbstractHandlerContext<T : Any, H : Any>(
         val map = mutableMapOf<String, H>()
         for (strategy in strategies) {
             // 提取当前策略的登录类型标识
-            val loginType = extractType(strategy)
-            if (loginType == LoginTypes.DEFAULT) {
+            val loginTypes = extractType(strategy)
+            if (loginTypes.contains(LoginTypes.DEFAULT)) {
                 defaultStrategy = strategy
                 continue
             }
             // 获取当前策略对应的处理器实例
             val handler = extractHandler(strategy)
-            // 检查是否已存在相同类型的处理器
-            val existingHandlerName = map[loginType]?.javaClass?.name
-            existingHandlerName?.let {
-                log.warn("重复注册登录类型 [$loginType] 的$typeName，已存在 $existingHandlerName，被 ${strategy::class.java.name} 覆盖")
-            }?.run {
-                log.info("注册${typeName}策略: $loginType -> ${strategy::class.java.name}")
+            log.info("注册${typeName}策略: $loginTypes -> ${strategy::class.java.name}")
+            loginTypes.forEach { loginType ->
+                if (map.containsKey(loginType)) {
+                    log.warn("已存在 loginType 为 [$loginType] 的$typeName，将覆盖")
+                }
+                // 注册或覆盖处理器映射
+                map[loginType] = handler
             }
-            // 注册或覆盖处理器映射
-            map[loginType] = handler
         }
         // 不可变化处理器映射表
         this.handlerMap = map.toMap()

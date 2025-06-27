@@ -3,12 +3,10 @@ package com.gewuyou.forgeboot.security.authenticate.impl.provider
 
 import com.gewuyou.forgeboot.security.authenticate.api.exception.ForgeBootAuthenticationException
 import com.gewuyou.forgeboot.security.authenticate.api.service.UserCacheService
-import com.gewuyou.forgeboot.security.authenticate.api.service.UserDetailsService
 import com.gewuyou.forgeboot.security.authenticate.impl.constants.ForgeBootSecurityAuthenticationResponseInformation
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
-
 import org.springframework.security.core.userdetails.UserDetails
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -21,7 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 abstract class AbstractPrincipalCredentialsAuthenticationProvider(
     private val userCacheService: UserCacheService,
-    private val userDetailsService: UserDetailsService
 ) : AuthenticationProvider {
 
     /**
@@ -79,19 +76,7 @@ abstract class AbstractPrincipalCredentialsAuthenticationProvider(
      * @return UserDetails 用户详细信息
      * @throws ForgeBootAuthenticationException 当 principal 为空或加载失败时抛出异常
      */
-    protected open fun retrieveUser(principal: String): UserDetails {
-        if (principal.isBlank()) {
-            ForgeBootAuthenticationException(ForgeBootSecurityAuthenticationResponseInformation.PRINCIPAL_NOT_PROVIDED)
-        }
-        return try {
-            userDetailsService.loadUserByPrincipal(principal)
-        } catch (e: Exception) {
-            throw ForgeBootAuthenticationException(
-                ForgeBootSecurityAuthenticationResponseInformation.INTERNAL_SERVER_ERROR,
-                e
-            )
-        }
-    }
+    abstract fun retrieveUser(principal: String): UserDetails
 
     /**
      * 在验证凭据前进行账户状态检查
@@ -127,7 +112,8 @@ abstract class AbstractPrincipalCredentialsAuthenticationProvider(
      * @throws ForgeBootAuthenticationException 当凭证为 null 时抛出异常
      */
     protected fun checkCredentialsNotNull(credentials: Any?) {
-        credentials ?: ForgeBootAuthenticationException(ForgeBootSecurityAuthenticationResponseInformation.PASSWORD_NOT_PROVIDED)
+        credentials
+            ?: ForgeBootAuthenticationException(ForgeBootSecurityAuthenticationResponseInformation.PASSWORD_NOT_PROVIDED)
     }
 
     /**
@@ -157,6 +143,6 @@ abstract class AbstractPrincipalCredentialsAuthenticationProvider(
      */
     protected abstract fun createSuccessAuthentication(
         authentication: Authentication,
-        user: UserDetails
+        user: UserDetails,
     ): Authentication
 }

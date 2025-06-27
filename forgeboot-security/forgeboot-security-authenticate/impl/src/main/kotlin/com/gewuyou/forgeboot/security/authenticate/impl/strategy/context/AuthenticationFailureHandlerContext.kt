@@ -14,6 +14,6 @@ class AuthenticationFailureHandlerContext(
 ) : AbstractHandlerContext<AuthenticationFailureStrategy, AuthenticationFailureHandler>(
     strategies,
     "认证失败处理器",
-    { it.supportedLoginType() },
+    { it.supportedLoginTypes() },
     { it }
 )
