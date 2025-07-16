@@ -1,7 +1,0 @@
-com.gewuyou.forgeboot.security.authorize.autoconfigure.ForgeSecurityAuthorizeAutoConfiguration
-com.gewuyou.forgeboot.security.authorize.autoconfigure.core.ForgeSecurityAuthorizeCoreConfiguration
-com.gewuyou.forgeboot.security.authorize.autoconfigure.core.SingleTokenSecurityCoreAutoConfiguration
-com.gewuyou.forgeboot.security.authorize.autoconfigure.webflux.ReactiveAuthorizeSecurityConfiguration
-com.gewuyou.forgeboot.security.authorize.autoconfigure.webflux.ReactiveSingleTokenSecurityAutoConfiguration
-com.gewuyou.forgeboot.security.authorize.autoconfigure.servlet.ServletAuthorizeSecurityConfiguration
-com.gewuyou.forgeboot.security.authorize.autoconfigure.servlet.ServletSingleTokenSecurityAutoConfiguration

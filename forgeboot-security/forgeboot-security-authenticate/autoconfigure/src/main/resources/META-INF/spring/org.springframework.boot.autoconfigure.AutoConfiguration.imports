@@ -1,4 +1,0 @@
-com.gewuyou.forgeboot.security.authenticate.autoconfigure.SecurityAuthenticateAutoConfiguration
-com.gewuyou.forgeboot.security.authenticate.autoconfigure.SecurityProviderAutoConfiguration
-com.gewuyou.forgeboot.security.authenticate.autoconfigure.SecurityStrategyAutoConfiguration
-com.gewuyou.forgeboot.security.authenticate.autoconfigure.SecurityCoreAutoConfiguration
