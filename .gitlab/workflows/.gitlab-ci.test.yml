@@ -19,6 +19,8 @@ publish:
   rules:
     - if: '$CI_COMMIT_BRANCH == "test"'
   script:
+    - echo "🔧 授予 gradlew 执行权限..."
+    - chmod +x gradlew
     - ./gradlew publishMavenJavaPublicationToGitLabRepository
   tags:
     - java

@@ -29,6 +29,8 @@ build:
       - .kotlin/
     policy: pull-push
   script:
+    - echo "🔧 授予 gradlew 执行权限..."
+    - chmod +x gradlew
     - ./gradlew clean build
   tags:
     - java
@@ -81,6 +83,8 @@ publish:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
+    - echo "🔧 授予 gradlew 执行权限..."
+    - chmod +x gradlew
     - ./gradlew publishMavenJavaPublicationToGitLabRepository
   tags:
     - java
