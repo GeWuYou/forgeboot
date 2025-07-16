@@ -136,42 +136,42 @@ project(":forgeboot-trace:forgeboot-trace-impl").name = "forgeboot-trace-impl"
 project(":forgeboot-trace:forgeboot-trace-autoconfigure").name = "forgeboot-trace-autoconfigure"
 //endregion
 
-//region module security
-/**
- * Includes and configures projects related to 'forgeboot-security'
- * This module handles security-related functionality.
- */
-include(
-    "forgeboot-security",
-    ":forgeboot-security:forgeboot-security-core",
-
-    ":forgeboot-security:forgeboot-security-authenticate",
-    ":forgeboot-security:forgeboot-security-authenticate:api",
-    ":forgeboot-security:forgeboot-security-authenticate:impl",
-    ":forgeboot-security:forgeboot-security-authenticate:autoconfigure",
-
-    ":forgeboot-security:forgeboot-security-authorize",
-    ":forgeboot-security:forgeboot-security-authorize:api",
-    ":forgeboot-security:forgeboot-security-authorize:impl",
-    ":forgeboot-security:forgeboot-security-authorize:autoconfigure"
-)
-project(":forgeboot-security").name = "forgeboot-security-spring-boot-starter"
-project(":forgeboot-security:forgeboot-security-core").name = "forgeboot-security-core"
-
-project(":forgeboot-security:forgeboot-security-authenticate").name =
-    "forgeboot-security-authenticate-spring-boot-starter"
-project(":forgeboot-security:forgeboot-security-authenticate:api").name = "forgeboot-security-authenticate-api"
-project(":forgeboot-security:forgeboot-security-authenticate:impl").name = "forgeboot-security-authenticate-impl"
-project(":forgeboot-security:forgeboot-security-authenticate:autoconfigure").name =
-    "forgeboot-security-authenticate-autoconfigure"
-
-project(":forgeboot-security:forgeboot-security-authorize").name = "forgeboot-security-authorize-spring-boot-starter"
-project(":forgeboot-security:forgeboot-security-authorize:api").name = "forgeboot-security-authorize-api"
-project(":forgeboot-security:forgeboot-security-authorize:impl").name = "forgeboot-security-authorize-impl"
-project(":forgeboot-security:forgeboot-security-authorize:autoconfigure").name =
-    "forgeboot-security-authorize-autoconfigure"
-
-//endregion
+////region module security
+///**
+// * Includes and configures projects related to 'forgeboot-security'
+// * This module handles security-related functionality.
+// */
+//include(
+//    "forgeboot-security",
+//    ":forgeboot-security:forgeboot-security-core",
+//
+//    ":forgeboot-security:forgeboot-security-authenticate",
+//    ":forgeboot-security:forgeboot-security-authenticate:api",
+//    ":forgeboot-security:forgeboot-security-authenticate:impl",
+//    ":forgeboot-security:forgeboot-security-authenticate:autoconfigure",
+//
+//    ":forgeboot-security:forgeboot-security-authorize",
+//    ":forgeboot-security:forgeboot-security-authorize:api",
+//    ":forgeboot-security:forgeboot-security-authorize:impl",
+//    ":forgeboot-security:forgeboot-security-authorize:autoconfigure"
+//)
+//project(":forgeboot-security").name = "forgeboot-security-spring-boot-starter"
+//project(":forgeboot-security:forgeboot-security-core").name = "forgeboot-security-core"
+//
+//project(":forgeboot-security:forgeboot-security-authenticate").name =
+//    "forgeboot-security-authenticate-spring-boot-starter"
+//project(":forgeboot-security:forgeboot-security-authenticate:api").name = "forgeboot-security-authenticate-api"
+//project(":forgeboot-security:forgeboot-security-authenticate:impl").name = "forgeboot-security-authenticate-impl"
+//project(":forgeboot-security:forgeboot-security-authenticate:autoconfigure").name =
+//    "forgeboot-security-authenticate-autoconfigure"
+//
+//project(":forgeboot-security:forgeboot-security-authorize").name = "forgeboot-security-authorize-spring-boot-starter"
+//project(":forgeboot-security:forgeboot-security-authorize:api").name = "forgeboot-security-authorize-api"
+//project(":forgeboot-security:forgeboot-security-authorize:impl").name = "forgeboot-security-authorize-impl"
+//project(":forgeboot-security:forgeboot-security-authorize:autoconfigure").name =
+//    "forgeboot-security-authorize-autoconfigure"
+//
+////endregion
 
 //region module  cache
 include(

@@ -1,0 +1,10 @@
+include:
+  - local: '/.gitlab/workflows/.gitlab-ci.test.yml'
+    rules:
+      - if: '$CI_COMMIT_BRANCH == "test"'
+  - local: '/.gitlab/workflows/.gitlab-ci.main.yml'
+    rules:
+      - if: '$CI_COMMIT_BRANCH == "main"'
+  - local: '/.gitlab/workflows/.gitlab-ci.other.yml'
+    rules:
+      - if: '$CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH != "test"'

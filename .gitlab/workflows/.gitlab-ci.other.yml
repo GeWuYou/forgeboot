@@ -1,0 +1,44 @@
+stages:
+  - check
+before_script:
+  - export GRADLE_USER_HOME=$CI_PROJECT_DIR/.gradle
+  - rm -rf $CI_PROJECT_DIR/.gradle/.tmp || true
+# ✅ check Job
+check:
+  stage: check
+  cache:
+    key:
+      files:
+        - gradle/libs.versions.toml
+        - "**/build.gradle.kts"
+      prefix: lab-agent
+    paths:
+      - .gradle/caches/
+      - .gradle/wrapper/
+      - .gradle/kotlin-profile/
+      - .kotlin/
+      - buildSrc/.gradle/
+      - buildSrc/build/
+    policy: pull-push
+  script:
+    - echo "🔧 授予 gradlew 执行权限..."
+    - chmod +x gradlew
+
+    - echo "🧪 开始快速编译检查（跳过打包和测试）..."
+    - ./gradlew compileKotlin compileJava --stacktrace || (echo "❌ 编译失败！请检查错误日志" && exit 1)
+
+    - echo "📦 当前缓存目录："
+    - ls -la .gradle/
+
+    - echo "📦 Gradle 缓存结构检查"
+    - ls -la .gradle/caches/modules-2/files-2.1 || true
+    - echo "📦 缓存文件数量：$(find .gradle/caches/modules-2/files-2.1 -type f | wc -l)"
+
+    - echo "🛑 停止 Gradle 守护进程..."
+    - ./gradlew --stop
+
+    - echo "🔍 当前 Java 进程："
+    - ps aux | grep java || true
+  tags:
+    - docker
+    - java

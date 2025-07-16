@@ -1,0 +1,131 @@
+stages:
+  - build
+  - tag
+  - publish
+  - reset
+  - mirror
+
+variables:
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
+
+before_script:
+  - rm -rf $GRADLE_USER_HOME/.tmp || true
+
+# ✅ Build 阶段
+build:
+  stage: build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  cache:
+    key:
+      files:
+        - gradle/libs.versions.toml
+        - "**/*.gradle.kts"
+      prefix: lab-agent
+    paths:
+      - .gradle/caches/
+      - .gradle/wrapper/
+      - .gradle/kotlin-profile/
+      - .kotlin/
+    policy: pull-push
+  script:
+    - ./gradlew clean build
+  tags:
+    - java
+
+# 🏷️ 自动打标签
+tag:
+  stage: tag
+  needs: [ "build" ]
+  image: alpine:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - set -euo pipefail
+    - apk add --no-cache git
+    - git config --global user.email "pipeline@${GITLAB_URL}"
+    - git config --global user.name "Project Pipeline Bot"
+    - git fetch --tags
+    - git fetch origin main
+    - MAIN_COMMIT=$(git rev-parse origin/main)
+    - echo "🔗 main commit -> $MAIN_COMMIT"
+
+    - LATEST_TAG=$(git tag --list '*' --sort=-v:refname | head -n1 || true)
+    - if [ -z "$LATEST_TAG" ]; then LATEST_TAG="0.0.0"; fi
+    - echo "🔖 最新 tag -> $LATEST_TAG"
+
+    - VERSION=${LATEST_TAG#v}
+    - MAJOR=$(echo "$VERSION" | cut -d. -f1)
+    - MINOR=$(echo "$VERSION" | cut -d. -f2)
+    - PATCH=$(echo "$VERSION" | cut -d. -f3)
+
+    - PATCH=$((PATCH + 1))
+    - NEW_TAG="${MAJOR}.${MINOR}.${PATCH}"
+    - echo "🏷️ 新 tag -> $NEW_TAG"
+
+    - if git tag --points-at "$MAIN_COMMIT" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' > /dev/null; then
+      echo "⏭️ 已存在 tag，跳过创建";
+      exit 0;
+      fi
+
+    - git tag $NEW_TAG $MAIN_COMMIT
+    - git push https://oauth2:${PIPELINE_BOT_TOKEN}@${GITLAB_URL}/${CI_PROJECT_PATH}.git $NEW_TAG
+    - echo "✅ tag $NEW_TAG 已推送"
+  tags:
+    - java
+
+# 📦 发布至 GitLab Maven 仓库
+publish:
+  stage: publish
+  needs: [ "tag" ]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - ./gradlew publishMavenJavaPublicationToGitLabRepository
+  tags:
+    - java
+
+# 🔄 重建 test 分支
+reset:
+  stage: reset
+  needs: [ "build" ]
+  image: alpine:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - set -euo pipefail
+    - apk add --no-cache git
+    - git config --global user.email "pipeline@${GITLAB_URL}"
+    - git config --global user.name "Project Pipeline Bot"
+    - git clone --depth=1 --branch main https://oauth2:${PIPELINE_BOT_TOKEN}@${GITLAB_URL}/${CI_PROJECT_PATH}.git repo
+    - cd repo
+    - git checkout -B test
+    - git push origin test --force
+    - echo "✅ test 分支已重建完成"
+  tags:
+    - java
+#  Mirror to GitHub
+mirror-to-github:
+  stage: mirror
+  needs: [ "build" ]
+  image: alpine:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - set -euo pipefail
+    - apk add --no-cache git openssh
+    - git config --global user.name "Project Pipeline Bot"
+    - git config --global user.email "pipeline@${GITLAB_URL}"
+
+    - echo "🔄 正在 clone 当前 GitLab 仓库..."
+    - git clone --depth=1 --branch main https://oauth2:${PIPELINE_BOT_TOKEN}@${GITLAB_URL}/${CI_PROJECT_PATH}.git repo
+    - cd repo
+
+    - echo "🔗 添加 GitHub 远程地址..."
+    - git remote add github https://x-access-token:${GITHUB_PUSH_TOKEN}@github.com/GeWuYou/forgeboot.git
+
+    - echo "🚀 推送 main 分支到 GitHub..."
+    - git push github main --force
+    - echo "✅ GitHub 同步完成"
+  tags:
+    - java

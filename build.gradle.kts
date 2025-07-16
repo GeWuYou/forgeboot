@@ -11,12 +11,9 @@ plugins {
     // Kotlin kapt 支持
     alias(libs.plugins.kotlin.kapt)
     id(libs.plugins.kotlin.jvm.get().pluginId)
-    alias(libs.plugins.gradleMavenPublishPlugin)
+//    alias(libs.plugins.gradleMavenPublishPlugin)
 }
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
+
 
 // 配置 SCM 版本插件
 scmVersion {
@@ -93,27 +90,26 @@ subprojects {
         tasks.named<Jar>("sourcesJar") {
             dependsOn("generateI18nKeys")
         }
-
     }
 
     version = rootProject.version
 
     apply {
-        plugin(libs.plugins.java.get().pluginId)
-        plugin(libs.plugins.javaLibrary.get().pluginId)
+//        plugin(libs.plugins.java.get().pluginId)
+//        plugin(libs.plugins.javaLibrary.get().pluginId)
         plugin(libs.plugins.maven.publish.get().pluginId)
         plugin(libs.plugins.kotlin.jvm.get().pluginId)
         plugin(libs.plugins.axionRelease.get().pluginId)
         plugin(libs.plugins.kotlin.kapt.get().pluginId)
-        plugin(libs.plugins.gradleMavenPublishPlugin.get().pluginId)
+//        plugin(libs.plugins.gradleMavenPublishPlugin.get().pluginId)
         // 导入仓库配置
         from(file("$configDir/repositories.gradle.kts"))
     }
-    // 中央仓库
-    mavenPublishing {
-        publishToMavenCentral("DEFAULT", true)
-        signAllPublications()
-    }
+//    // 中央仓库
+//    mavenPublishing {
+//        publishToMavenCentral("https://s01.oss.sonatype.org/", true)
+//        signAllPublications()
+//    }
     // 发布配置
     publishing {
         repositories {
@@ -129,6 +125,17 @@ subprojects {
                 credentials {
                     username = System.getenv("GITHUB_USERNAME")
                     password = System.getenv("GITHUB_TOKEN")
+                }
+            }
+            maven {
+                name = "GitLab"
+                url = uri("https://gitlab.snow-lang.com/api/v4/projects/18/packages/maven")
+                credentials(HttpHeaderCredentials::class) {
+                    name = "Private-Token"
+                    value = System.getenv("PIPELINE_BOT_TOKEN")  // 存储为 GitLab CI/CD Secret
+                }
+                authentication {
+                    create("header", HttpHeaderAuthentication::class)
                 }
             }
             // Gitea 仓库

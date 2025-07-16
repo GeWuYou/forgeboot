@@ -6,4 +6,5 @@ dependencies {
     implementation(platform(libs.springBootDependencies.bom))
     implementation(libs.springBoot.autoconfigure)
     implementation(libs.jackson.databind)
+    implementation(libs.kotlinxCoroutines.reactor)
 }

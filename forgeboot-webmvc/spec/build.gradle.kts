@@ -1,6 +1,6 @@
 
 dependencies {
     compileOnly(libs.springBootStarter.jpa)
-    implementation(project(Modules.Webmvc.DTO))
-    implementation(project(Modules.Core.EXTENSION))
+    api(project(Modules.Webmvc.DTO))
+    api(project(Modules.Core.EXTENSION))
 }

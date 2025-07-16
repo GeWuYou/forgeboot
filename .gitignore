@@ -21,7 +21,7 @@ build/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-
+/temp
 ### Kotlin ###
 .kotlin
 
