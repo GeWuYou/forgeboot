@@ -97,7 +97,10 @@ subprojects {
     apply {
 //        plugin(libs.plugins.java.get().pluginId)
 //        plugin(libs.plugins.javaLibrary.get().pluginId)
-        plugin(libs.plugins.maven.publish.get().pluginId)
+        if (!project.name.contains("demo")) {
+            plugin(libs.plugins.maven.publish.get().pluginId)
+        }
+        plugin(libs.plugins.kotlin.plugin.spring.get().pluginId)
         plugin(libs.plugins.kotlin.jvm.get().pluginId)
         plugin(libs.plugins.axionRelease.get().pluginId)
         plugin(libs.plugins.kotlin.kapt.get().pluginId)
@@ -111,85 +114,86 @@ subprojects {
 //        signAllPublications()
 //    }
     // 发布配置
-    publishing {
-        repositories {
-            // 本地仓库
-            maven {
-                name = "localRepo"
-                url = uri("file://D:/Config/Jrebel/.jrebel/.m2/repository")
-            }
-            // GitHub Packages 仓库
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/GeWuYou/forgeboot")
-                credentials {
-                    username = System.getenv("GITHUB_USERNAME")
-                    password = System.getenv("GITHUB_TOKEN")
-                }
-            }
-            maven {
-                name = "GitLab"
-                url = uri("https://gitlab.snow-lang.com/api/v4/projects/18/packages/maven")
-                credentials(HttpHeaderCredentials::class) {
-                    name = "Private-Token"
-                    value = System.getenv("PIPELINE_BOT_TOKEN")  // 存储为 GitLab CI/CD Secret
-                }
-                authentication {
-                    create("header", HttpHeaderAuthentication::class)
-                }
-            }
-            // Gitea 仓库
-            val host = System.getenv("GITEA_HOST")
-            host?.let {
+    if (!project.name.contains("demo")) {
+        publishing {
+            repositories {
+                // 本地仓库
                 maven {
-                    name = "Gitea"
-                    url = uri("${it}/api/packages/gewuyou/maven")
-                    credentials(HttpHeaderCredentials::class.java) {
-                        name = "Authorization"
-                        value = "token ${System.getenv("GITEA_TOKEN")}"
+                    name = "localRepo"
+                    url = uri("file://D:/Config/Jrebel/.jrebel/.m2/repository")
+                }
+                // GitHub Packages 仓库
+                maven {
+                    name = "GitHubPackages"
+                    url = uri("https://maven.pkg.github.com/GeWuYou/forgeboot")
+                    credentials {
+                        username = System.getenv("GITHUB_USERNAME")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
+                }
+                maven {
+                    name = "GitLab"
+                    url = uri("https://gitlab.snow-lang.com/api/v4/projects/18/packages/maven")
+                    credentials(HttpHeaderCredentials::class) {
+                        name = "Private-Token"
+                        value = System.getenv("PIPELINE_BOT_TOKEN")  // 存储为 GitLab CI/CD Secret
                     }
                     authentication {
-                        create("header", HttpHeaderAuthentication::class.java)
+                        create("header", HttpHeaderAuthentication::class)
+                    }
+                }
+                // Gitea 仓库
+                val host = System.getenv("GITEA_HOST")
+                host?.let {
+                    maven {
+                        name = "Gitea"
+                        url = uri("${it}/api/packages/gewuyou/maven")
+                        credentials(HttpHeaderCredentials::class.java) {
+                            name = "Authorization"
+                            value = "token ${System.getenv("GITEA_TOKEN")}"
+                        }
+                        authentication {
+                            create("header", HttpHeaderAuthentication::class.java)
+                        }
                     }
                 }
             }
-        }
-        publications {
-            create<MavenPublication>("mavenJava") {
-                val projectName = project.name
-                from(components["java"])
-                groupId = project.group.toString()
-                artifactId = projectName
-                version = project.version.toString()
+            publications {
+                create<MavenPublication>("mavenJava") {
+                    val projectName = project.name
+                    from(components["java"])
+                    groupId = project.group.toString()
+                    artifactId = projectName
+                    version = project.version.toString()
 
-                pom {
-                    name.set(projectName)
-                    description.set("Part of Forgeboot Starters")
-                    url.set("https://github.com/GeWuYou/forgeboot")
-
-                    licenses {
-                        license {
-                            name.set("Apache-2.0")
-                            url.set("https://www.apache.org/licenses/LICENSE-2.0")
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("gewuyou")
-                            name.set("gewuyou")
-                            email.set("gewuyou1024@gmail.com")
-                        }
-                    }
-                    scm {
-                        connection.set("scm:git:git://github.com/GeWuYou/forgeboot.git")
-                        developerConnection.set("scm:git:ssh://github.com/GeWuYou/forgeboot.git")
+                    pom {
+                        name.set(projectName)
+                        description.set("Part of Forgeboot Starters")
                         url.set("https://github.com/GeWuYou/forgeboot")
+
+                        licenses {
+                            license {
+                                name.set("Apache-2.0")
+                                url.set("https://www.apache.org/licenses/LICENSE-2.0")
+                            }
+                        }
+                        developers {
+                            developer {
+                                id.set("gewuyou")
+                                name.set("gewuyou")
+                                email.set("gewuyou1024@gmail.com")
+                            }
+                        }
+                        scm {
+                            connection.set("scm:git:git://github.com/GeWuYou/forgeboot.git")
+                            developerConnection.set("scm:git:ssh://github.com/GeWuYou/forgeboot.git")
+                            url.set("https://github.com/GeWuYou/forgeboot")
+                        }
                     }
                 }
             }
         }
     }
-
     // 依赖配置
     dependencies {
 
@@ -217,8 +221,6 @@ subprojects {
     tasks.named<Test>("test") {
         useJUnitPlatform()
     }
-
-
 }
 /**
  * 注册一个 Gradle 任务用于清理项目中的无用文件。

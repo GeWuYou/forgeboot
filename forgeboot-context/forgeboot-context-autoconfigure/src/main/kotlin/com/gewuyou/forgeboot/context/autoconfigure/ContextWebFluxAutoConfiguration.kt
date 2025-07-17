@@ -3,6 +3,7 @@ package com.gewuyou.forgeboot.context.autoconfigure
 import com.gewuyou.forgeboot.context.api.ContextProcessor
 import com.gewuyou.forgeboot.context.impl.ContextHolder
 import com.gewuyou.forgeboot.context.impl.filter.ContextWebFilter
+import com.gewuyou.forgeboot.context.impl.filter.CoroutineMdcWebFilter
 import com.gewuyou.forgeboot.context.impl.processor.ReactorProcessor
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -46,4 +47,17 @@ class ContextWebFluxAutoConfiguration {
         reactorProcessor: ReactorProcessor,
         contextHolder: ContextHolder
     ) = ContextWebFilter(chain, reactorProcessor, contextHolder)
+    /**
+     * 注册 CoroutineMdcWebFilter Bean，用于在协程环境中传播 MDC 上下文信息。
+     *
+     * MDC（Mapped Diagnostic Context）通常用于存储线程上下文数据，在异步或协程编程模型中，
+     * 需要特殊的处理以确保上下文能够在不同协程之间正确传递。
+     * 该过滤器通过注册为 Spring WebFlux 的 WebFilter，确保请求链路中的 MDC 数据一致性。
+     *
+     * @return 构建完成的 CoroutineMdcWebFilter 实例
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    @Order(Ordered.HIGHEST_PRECEDENCE + 11) // 稍晚于 ContextWebFilter 执行
+    fun coroutineMdcWebFilter(contextHolder: ContextHolder): CoroutineMdcWebFilter = CoroutineMdcWebFilter(contextHolder)
 }

@@ -47,11 +47,16 @@ abstract class AbstractContext<K, V>:  Context<K, V> {
     }
 
     /**
-     * 从上下文中移除指定的键值对。
+     * 从上下文中移除指定的键值对并返回被移除的值。
      *
-     * @param key 要移除的键
+     * 此方法用于在上下文中删除与指定键关联的条目。如果该键存在，
+     * 则将其从上下文中移除，并返回与之关联的值；如果该键不存在，
+     * 则返回 null。
+     *
+     * @param key 要移除的键，不能为空
+     * @return 与指定键关联的值，如果键不存在则返回 null
      */
-    override fun remove(key: K) {
-        local.get().remove(key)
+    override fun remove(key: K) : V? {
+       return local.get().remove(key)
     }
 }

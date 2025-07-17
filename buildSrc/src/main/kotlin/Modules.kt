@@ -117,4 +117,7 @@ object Modules {
                 "${AUTHORIZE}:forgeboot-security-authorize-autoconfigure"
         }
     }
+    object Demo{
+        const val ROOT = ":forgeboot-demo"
+    }
 }
