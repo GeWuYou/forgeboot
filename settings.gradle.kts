@@ -136,6 +136,14 @@ project(":forgeboot-trace:forgeboot-trace-impl").name = "forgeboot-trace-impl"
 project(":forgeboot-trace:forgeboot-trace-autoconfigure").name = "forgeboot-trace-autoconfigure"
 //endregion
 
+////region module demo
+include(
+    "forgeboot-demo",
+    ":forgeboot-demo:forgeboot-trace-demo"
+)
+
+
+
 ////region module security
 ///**
 // * Includes and configures projects related to 'forgeboot-security'

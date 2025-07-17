@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+    <!-- 公共属性 -->
+    <springProperty name="APP_NAME" source="spring.application.name" defaultValue="unknow-app"/>
+    <property name="LOG_PATH" value="logs/${APP_NAME}"/>
+    <property name="MAX_FILE_SIZE" value="10MB"/>
+    <property name="MAX_HISTORY" value="10"/>
+    <!--彩色日志格式-->
+    <property name="CONSOLE_PATTERN"
+              value="时间:[%red(%d{yyyy-MM-dd HH:mm:ss})] 请求ID:[%highlight(%X{requestId})] 线程:[%green(%thread)] 日志级别:[%highlight(%-5level)] 调用位置:[%boldMagenta(%logger{50}) 参见:%blue(\(%F:%L\))] 日志信息:[%cyan(%msg%n)]"/>
+    <!--文件日志格式-->
+    <property name="FILE_PATTERN"
+              value="时间:[%d{yyyy-MM-dd HH:mm:ss}] 请求ID:[%X{requestId}] 线程:[%thread] 日志级别:[%-5level] 调用位置:[%logger{50} 参见:(%F:%L)] 日志信息:[%msg%n]"/>
+    <!-- ========== dev & test：双轨（Pattern + JSON） ========== -->
+    <springProfile name="dev">
+
+        <!-- 彩色行日志 -->
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_PATTERN}</pattern>
+            </encoder>
+        </appender>
+
+<!--        <root level="DEBUG">-->
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+</configuration>

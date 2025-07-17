@@ -33,4 +33,12 @@ open class ContextHolder(
     override fun <T> retrieveByType(key: String, type: Class<T>): T? {
         return retrieve(key)?.let { valueSerializer.deserialize(it, type) }
     }
+    /**
+     * 将指定的映射中的所有键值对存储到上下文中。
+     *
+     * @param map 包含键值对的映射，键为字符串类型，值可以为任意类型或 null
+     */
+    fun putAll(map: Map<String, Any?>) {
+        map.forEach { (k, v) -> put(k, v) }
+    }
 }
