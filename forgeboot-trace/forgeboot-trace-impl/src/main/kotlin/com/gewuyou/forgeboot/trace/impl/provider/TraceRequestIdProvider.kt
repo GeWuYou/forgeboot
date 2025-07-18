@@ -4,6 +4,7 @@ import com.gewuyou.forgeboot.context.api.extension.get
 import com.gewuyou.forgeboot.context.impl.ContextHolder
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
 import com.gewuyou.forgeboot.trace.api.config.TraceProperties
+import org.slf4j.MDC
 
 
 /**
@@ -14,8 +15,8 @@ import com.gewuyou.forgeboot.trace.api.config.TraceProperties
  */
 class TraceRequestIdProvider(
     private val traceProperties: TraceProperties,
-    private val contextHolder: ContextHolder
-): RequestIdProvider {
+    private val contextHolder: ContextHolder,
+) : RequestIdProvider {
     /**
      * 获取请求ID
      *
@@ -24,6 +25,7 @@ class TraceRequestIdProvider(
      * @return 请求ID的字符串表示
      */
     override fun getRequestId(): String {
-        return contextHolder[traceProperties.requestIdMdcKey] ?:throw RuntimeException("requestId is null")
+        return contextHolder[traceProperties.requestIdMdcKey] ?: MDC.get(traceProperties.requestIdMdcKey)
+        ?: throw RuntimeException("requestId is null")
     }
 }

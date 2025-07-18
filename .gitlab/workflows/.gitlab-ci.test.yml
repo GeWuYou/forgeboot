@@ -1,23 +1,9 @@
 stages:
-  - build
   - publish
-
-# 🧪 test 构建
-build:
-  stage: build
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "test"'
-  script:
-    - echo "🔧 授予 gradlew 执行权限..."
-    - chmod +x gradlew
-    - ./gradlew clean build
-  tags:
-    - java
 
 # 🧪 test 发布 SNAPSHOT 包（允许覆盖）
 publish:
   stage: publish
-  needs: ["build"]
   rules:
     - if: '$CI_COMMIT_BRANCH == "test"'
   script:

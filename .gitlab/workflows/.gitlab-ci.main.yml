@@ -1,5 +1,4 @@
 stages:
-  - build
   - tag
   - publish
   - reset
@@ -11,34 +10,9 @@ variables:
 before_script:
   - rm -rf $GRADLE_USER_HOME/.tmp || true
 
-# ✅ Build 阶段
-build:
-  stage: build
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  cache:
-    key:
-      files:
-        - gradle/libs.versions.toml
-        - "**/*.gradle.kts"
-      prefix: lab-agent
-    paths:
-      - .gradle/caches/
-      - .gradle/wrapper/
-      - .gradle/kotlin-profile/
-      - .kotlin/
-    policy: pull-push
-  script:
-    - echo "🔧 授予 gradlew 执行权限..."
-    - chmod +x gradlew
-    - ./gradlew clean build
-  tags:
-    - java
-
 # 🏷️ 自动打标签
 tag:
   stage: tag
-  needs: [ "build" ]
   image: alpine:latest
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -82,6 +56,18 @@ publish:
   needs: [ "tag" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+  cache:
+    key:
+      files:
+        - gradle/libs.versions.toml
+        - "**/*.gradle.kts"
+      prefix: lab-agent
+    paths:
+      - .gradle/caches/
+      - .gradle/wrapper/
+      - .gradle/kotlin-profile/
+      - .kotlin/
+    policy: pull-push
   script:
     - echo "🔧 授予 gradlew 执行权限..."
     - chmod +x gradlew
@@ -92,7 +78,7 @@ publish:
 # 🔄 重建 test 分支
 reset:
   stage: reset
-  needs: [ "build" ]
+  needs: [ "publish" ]
   image: alpine:latest
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -111,7 +97,7 @@ reset:
 #  Mirror to GitHub
 mirror-to-github:
   stage: mirror
-  needs: [ "build" ]
+  needs: [ "publish" ]
   image: alpine:latest
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
