@@ -5,6 +5,7 @@ import com.gewuyou.forgeboot.context.impl.ContextHolder
 import com.gewuyou.forgeboot.context.impl.coroutine.ContextAwareCoroutineScope
 import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
+import com.gewuyou.forgeboot.webmvc.dto.R
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -23,7 +24,7 @@ class TraceTestController(
     private val processors: List<ContextProcessor>,
 ) {
     @GetMapping("/coroutine")
-    suspend fun coroutine(): String {
+    suspend fun coroutine(): R<String> {
         val requestId = requestIdProvider.getRequestId()
         log.info("→ Controller RequestId: $requestId")
 
@@ -32,7 +33,7 @@ class TraceTestController(
         scope.launchWithContext {
             log.info("RID: ${requestIdProvider.getRequestId()}")
         }
-        return "Main coroutine returned immediately with requestId: $requestId"
+        return R.success("Main coroutine returned immediately with requestId: $requestId",requestIdProvider = requestIdProvider)
     }
 
     @GetMapping("/servlet")
