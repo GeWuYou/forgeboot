@@ -5,7 +5,7 @@ stages:
 publish:
   stage: publish
   rules:
-    - if: '$CI_COMMIT_BRANCH == "test" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event")'
+    - if: '$CI_COMMIT_BRANCH == "test" && $CI_COMMIT_AUTHOR != "Project Pipeline Bot"'
   script:
     - echo "🔧 授予 gradlew 执行权限..."
     - chmod +x gradlew
