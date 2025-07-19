@@ -78,10 +78,9 @@ publish:
 # 🔄 重建 test 分支
 reset:
   stage: reset
-  needs: [ "publish" ]
   image: alpine:latest
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE !~ /^ci:|^chore:|^\[no-publish\]/'
+    - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - set -euo pipefail
     - apk add --no-cache git
