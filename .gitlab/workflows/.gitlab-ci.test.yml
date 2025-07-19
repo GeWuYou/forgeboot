@@ -9,6 +9,12 @@ publish:
   script:
     - echo "🔧 授予 gradlew 执行权限..."
     - chmod +x gradlew
-    - ./gradlew publishMavenJavaPublicationToGitLabRepository
+    - ./gradlew printVersion
+    # 强制刷新 SNAPSHOT 缓存并发布
+    - ./gradlew clean publishMavenJavaPublicationToGitLabRepository \
+      --no-daemon \
+      --refresh-dependencies \
+      -Porg.gradle.caching=false \
+      -Dorg.gradle.configuration-cache=false
   tags:
     - java
