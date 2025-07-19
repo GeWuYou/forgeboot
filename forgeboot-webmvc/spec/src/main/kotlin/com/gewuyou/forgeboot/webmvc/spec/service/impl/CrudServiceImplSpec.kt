@@ -2,13 +2,12 @@ package com.gewuyou.forgeboot.webmvc.spec.service.impl
 
 import com.gewuyou.forgeboot.webmvc.dto.PageResult
 import com.gewuyou.forgeboot.webmvc.dto.extension.map
+import com.gewuyou.forgeboot.webmvc.dto.extension.toJpaQuery
 import com.gewuyou.forgeboot.webmvc.dto.extension.toPageResult
-import com.gewuyou.forgeboot.webmvc.dto.extension.toPageable
-import com.gewuyou.forgeboot.webmvc.dto.request.PageQueryReq
+import com.gewuyou.forgeboot.webmvc.dto.extension.toSpecification
+import com.gewuyou.forgeboot.webmvc.dto.page.QueryComponent
 import com.gewuyou.forgeboot.webmvc.spec.repository.CrudRepositorySpec
 import com.gewuyou.forgeboot.webmvc.spec.service.CrudServiceSpec
-import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.domain.Specification
 
 
 /**
@@ -17,9 +16,9 @@ import org.springframework.data.jpa.domain.Specification
  * @since 2025-05-29 20:37:27
  * @author gewuyou
  */
-abstract class CrudServiceImplSpec<Entity : Any, Id : Any, Filter : Any>(
+abstract class CrudServiceImplSpec<Entity : Any, Id : Any>(
     private val repository: CrudRepositorySpec<Entity, Id>,
-) : CrudServiceSpec<Entity, Id, Filter> {
+) : CrudServiceSpec<Entity, Id> {
 
     /**
      * 根据实体的唯一标识符查找实体对象。
@@ -30,41 +29,6 @@ abstract class CrudServiceImplSpec<Entity : Any, Id : Any, Filter : Any>(
     override fun findById(id: Id): Entity? {
         return repository.findById(id).orElse(null)
     }
-
-    /**
-     * 执行分页查询并返回原始实体的分页结果。
-     *
-     * @param query 分页查询请求，包含过滤条件和分页信息
-     * @return 返回实体类型的分页结果
-     */
-    override fun page(query: PageQueryReq<Filter>): PageResult<Entity> {
-        return repository
-            .findAll(
-                buildSpecification(query),
-                resolvePageable(query)
-            )
-            .toPageResult()
-    }
-
-    /**
-     * 将分页请求解析为 Pageable 对象。
-     * 子类可重写此方法来自定义分页逻辑（例如默认排序）。
-     *
-     * @param query 分页查询请求
-     * @return 分页参数
-     */
-    protected open fun resolvePageable(query: PageQueryReq<Filter>): Pageable {
-        return query.toPageable()
-    }
-
-
-    /**
-     * 构建 JPA Specification 查询条件。
-     *
-     * @param query 包含过滤条件的分页请求
-     * @return 返回构建好的 Specification 查询条件
-     */
-    protected abstract fun buildSpecification(query: PageQueryReq<Filter>): Specification<Entity>
 
     /**
      * 获取所有实体列表。
@@ -154,32 +118,50 @@ abstract class CrudServiceImplSpec<Entity : Any, Id : Any, Filter : Any>(
     }
 
     /**
-     * 执行分页查询并将结果使用给定的映射函数转换为其他类型。
+     * 分页查询实体列表
      *
-     * @param query 分页查询请求，包含查询参数和分页信息
-     * @param mapping 映射函数，用于将实体映射为其他类型
-     * @param <V> 映射后的目标类型
-     * @return 返回映射后的分页结果
+     * 通过提供的查询组件进行分页数据检索，返回包含分页信息的结果对象
+     *
+     * @param query 查询组件，包含分页和过滤条件等信息
+     * @return 返回分页结果对象，包含当前页的数据列表、总记录数等信息
      */
-    override fun <V> pageMapped(
-        query: PageQueryReq<Filter>,
-        mapping: (Entity) -> V,
-    ): PageResult<V> {
-        val page = repository.findAll(
-            buildSpecification(query),
-            resolvePageable(query)
-        )
-        return page.toPageResult().map(mapping)
+    override fun page(query: QueryComponent): PageResult<Entity> {
+        val (specification, pageable) = query.toJpaQuery<Entity>()
+        return repository.findAll(specification, pageable).toPageResult()
     }
 
     /**
-     * 根据给定的过滤条件统计实体数量。
+     * 分页查询并映射结果
      *
-     * @param filter 查询过滤器
-     * @return 返回满足条件的实体数量
+     * 通过提供的查询组件进行分页数据检索，并使用给定的映射函数将结果转换为另一种类型
+     * 适用于需要将实体转换为DTO或其他形式的场景
+     *
+     * @param query 查询组件，包含分页和过滤条件等信息
+     * @param mapping 将实体转换为目标类型的函数
+     * @return 返回分页结果对象，包含转换后的数据列表、总记录数等信息
      */
-    override fun count(filter: Filter): Long {
-        return repository.count(buildSpecification(PageQueryReq<Filter>().apply { this.filter = filter }))
+    override fun <V> pageMapped(
+        query: QueryComponent,
+        mapping: (Entity) -> V,
+    ): PageResult<V> {
+        val (specification, pageable) = query.toJpaQuery<Entity>()
+        return repository.findAll(specification, pageable)
+            .toPageResult()
+            .map(mapping)
+    }
+
+    /**
+     * 查询符合条件的记录总数
+     *
+     * 根据查询组件中的过滤条件统计匹配的记录数量
+     * 通常用于分页时计算总页数或显示记录总数
+     *
+     * @param query 查询组件，包含过滤条件等信息
+     * @return 返回符合条件的记录总数
+     */
+    override fun count(query: QueryComponent): Long {
+        val specification = query.toSpecification<Entity>()
+        return repository.count(specification)
     }
 
     /**
