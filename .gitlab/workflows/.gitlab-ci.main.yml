@@ -15,7 +15,7 @@ tag:
   stage: tag
   image: alpine:latest
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE !~ /^ci:|^chore:|^\[no-publish\]/'
   script:
     - set -euo pipefail
     - apk add --no-cache git
@@ -55,7 +55,7 @@ publish:
   stage: publish
   needs: [ "tag" ]
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE !~ /^ci:|^chore:|^\[no-publish\]/'
   cache:
     key:
       files:
@@ -81,7 +81,7 @@ reset:
   needs: [ "publish" ]
   image: alpine:latest
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE !~ /^ci:|^chore:|^\[no-publish\]/'
   script:
     - set -euo pipefail
     - apk add --no-cache git
@@ -97,7 +97,6 @@ reset:
 #  Mirror to GitHub
 mirror-to-github:
   stage: mirror
-  needs: [ "publish" ]
   image: alpine:latest
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
