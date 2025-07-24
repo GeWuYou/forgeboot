@@ -75,7 +75,8 @@ include(
     ":forgeboot-webmvc:exception-i18n",
     ":forgeboot-webmvc:dto",
     ":forgeboot-webmvc:validation",
-    ":forgeboot-webmvc:spec"
+    ":forgeboot-webmvc:spec-core",
+    ":forgeboot-webmvc:spec-jpa",
 )
 project(":forgeboot-webmvc").name = "forgeboot-webmvc-spring-boot-starter"
 project(":forgeboot-webmvc:version").name = "forgeboot-webmvc-version-spring-boot-starter"
@@ -84,7 +85,8 @@ project(":forgeboot-webmvc:exception").name = "forgeboot-webmvc-exception-spring
 project(":forgeboot-webmvc:exception-i18n").name = "forgeboot-webmvc-exception-i18n-spring-boot-starter"
 project(":forgeboot-webmvc:dto").name = "forgeboot-webmvc-dto"
 project(":forgeboot-webmvc:validation").name = "forgeboot-webmvc-validation"
-project(":forgeboot-webmvc:spec").name = "forgeboot-webmvc-spec"
+project(":forgeboot-webmvc:spec-core").name = "forgeboot-webmvc-spec-core"
+project(":forgeboot-webmvc:spec-jpa").name = "forgeboot-webmvc-spec-jpa"
 //endregion
 
 //region module core
