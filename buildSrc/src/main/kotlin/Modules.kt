@@ -117,7 +117,19 @@ object Modules {
                 "${AUTHORIZE}:forgeboot-security-authorize-autoconfigure"
         }
     }
+    object Plugin {
+        private const val PLUGIN = ":forgeboot-plugin"
+        const val CORE = "${PLUGIN}:forgeboot-plugin-core"
+        const val SPRING = "${PLUGIN}:forgeboot-plugin-spring"
+    }
     object Demo{
-        const val ROOT = ":forgeboot-demo"
+        private const val ROOT = ":forgeboot-demo"
+        object Plugin{
+            private const val PLUGIN = "${ROOT}:forgeboot-plugin-demo"
+            const val API = "${PLUGIN}:forgeboot-plugin-demo-api"
+            const val IMPL = "${PLUGIN}:forgeboot-plugin-demo-impl"
+            const val SERVER = "${PLUGIN}:forgeboot-plugin-demo-server"
+        }
+
     }
 }
