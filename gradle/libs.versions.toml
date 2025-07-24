@@ -17,6 +17,10 @@ slf4j-version = "2.0.17"
 map-struct-version="1.6.3"
 caffeine-version="3.2.1"
 redisson-version="3.50.0"
+org-pf4j-version = "3.13.0"
+org-pf4j-spring-version = "0.10.0"
+org-yaml-snakeyaml-version = "2.4"
+org-yaml-snakeyaml-engine-version = "2.9"
 [libraries]
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
 kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime-version" }
@@ -41,7 +45,7 @@ springBootStarter-redis = { group = "org.springframework.boot", name = "spring-b
 redisson-springBootStarter= { group = "org.redisson", name = "redisson-spring-boot-starter", version.ref = "redisson-version" }
 springBoot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot-version" }
 springBoot-autoconfigure = { group = "org.springframework.boot", name = "spring-boot-autoconfigure" }
-
+springBoot-starter = { group = "org.springframework.boot", name = "spring-boot-starter" }
 springExpression = { group = "org.springframework", name = "spring-expression",  version.ref = "spring-framework-version" }
 
 springCloudDependencies-bom = { module = "org.springframework.cloud:spring-cloud-dependencies", version.ref = "spring-cloud-version" }
@@ -57,6 +61,10 @@ jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackso
 reactor-core = { group = "io.projectreactor", name = "reactor-core" }
 #org
 org-mapstruct = { group = "org.mapstruct", name = "mapstruct", version.ref = "map-struct-version" }
+org-snakeyaml-snakeyamlEngine = { group = "org.snakeyaml", name = "snakeyaml-engine", version.ref = "org-yaml-snakeyaml-engine-version" }
+org-yaml-snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "org-yaml-snakeyaml-version" }
+org-pf4j = { group = "org.pf4j", name = "pf4j", version.ref = "org-pf4j-version" }
+org-pf4jSpring = { group = "org.pf4j", name = "pf4j-spring", version.ref = "org-pf4j-spring-version" }
 # Libraries can be bundled together for easier import
 # jwt
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt-version" }
@@ -64,6 +72,8 @@ jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt-version"
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt-version" }
 # com
 com-github-benManes-caffeine = { module = "com.github.ben-manes.caffeine:caffeine",version.ref = "caffeine-version" }
+# io
+
 [bundles]
 kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines-core"]
 jacksonAll = [

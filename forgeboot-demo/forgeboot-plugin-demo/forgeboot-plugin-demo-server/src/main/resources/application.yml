@@ -1,0 +1,3 @@
+forgeboot:
+  plugin:
+    path: .\forgeboot-demo\forgeboot-plugin-demo\forgeboot-plugin-demo-server\plugins

@@ -1,0 +1,4 @@
+pluginId: simple-greeting
+version: 1.0.0
+pluginClass: com.gewuyou.forgeboot.plugin.demo.impl.SimpleGreetingPlugin
+pluginDescription: A greeting plugin

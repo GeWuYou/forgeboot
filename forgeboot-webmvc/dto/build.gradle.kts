@@ -9,7 +9,6 @@ dependencies {
     compileOnly(libs.jackson.annotations)
     compileOnly(libs.springBootStarter.jpa)
     compileOnly(libs.springBootStarter.validation)
-    compileOnly(libs.org.mapstruct)
 }
 i18nKeyGen {
     rootPackage.set("com.gewuyou.forgeboot.webmvc.dto.i18n")

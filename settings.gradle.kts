@@ -136,50 +136,25 @@ project(":forgeboot-trace:forgeboot-trace-impl").name = "forgeboot-trace-impl"
 project(":forgeboot-trace:forgeboot-trace-autoconfigure").name = "forgeboot-trace-autoconfigure"
 //endregion
 
-////region module demo
+//region module trace
+/**
+ * Includes and configures projects related to 'forgeboot-trace'
+ * This module handles distributed tracing functionality.
+ */
 include(
     "forgeboot-demo",
-    ":forgeboot-demo:forgeboot-trace-demo"
+    ":forgeboot-demo:forgeboot-trace-demo",
+    ":forgeboot-demo:forgeboot-plugin-demo",
+    ":forgeboot-demo:forgeboot-plugin-demo:forgeboot-plugin-demo-api",
+    ":forgeboot-demo:forgeboot-plugin-demo:forgeboot-plugin-demo-impl",
+    ":forgeboot-demo:forgeboot-plugin-demo:forgeboot-plugin-demo-server",
 )
-
-
-
-////region module security
-///**
-// * Includes and configures projects related to 'forgeboot-security'
-// * This module handles security-related functionality.
-// */
-//include(
-//    "forgeboot-security",
-//    ":forgeboot-security:forgeboot-security-core",
-//
-//    ":forgeboot-security:forgeboot-security-authenticate",
-//    ":forgeboot-security:forgeboot-security-authenticate:api",
-//    ":forgeboot-security:forgeboot-security-authenticate:impl",
-//    ":forgeboot-security:forgeboot-security-authenticate:autoconfigure",
-//
-//    ":forgeboot-security:forgeboot-security-authorize",
-//    ":forgeboot-security:forgeboot-security-authorize:api",
-//    ":forgeboot-security:forgeboot-security-authorize:impl",
-//    ":forgeboot-security:forgeboot-security-authorize:autoconfigure"
-//)
-//project(":forgeboot-security").name = "forgeboot-security-spring-boot-starter"
-//project(":forgeboot-security:forgeboot-security-core").name = "forgeboot-security-core"
-//
-//project(":forgeboot-security:forgeboot-security-authenticate").name =
-//    "forgeboot-security-authenticate-spring-boot-starter"
-//project(":forgeboot-security:forgeboot-security-authenticate:api").name = "forgeboot-security-authenticate-api"
-//project(":forgeboot-security:forgeboot-security-authenticate:impl").name = "forgeboot-security-authenticate-impl"
-//project(":forgeboot-security:forgeboot-security-authenticate:autoconfigure").name =
-//    "forgeboot-security-authenticate-autoconfigure"
-//
-//project(":forgeboot-security:forgeboot-security-authorize").name = "forgeboot-security-authorize-spring-boot-starter"
-//project(":forgeboot-security:forgeboot-security-authorize:api").name = "forgeboot-security-authorize-api"
-//project(":forgeboot-security:forgeboot-security-authorize:impl").name = "forgeboot-security-authorize-impl"
-//project(":forgeboot-security:forgeboot-security-authorize:autoconfigure").name =
-//    "forgeboot-security-authorize-autoconfigure"
-//
-////endregion
+//endregion
+include(
+    "forgeboot-plugin",
+    ":forgeboot-plugin:forgeboot-plugin-core",
+    ":forgeboot-plugin:forgeboot-plugin-spring",
+)
 
 //region module  cache
 include(
