@@ -1,15 +1,13 @@
 package com.gewuyou.webmvc.spec.jpa.service.impl
 
 import com.gewuyou.forgeboot.webmvc.dto.PageResult
-
+import com.gewuyou.webmvc.spec.core.extension.map
+import com.gewuyou.webmvc.spec.core.extension.toPageResult
 import com.gewuyou.webmvc.spec.core.page.QueryComponent
-import com.gewuyou.webmvc.spec.jpa.extension.map
 import com.gewuyou.webmvc.spec.jpa.extension.toJpaQuery
-import com.gewuyou.webmvc.spec.jpa.extension.toPageResult
 import com.gewuyou.webmvc.spec.jpa.extension.toSpecification
 import com.gewuyou.webmvc.spec.jpa.repository.JpaCrudRepositorySpec
 import com.gewuyou.webmvc.spec.jpa.service.JpaCrudServiceSpec
-
 
 /**
  * Jpa CRUD 服务实现的抽象类，提供通用的数据访问操作。
@@ -196,6 +194,24 @@ abstract class JpaCrudServiceImplSpec<Entity : Any, Id : Any>(
     protected abstract fun setDeleted(entity: Entity)
 
     /**
+     * 将实体标记为已恢复状态。
+     *
+     * 此方法应在子类中实现，用于定义如何将实体从软删除状态恢复为正常状态（例如清除 deleted 字段或设置为 false）。
+     * 该机制允许在不物理删除数据的情况下，灵活地控制记录的可见性与状态。
+     *
+     * @param entity 实体对象，表示要恢复的实体
+     */
+    protected abstract fun setRestored(entity: Entity)
+
+    /**
+     * 判断实体是否已被软删除
+     *
+     * @param entity 实体对象，用于检查其删除状态
+     * @return 如果实体已被标记为软删除状态返回 true，否则返回 false
+     */
+    protected abstract fun isSoftDeletedByEntity(entity: Entity): Boolean
+
+    /**
      * 执行软删除操作。
      *
      * 该方法会根据提供的 ID 查找实体。如果找到该实体，则调用 [setDeleted] 方法将其标记为删除状态，
@@ -211,5 +227,61 @@ abstract class JpaCrudServiceImplSpec<Entity : Any, Id : Any>(
             setDeleted(it)
             update(it)
         }
+    }
+
+    /**
+     * 查询记录总数
+     *
+     *
+     * @return 返回记录总数
+     */
+    override fun count(): Long {
+       return repository.count()
+    }
+
+    /**
+     * 批量软删除
+     *
+     * @param ids 要软删除的实体ID列表
+     */
+    override fun softDeleteByIds(ids: List<Id>) {
+        ids.forEach {
+            softDelete( it)
+        }
+    }
+
+    /**
+     * 取消软删除（恢复已删除实体）
+     *
+     * @param id 要恢复的实体ID
+     */
+    override fun restore(id: Id) {
+        val exist: Entity? = findById(id)
+        exist?.let {
+            setRestored(exist)
+            update(it)
+        }
+    }
+
+    /**
+     * 批量取消软删除
+     *
+     * @param ids 要恢复的实体ID列表
+     */
+    override fun restoreByIds(ids: List<Id>) {
+        ids.forEach {
+            restore(it)
+        }
+    }
+
+    /**
+     * 判断实体是否已被软删除
+     *
+     * @param id 实体ID
+     * @return 如果是软删除状态返回 true，否则返回 false
+     */
+    override fun isSoftDeleted(id: Id): Boolean {
+        val entity = findById(id)?:return false
+        return isSoftDeletedByEntity(entity)
     }
 }

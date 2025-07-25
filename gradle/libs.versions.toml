@@ -4,7 +4,7 @@
 
 [versions]
 jjwt-version = "0.12.6"
-gradleMavenPublishPlugin-version="0.32.0"
+gradleMavenPublishPlugin-version = "0.32.0"
 kotlin-version = "2.0.0"
 kotlinxDatetime-version = "0.6.1"
 kotlinxSerializationJSON-version = "1.7.3"
@@ -12,20 +12,17 @@ kotlinxSerializationJSON-version = "1.7.3"
 axion-release-version = "1.18.7"
 spring-cloud-version = "2024.0.1"
 spring-boot-version = "3.4.4"
-spring-framework-version = "6.2.5"
 slf4j-version = "2.0.17"
-map-struct-version="1.6.3"
-caffeine-version="3.2.1"
-redisson-version="3.50.0"
+caffeine-version = "3.2.1"
+redisson-version = "3.50.0"
 org-pf4j-version = "3.13.0"
 org-pf4j-spring-version = "0.10.0"
 org-yaml-snakeyaml-version = "2.4"
-org-yaml-snakeyaml-engine-version = "2.9"
 [libraries]
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
 kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime-version" }
 kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJSON-version" }
-kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect",  version.ref = "kotlin-version" }
+kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin-version" }
 #kotlinxCoroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines-version" }
 kotlinxCoroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" }
 # kotlinx
@@ -36,18 +33,17 @@ slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-version" }
 springBootDependencies-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot-version" }
 springBootStarter-aop = { group = "org.springframework.boot", name = "spring-boot-starter-aop" }
 springBootStarter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web" }
-springBootStarter-security = { group = "org.springframework.boot", name = "spring-boot-starter-security" }
 springBootStarter-webflux = { group = "org.springframework.boot", name = "spring-boot-starter-webflux" }
 springBootStarter-jpa = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa" }
 springBootStarter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
 springBootStarter-redis = { group = "org.springframework.boot", name = "spring-boot-starter-data-redis" }
 
-redisson-springBootStarter= { group = "org.redisson", name = "redisson-spring-boot-starter", version.ref = "redisson-version" }
+
+redisson-springBootStarter = { group = "org.redisson", name = "redisson-spring-boot-starter", version.ref = "redisson-version" }
 springBoot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot-version" }
 springBoot-autoconfigure = { group = "org.springframework.boot", name = "spring-boot-autoconfigure" }
 springBoot-starter = { group = "org.springframework.boot", name = "spring-boot-starter" }
-springExpression = { group = "org.springframework", name = "spring-expression",  version.ref = "spring-framework-version" }
-
+springFramework-data-commons = { group = "org.springframework.data", name = "spring-data-commons" }
 springCloudDependencies-bom = { module = "org.springframework.cloud:spring-cloud-dependencies", version.ref = "spring-cloud-version" }
 springCloudStarter-openfeign = { group = "org.springframework.cloud", name = "spring-cloud-starter-openfeign" }
 
@@ -60,8 +56,6 @@ jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackso
 
 reactor-core = { group = "io.projectreactor", name = "reactor-core" }
 #org
-org-mapstruct = { group = "org.mapstruct", name = "mapstruct", version.ref = "map-struct-version" }
-org-snakeyaml-snakeyamlEngine = { group = "org.snakeyaml", name = "snakeyaml-engine", version.ref = "org-yaml-snakeyaml-engine-version" }
 org-yaml-snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "org-yaml-snakeyaml-version" }
 org-pf4j = { group = "org.pf4j", name = "pf4j", version.ref = "org-pf4j-version" }
 org-pf4jSpring = { group = "org.pf4j", name = "pf4j-spring", version.ref = "org-pf4j-spring-version" }
@@ -71,7 +65,7 @@ jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt-version" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt-version" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt-version" }
 # com
-com-github-benManes-caffeine = { module = "com.github.ben-manes.caffeine:caffeine",version.ref = "caffeine-version" }
+com-github-benManes-caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine-version" }
 # io
 
 [bundles]
@@ -100,5 +94,5 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
 kotlin-plugin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin-version" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt" }
 forgeboot-i18n-keygen = { id = "i18n-key-gen" }
-gradleMavenPublishPlugin={id="com.vanniktech.maven.publish", version.ref="gradleMavenPublishPlugin-version"}
+gradleMavenPublishPlugin = { id = "com.vanniktech.maven.publish", version.ref = "gradleMavenPublishPlugin-version" }
 

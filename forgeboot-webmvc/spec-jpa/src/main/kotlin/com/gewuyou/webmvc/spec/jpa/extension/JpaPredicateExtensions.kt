@@ -1,63 +1,17 @@
 package com.gewuyou.webmvc.spec.jpa.extension
 
 
-import com.gewuyou.webmvc.spec.core.enums.SortDirection
-import com.gewuyou.webmvc.spec.core.page.DateRangeFilterable
-import com.gewuyou.webmvc.spec.core.page.KeywordSearchable
-import com.gewuyou.webmvc.spec.core.page.Pageable
-import com.gewuyou.webmvc.spec.core.page.QueryComponent
-import com.gewuyou.webmvc.spec.core.page.Sortable
+import com.gewuyou.webmvc.spec.core.extension.toPageRequest
+import com.gewuyou.webmvc.spec.core.page.*
 import com.gewuyou.webmvc.spec.jpa.page.JpaFilterable
 import com.gewuyou.webmvc.spec.jpa.page.JpaStatusFilterable
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
-
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import java.time.Instant
 
-
-/**
- * 将自定义的排序方向枚举转换为 Spring Data JPA 的排序方向
- *
- * @return 对应的 Spring Data Sort.Direction 枚举值
- */
-fun SortDirection.toSpringDirection(): Sort.Direction =
-    if (this == SortDirection.DESC) Sort.Direction.DESC else Sort.Direction.ASC
-
-/**
- * 将当前排序配置转换为可用于 Spring Data Pageable 的排序条件列表
- *
- * @param defaultSort 当没有其他排序条件时使用的默认排序，默认为按 createdAt 降序
- * @return 适用于 Pageable 的排序条件列表
- *
- * 处理逻辑优先级：
- * 1. 如果存在多个排序条件，使用 sortConditions 构建排序列表
- * 2. 如果指定了单一排序字段，使用 sortBy 和 sortDirection 构建排序条件
- * 3. 如果没有指定任何排序条件，使用默认排序
- */
-fun Sortable.toSortOrders(defaultSort: Sort.Order = Sort.Order.desc("createdAt")): List<Sort.Order> {
-    return when {
-        sortConditions.isNotEmpty() -> {
-            // 使用 map 将每个 SortCondition 转换为 Spring 的 Sort.Order 对象
-            sortConditions.map {
-                Sort.Order(
-                    it.direction.toSpringDirection(),
-                    it.property
-                )
-            }
-        }
-
-        sortBy.isNotBlank() -> {
-            // 当存在单一排序字段时，创建对应的排序条件列表
-            listOf(Sort.Order(sortDirection.toSpringDirection(), sortBy))
-        }
-
-        else -> listOf(defaultSort)
-    }
-}
 
 /**
  * 构建关键字搜索对应的 JPA Predicate 条件列表
@@ -179,21 +133,6 @@ fun <T> QueryComponent.toSpecification(): Specification<T> {
  * @return 返回一个 Pair，包含以下两个元素：
  *         - Specification<T>：JPA 查询条件规范
  *         - PageRequest：包含分页和排序信息的请求对象
- *
- * 重要逻辑说明：
- * 1. currentPage 从 1 开始计数，转换为 Spring Data 从 0 开始的页码
- * 2. pageSize 保持不变，直接用于分页请求
- * 3. 如果对象实现了 Sortable 接口，则使用其排序条件；否则使用未排序状态
- * 4. 如果对象未实现 Pageable 接口，则使用默认分页参数（第一页，每页10条）
  */
-fun <T> QueryComponent.toJpaQuery(): Pair<Specification<T>, PageRequest> {
-    val specification = this.toSpecification<T>()
-    val pageable = this as? Pageable
-    val sortable = this as? Sortable
-    // 默认分页参数
-    val page = pageable?.let { (it.currentPage - 1).coerceAtLeast(0) } ?: 0
-    val size = pageable?.pageSize ?: 10
-    // 排序规则
-    val sort = sortable?.let { Sort.by(it.toSortOrders()) } ?: Sort.unsorted()
-    return specification to PageRequest.of(page, size, sort)
-}
+fun <T> QueryComponent.toJpaQuery(): Pair<Specification<T>, PageRequest> =
+    this.toSpecification<T>() to this.toPageRequest()
