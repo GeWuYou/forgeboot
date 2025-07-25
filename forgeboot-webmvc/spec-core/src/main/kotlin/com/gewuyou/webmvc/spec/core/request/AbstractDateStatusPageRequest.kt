@@ -11,7 +11,6 @@ import com.gewuyou.webmvc.spec.core.page.StatusFilterable
  *
  * @property currentPage 当前页码，从1开始计数的分页参数
  * @property pageSize 每页记录数量，控制分页大小
- * @property statusConditions 状态条件映射，键值对形式表示的状态过滤条件
  *
  * @since 2025-07-19 09:15:12
  * @author gewuyou

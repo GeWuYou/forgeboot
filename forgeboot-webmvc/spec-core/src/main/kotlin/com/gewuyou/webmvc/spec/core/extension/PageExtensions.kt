@@ -1,4 +1,4 @@
-package com.gewuyou.webmvc.spec.jpa.extension
+package com.gewuyou.webmvc.spec.core.extension
 
 import com.gewuyou.forgeboot.webmvc.dto.PageResult
 import org.springframework.data.domain.Page
