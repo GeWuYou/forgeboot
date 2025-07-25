@@ -41,7 +41,7 @@ abstract class SimpleJpaCrudServiceImplSpec<Entity : Any, Id : Any>(
      * @param entity 实体对象，用于检查其删除状态
      * @return 如果实体已被标记为软删除状态返回 true，否则返回 false
      */
-    override fun isSoftDeleted(entity: Entity): Boolean {
+    override fun isSoftDeletedByEntity(entity: Entity): Boolean {
         return false
     }
 }

@@ -209,7 +209,7 @@ abstract class JpaCrudServiceImplSpec<Entity : Any, Id : Any>(
      * @param entity 实体对象，用于检查其删除状态
      * @return 如果实体已被标记为软删除状态返回 true，否则返回 false
      */
-    protected abstract fun isSoftDeleted(entity: Entity): Boolean
+    protected abstract fun isSoftDeletedByEntity(entity: Entity): Boolean
 
     /**
      * 执行软删除操作。
@@ -282,6 +282,6 @@ abstract class JpaCrudServiceImplSpec<Entity : Any, Id : Any>(
      */
     override fun isSoftDeleted(id: Id): Boolean {
         val entity = findById(id)?:return false
-        return isSoftDeleted(entity)
+        return isSoftDeletedByEntity(entity)
     }
 }
