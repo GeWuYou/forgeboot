@@ -47,10 +47,14 @@ tag:
     - git tag $NEW_TAG $MAIN_COMMIT
     - git push https://oauth2:${PIPELINE_BOT_TOKEN}@${GITLAB_URL}/${CI_PROJECT_PATH}.git $NEW_TAG
     - echo "✅ tag $NEW_TAG 已推送"
+    # 添加 GitHub 远程并推送 tag
+    - git remote add github https://x-access-token:${GITHUB_PUSH_TOKEN}@github.com/GeWuYou/forgeboot.git
+    - git push github $NEW_TAG
+    - echo "✅ tag $NEW_TAG 已同步至 GitHub"
   tags:
     - java
 
-# 📦 发布至 GitLab Maven 仓库
+# 📦 发布至 GitLab 与 GitHub Maven 仓库
 publish:
   stage: publish
   needs: [ "tag" ]
@@ -72,6 +76,7 @@ publish:
     - echo "🔧 授予 gradlew 执行权限..."
     - chmod +x gradlew
     - ./gradlew publishMavenJavaPublicationToGitLabRepository
+    - ./gradlew publishMavenJavaPublicationToGitHubRepository
   tags:
     - java
 
