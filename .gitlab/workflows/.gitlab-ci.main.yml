@@ -76,7 +76,7 @@ publish:
     - echo "🔧 授予 gradlew 执行权限..."
     - chmod +x gradlew
     - ./gradlew publishMavenJavaPublicationToGitLabRepository
-    - ./gradlew publishMavenJavaPublicationToGitHubRepository
+    - ./gradlew publishMavenJavaPublicationToGitHubRepository --continue
   tags:
     - java
 

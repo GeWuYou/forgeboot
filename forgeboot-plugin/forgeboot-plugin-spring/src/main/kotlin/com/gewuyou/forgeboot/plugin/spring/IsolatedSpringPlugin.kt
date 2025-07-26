@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationContext
 /**
  * 隔离的Spring插件
  *
- * 该抽象类继承自SpringPlugin，提供了独立的Spring应用上下文，
+ * 该抽象类继承自AbstractSpringPlugin，提供了独立的Spring应用上下文，
  * 使得每个插件可以在自己的上下文中管理Bean，实现插件间的隔离。
  *
  * @property pluginWrapper 插件包装器，提供插件的基本信息和类加载器
