@@ -157,7 +157,9 @@ include(
     ":forgeboot-plugin:forgeboot-plugin-core",
     ":forgeboot-plugin:forgeboot-plugin-spring",
 )
-
+project(":forgeboot-plugin").name = "forgeboot-plugin-spring-boot-starter"
+project(":forgeboot-plugin:forgeboot-plugin-core").name = "forgeboot-plugin-core"
+project(":forgeboot-plugin:forgeboot-plugin-spring").name = "forgeboot-plugin-spring"
 //region module  cache
 include(
     "forgeboot-cache",

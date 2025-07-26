@@ -1,10 +1,8 @@
 package com.gewuyou.forgeboot.plugin.spring
 
 import org.pf4j.PluginWrapper
-import org.pf4j.spring.SpringPlugin
 import org.pf4j.spring.SpringPluginManager
 import org.springframework.context.ApplicationContext
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.env.ConfigurableEnvironment
 
 /**
@@ -17,38 +15,20 @@ import org.springframework.core.env.ConfigurableEnvironment
  * @property pluginWrapper 插件包装器，提供插件的基本信息和类加载器
  *
  * @since 2025-07-24 15:35:52
- * @author gewuyou
  */
 abstract class MergedSpringPlugin(
-   private val pluginWrapper: PluginWrapper
-) : SpringPlugin(pluginWrapper) {
-
+    private val pluginWrapper: PluginWrapper,
+) : AbstractSpringPlugin(pluginWrapper) {
     /**
      * 创建应用上下文
      *
-     * 该方法覆盖了父类的实现，创建一个与主应用上下文有关联的AnnotationConfigApplicationContext，
-     * 设置插件的类加载器，建立父子上下文关系，并注册插件特定的配置类。
-     *
-     * @return 配置完成的ApplicationContext实例
+     * 创建一个与主应用上下文有关联的 AnnotationConfigApplicationContext，
+     * 设置类加载器、父上下文、环境，并注册插件配置类。
      */
     override fun createApplicationContext(): ApplicationContext {
-        return AnnotationConfigApplicationContext().apply {
-            classLoader = pluginWrapper.pluginClassLoader
-            parent = (pluginWrapper.pluginManager as SpringPluginManager).applicationContext
-            // 保证配置文件能读取
-            environment = parent?.environment as ConfigurableEnvironment
-            register(pluginConfigurationClass())
-            refresh()
-        }
+        val manager = pluginWrapper.pluginManager as SpringPluginManager
+        val parentCtx = manager.applicationContext
+        val env = parentCtx.environment as ConfigurableEnvironment
+        return buildSpringContext(pluginWrapper, parentCtx, env)
     }
-
-    /**
-     * 获取插件配置类
-     *
-     * 抽象方法，子类需要提供插件特定的配置类，
-     * 该配置类将被注册到插件的应用上下文中。
-     *
-     * @return 插件配置类的Class对象
-     */
-    abstract fun pluginConfigurationClass(): Class<*>
 }
