@@ -1,10 +1,7 @@
 package com.gewuyou.forgeboot.plugin.demo.impl
 
-import com.gewuyou.forgeboot.plugin.spring.manager.SpringPluginManager
+import com.gewuyou.forgeboot.plugin.spring.MergedSpringPlugin
 import org.pf4j.PluginWrapper
-import org.pf4j.spring.SpringPlugin
-import org.springframework.context.ApplicationContext
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 /**
  * 简单的问候插件
@@ -16,13 +13,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  */
 class SimpleGreetingPlugin(
     private val pluginWrapper: PluginWrapper,
-) : SpringPlugin(pluginWrapper) {
-    override fun createApplicationContext(): ApplicationContext {
-        return AnnotationConfigApplicationContext().apply { ->
-            classLoader = pluginWrapper.pluginClassLoader
-            parent = (pluginWrapper.pluginManager as SpringPluginManager).applicationContext
-            register(PluginConfig::class.java)
-            refresh()
-        }
+) : MergedSpringPlugin(pluginWrapper) {
+    /**
+     * 获取插件配置类
+     *
+     * 抽象方法，子类需要提供插件特定的配置类，
+     * 该配置类将被注册到插件的应用上下文中。
+     */
+    override fun pluginConfigurationClass(): List<Class<*>> {
+        return listOf(PluginConfig::class.java)
     }
 }

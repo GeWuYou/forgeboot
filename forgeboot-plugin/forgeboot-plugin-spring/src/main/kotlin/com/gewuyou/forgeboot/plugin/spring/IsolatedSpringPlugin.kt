@@ -1,9 +1,7 @@
 package com.gewuyou.forgeboot.plugin.spring
 
 import org.pf4j.PluginWrapper
-import org.pf4j.spring.SpringPlugin
 import org.springframework.context.ApplicationContext
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 /**
  * 隔离的Spring插件
@@ -17,8 +15,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * @author gewuyou
  */
 abstract class IsolatedSpringPlugin(
-   private val pluginWrapper: PluginWrapper
-) : SpringPlugin(pluginWrapper) {
+    private val pluginWrapper: PluginWrapper,
+) : AbstractSpringPlugin(pluginWrapper) {
 
     /**
      * 创建应用上下文
@@ -29,20 +27,6 @@ abstract class IsolatedSpringPlugin(
      * @return 配置完成的ApplicationContext实例
      */
     override fun createApplicationContext(): ApplicationContext {
-        return AnnotationConfigApplicationContext().apply {
-            classLoader = pluginWrapper.pluginClassLoader
-            register(pluginConfigurationClass())
-            refresh()
-        }
+        return buildSpringContext(pluginWrapper)
     }
-
-    /**
-     * 获取插件配置类
-     *
-     * 抽象方法，子类需要提供插件特定的配置类，
-     * 该配置类将被注册到插件的应用上下文中。
-     *
-     * @return 插件配置类的Class对象
-     */
-    abstract fun pluginConfigurationClass(): Class<*>
 }
