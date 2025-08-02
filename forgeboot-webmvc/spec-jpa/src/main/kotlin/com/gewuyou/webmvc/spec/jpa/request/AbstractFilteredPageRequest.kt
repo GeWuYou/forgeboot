@@ -1,9 +1,9 @@
 package com.gewuyou.webmvc.spec.jpa.request
 
 
+import com.gewuyou.webmvc.spec.core.enums.SortDirection
 import com.gewuyou.webmvc.spec.core.page.Pageable
 import com.gewuyou.webmvc.spec.jpa.page.JpaFilterable
-import org.hibernate.query.SortDirection
 
 
 /**
