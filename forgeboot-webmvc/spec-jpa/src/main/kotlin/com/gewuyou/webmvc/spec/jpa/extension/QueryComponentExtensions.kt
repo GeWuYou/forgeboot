@@ -2,7 +2,9 @@ package com.gewuyou.webmvc.spec.jpa.extension
 
 
 import com.gewuyou.webmvc.spec.core.extension.toPageRequest
-import com.gewuyou.webmvc.spec.core.page.*
+import com.gewuyou.webmvc.spec.core.page.DateRangeFilterable
+import com.gewuyou.webmvc.spec.core.page.KeywordSearchable
+import com.gewuyou.webmvc.spec.core.page.QueryComponent
 import com.gewuyou.webmvc.spec.jpa.page.JpaFilterable
 import com.gewuyou.webmvc.spec.jpa.page.JpaStatusFilterable
 import jakarta.persistence.criteria.CriteriaBuilder

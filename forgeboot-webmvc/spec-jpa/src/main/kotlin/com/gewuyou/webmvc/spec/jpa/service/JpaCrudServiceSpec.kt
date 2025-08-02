@@ -12,17 +12,6 @@ import com.gewuyou.webmvc.spec.core.service.CrudServiceSpec
  */
 interface JpaCrudServiceSpec<Entity: Any, Id: Any>: CrudServiceSpec<Entity, Id> {
     /**
-     * 分页查询实体列表
-     *
-     * 通过提供的查询组件进行分页数据检索，返回包含分页信息的结果对象
-     *
-     * @param query 查询组件，包含分页和过滤条件等信息
-     * @return 返回分页结果对象，包含当前页的数据列表、总记录数等信息
-     */
-    fun page(query: QueryComponent): PageResult<Entity>
-
-
-    /**
      * 分页查询并映射结果
      *
      * 通过提供的查询组件进行分页数据检索，并使用给定的映射函数将结果转换为另一种类型
@@ -45,4 +34,12 @@ interface JpaCrudServiceSpec<Entity: Any, Id: Any>: CrudServiceSpec<Entity, Id> 
      * @return 返回符合条件的记录总数
      */
     fun count(query: QueryComponent): Long
+
+
+    /**
+     * 批量删除实体
+     *
+     * @param entities 要删除的实体列表
+     */
+    fun deleteByAll(entities: List<Entity>)
 }

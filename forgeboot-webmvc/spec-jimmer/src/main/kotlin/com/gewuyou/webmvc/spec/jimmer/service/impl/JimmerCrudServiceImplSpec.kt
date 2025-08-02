@@ -1,0 +1,211 @@
+package com.gewuyou.webmvc.spec.jimmer.service.impl
+
+import com.gewuyou.forgeboot.webmvc.dto.PageResult
+import com.gewuyou.webmvc.spec.core.extension.toPageRequest
+import com.gewuyou.webmvc.spec.core.extension.toPageResult
+import com.gewuyou.webmvc.spec.core.page.Pageable
+import com.gewuyou.webmvc.spec.core.page.QueryComponent
+import com.gewuyou.webmvc.spec.jimmer.page.JimmerKFilterable
+import com.gewuyou.webmvc.spec.jimmer.service.JimmerCrudServiceSpec
+import org.babyfish.jimmer.View
+import org.babyfish.jimmer.spring.repository.KRepository
+import org.babyfish.jimmer.spring.repository.fetchSpringPage
+import org.babyfish.jimmer.sql.ast.mutation.SaveMode
+
+/**
+ *JimmerCrud服务实现规范
+ *
+ * @since 2025-07-30 21:30:05
+ * @author gewuyou
+ */
+open class JimmerCrudServiceImplSpec<Entity : Any, Id : Any>(
+    open val repository: KRepository<Entity, Id>,
+) : JimmerCrudServiceSpec<Entity, Id> {
+    /**
+     * 根据查询条件分页查询并返回指定视图类型的分页结果
+     *
+     * 该函数通过泛型参数指定实体类型和视图类型，将查询结果转换为对应的视图对象返回
+     *
+     * @param E 实体类型参数，必须是Any的子类型
+     * @param V 视图类型参数，必须是View<E>的子类型
+     * @param query 查询组件，包含分页和过滤条件
+     * @return PageResult<V> 返回指定视图类型的分页结果
+     */
+    inline fun <reified E : Any, reified V : View<E>> pageWithView(
+        query: QueryComponent,
+    ): PageResult<V> {
+        query as Pageable
+        val pageable = query.toPageRequest()
+        @Suppress("UNCHECKED_CAST")
+        query as JimmerKFilterable<E>
+        return repository.sql.createQuery(E::class) {
+            where(query.getSpecification())
+            select(table.fetch(V::class))
+        }.fetchSpringPage(pageable).toPageResult()
+    }
+
+    /**
+     * 根据ID获取实体
+     *
+     * @param id 实体的唯一标识符
+     * @return 返回实体，如果不存在则返回null
+     */
+    override fun findById(id: Id): Entity? {
+        return repository.findById(id).orElse(null)
+    }
+
+    /**
+     * 获取所有实体列表
+     *
+     * @return 返回实体列表
+     */
+    override fun list(): List<Entity> {
+        return repository.findAll()
+    }
+
+    /**
+     * 保存一个实体
+     *
+     * @param entity 要保存的实体
+     * @return 返回保存后的实体
+     */
+    override fun save(entity: Entity): Entity {
+        return repository.save(entity)
+    }
+
+    /**
+     * 更新一个实体
+     *
+     * @param entity 要更新的实体
+     * @return 返回更新后的实体
+     */
+    override fun update(entity: Entity): Entity {
+        return repository.save(entity, SaveMode.UPDATE_ONLY)
+    }
+
+    /**
+     * 删除一个实体
+     *
+     * @param id 要删除的实体的ID
+     */
+    override fun deleteById(id: Id) {
+        repository.deleteById(id)
+    }
+
+    /**
+     * 批量删除实体
+     *
+     * @param ids 要删除的实体的ID列表
+     */
+    override fun deleteByIds(ids: List<Id>) {
+        repository.deleteByIds(ids)
+    }
+
+    /**
+     * 删除一个实体
+     *
+     * @param entity 要删除的实体
+     */
+    override fun deleteByOne(entity: Entity) {
+        repository.delete(entity)
+    }
+
+
+    /**
+     * 软删除
+     *
+     * 本函数用于标记实体为删除状态，而不是真正从数据库中移除
+     * 这种方法可以保留历史数据，同时避免数据泄露
+     *
+     * @param id 实体的唯一标识符
+     */
+    override fun softDelete(id: Id) {
+        throw UnsupportedOperationException("softDelete Not supported yet.")
+    }
+
+    /**
+     * 批量软删除
+     *
+     * @param ids 要软删除的实体ID列表
+     */
+    override fun softDeleteByIds(ids: List<Id>) {
+        throw UnsupportedOperationException("softDeleteByIds Not supported yet.")
+    }
+
+    /**
+     * 取消软删除（恢复已删除实体）
+     *
+     * @param id 要恢复的实体ID
+     */
+    override fun restore(id: Id) {
+        throw UnsupportedOperationException("restore Not supported yet.")
+    }
+
+    /**
+     * 批量取消软删除
+     *
+     * @param ids 要恢复的实体ID列表
+     */
+    override fun restoreByIds(ids: List<Id>) {
+        throw UnsupportedOperationException("restoreByIds Not supported yet.")
+    }
+
+    /**
+     * 判断实体是否已被软删除
+     *
+     * @param id 实体ID
+     * @return 如果是软删除状态返回 true，否则返回 false
+     */
+    override fun isSoftDeleted(id: Id): Boolean {
+        throw UnsupportedOperationException("isSoftDeleted Not supported yet.")
+    }
+
+    /**
+     * 根据ID检查实体是否存在
+     *
+     * @param id 实体的ID
+     * @return 如果实体存在返回true，否则返回false
+     */
+    override fun existsById(id: Id): Boolean {
+        return repository.existsById(id)
+    }
+
+    /**
+     * 批量保存实体
+     *
+     * @param entities 要保存的实体列表
+     * @return 返回保存后的实体列表
+     */
+    override fun saveAll(entities: List<Entity>): List<Entity> {
+        return repository.saveAll(entities)
+    }
+
+    /**
+     * 查询记录总数
+     *
+     *
+     * @return 返回记录总数
+     */
+    override fun count(): Long {
+        return count()
+    }
+
+    /**
+     * 分页查询实体列表
+     *
+     * 通过提供的查询组件进行分页数据检索，返回包含分页信息的结果对象
+     *
+     * @param query 查询组件，包含分页和过滤条件等信息
+     * @return 返回分页结果对象，包含当前页的数据列表、总记录数等信息
+     */
+    override fun page(query: QueryComponent): PageResult<Entity> {
+        query as Pageable
+        val pageable = query.toPageRequest()
+        @Suppress("UNCHECKED_CAST")
+        query as JimmerKFilterable<Entity>
+        return repository.sql.createQuery(query.entityClass()) {
+            where(query.getSpecification())
+            select(table)
+        }.fetchSpringPage(pageable).toPageResult()
+    }
+}

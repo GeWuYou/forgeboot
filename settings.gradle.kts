@@ -77,6 +77,7 @@ include(
     ":forgeboot-webmvc:validation",
     ":forgeboot-webmvc:spec-core",
     ":forgeboot-webmvc:spec-jpa",
+    ":forgeboot-webmvc:spec-jimmer",
 )
 project(":forgeboot-webmvc").name = "forgeboot-webmvc-spring-boot-starter"
 project(":forgeboot-webmvc:version").name = "forgeboot-webmvc-version-spring-boot-starter"
@@ -87,6 +88,7 @@ project(":forgeboot-webmvc:dto").name = "forgeboot-webmvc-dto"
 project(":forgeboot-webmvc:validation").name = "forgeboot-webmvc-validation"
 project(":forgeboot-webmvc:spec-core").name = "forgeboot-webmvc-spec-core"
 project(":forgeboot-webmvc:spec-jpa").name = "forgeboot-webmvc-spec-jpa"
+project(":forgeboot-webmvc:spec-jimmer").name = "forgeboot-webmvc-spec-jimmer"
 //endregion
 
 //region module core
@@ -152,6 +154,7 @@ include(
     ":forgeboot-demo:forgeboot-plugin-demo:forgeboot-plugin-demo-server",
 )
 //endregion
+//region module plugin
 include(
     "forgeboot-plugin",
     ":forgeboot-plugin:forgeboot-plugin-core",
@@ -160,13 +163,14 @@ include(
 project(":forgeboot-plugin").name = "forgeboot-plugin-spring-boot-starter"
 project(":forgeboot-plugin:forgeboot-plugin-core").name = "forgeboot-plugin-core"
 project(":forgeboot-plugin:forgeboot-plugin-spring").name = "forgeboot-plugin-spring"
+//endregion
 //region module  cache
 include(
     "forgeboot-cache",
     ":forgeboot-cache:forgeboot-cache-api",
     ":forgeboot-cache:forgeboot-cache-impl",
     ":forgeboot-cache:forgeboot-cache-autoconfigure"
-    )
+)
 project(":forgeboot-cache").name = "forgeboot-cache-spring-boot-starter"
 project(":forgeboot-cache:forgeboot-cache-api").name = "forgeboot-cache-api"
 project(":forgeboot-cache:forgeboot-cache-impl").name = "forgeboot-cache-impl"
