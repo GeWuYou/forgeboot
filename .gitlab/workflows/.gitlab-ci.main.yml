@@ -6,63 +6,100 @@ stages:
 
 variables:
   GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
+  GIT_STRATEGY: fetch
+  GIT_DEPTH: "0"
 
 before_script:
-  - rm -rf $GRADLE_USER_HOME/.tmp || true
+  - rm -rf "$GRADLE_USER_HOME/.tmp" || true
 
-# 🏷️ 自动打标签
-tag:
-  stage: tag
+# -------- 复用片段（anchors） ------------------------------------
+
+# 统一镜像：alpine/git + 清空 ENTRYPOINT，避免 "git sh" 问题
+.alpine_git_image: &alpine_git_image
   image:
     name: alpine/git:latest
     entrypoint: [ "" ]
+
+# 统一 Git 身份配置
+.git_identity: &git_identity
+  - git config --global user.email "pipeline@${GITLAB_URL}"
+  - git config --global user.name "Project Pipeline Bot"
+
+# 统一远端地址变量（GitLab & GitHub）
+.remotes: &remotes
+  - export GL_REPO_URL="https://oauth2:${PIPELINE_BOT_TOKEN}@${GITLAB_URL}/${CI_PROJECT_PATH}.git"
+  - export GH_REPO_URL="https://x-access-token:${GITHUB_PUSH_TOKEN}@github.com/GeWuYou/forgeboot.git"
+
+# tag 任务常用准备：清理本地 tag、拉取远端 tag 和 main
+.tag_prepare: &tag_prepare
+  - echo "🧹 删除所有本地 tag..."
+  - git tag -l | xargs -r git tag -d || true
+  - echo "🔍 拉取远程 tag 和 main"
+  - git fetch --tags --force --prune
+  - git fetch origin main --force
+  - MAIN_COMMIT=$(git rev-parse origin/main)
+  - echo "🔗 当前 main commit -> $MAIN_COMMIT"
+
+# 🏷️ 自动打标签
+# tag job: 在main分支提交时自动创建并推送新的语义化版本标签
+# 参数:
+#   stage: 指定该job属于tag阶段
+#   image: 指定使用alpine/git镜像，并清空entrypoint避免git sh问题
+#   rules: 定义触发规则，仅当提交到main分支且提交信息不包含"ci"(忽略大小写)时触发
+#   script: 执行标签创建和推送的具体脚本
+#   tags: 指定运行该job的runner标签为java
+tag:
+  stage: tag
+  <<: *alpine_git_image
   rules:
     - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE !~ /ci/i'
+  tags: [ java ]
+  before_script:
+    - *git_identity
+    - *remotes
+    - *tag_prepare
   script:
-    - git config --global user.email "pipeline@${GITLAB_URL}"
-    - git config --global user.name "Project Pipeline Bot"
-    - echo "🧹 删除所有本地 tag..."
-    - git tag -l | xargs -r git tag -d || true
-    - echo "🔍 拉取远程 tag 和 main"
-    - git fetch --tags --force --prune
-    - git fetch origin main --force
-    - MAIN_COMMIT=$(git rev-parse origin/main)
-    - echo "🔗 当前 main commit -> $MAIN_COMMIT"
-    - git fetch --tags
-    - git fetch origin main
-    - MAIN_COMMIT=$(git rev-parse origin/main)
-    - echo "🔗 main commit -> $MAIN_COMMIT"
-
+    - echo "📦 获取最新 tag..."
+    # 使用 git 自带排序（无需 coreutils 的 sort -V）
     - LATEST_TAG=$(git tag --list '*' --sort=-v:refname | head -n1 || true)
     - if [ -z "$LATEST_TAG" ]; then LATEST_TAG="0.0.0"; fi
     - echo "🔖 最新 tag -> $LATEST_TAG"
 
+    # 解析 semver（不带 v 前缀）
     - VERSION=${LATEST_TAG#v}
     - MAJOR=$(echo "$VERSION" | cut -d. -f1)
     - MINOR=$(echo "$VERSION" | cut -d. -f2)
     - PATCH=$(echo "$VERSION" | cut -d. -f3)
 
+    # 规则：patch +1，满 10 进位到 minor
     - PATCH=$((PATCH + 1))
-    - if [ "$PATCH" -ge 10 ]; then PATCH=0; MINOR=$((MINOR+1)); echo "🔁 patch 达到 10，进位：MINOR=$MINOR, PATCH=$PATCH"; fi
+    - if [ "$PATCH" -ge 10 ]; then PATCH=0; MINOR=$((MINOR+1)); echo "🔁 patch 达 10 进位：MINOR=$MINOR, PATCH=$PATCH"; fi
     - NEW_TAG="${MAJOR}.${MINOR}.${PATCH}"
     - echo "🏷️ 新 tag -> $NEW_TAG"
 
-    - if git tag --points-at "$MAIN_COMMIT" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' > /dev/null; then
-      echo "⏭️ 已存在 tag，跳过创建";
+    # 同一 commit 不重复打 tag
+    - if git tag --points-at "$MAIN_COMMIT" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' >/dev/null; then
+      echo "⏭️ 当前 commit 已有 semver tag，跳过";
       exit 0;
       fi
 
-    - git tag $NEW_TAG $MAIN_COMMIT
-    - git push https://oauth2:${PIPELINE_BOT_TOKEN}@${GITLAB_URL}/${CI_PROJECT_PATH}.git $NEW_TAG
-    - echo "✅ tag $NEW_TAG 已推送"
-    # 添加 GitHub 远程并推送 tag
-    - git remote add github https://x-access-token:${GITHUB_PUSH_TOKEN}@github.com/GeWuYou/forgeboot.git
-    - git push github $NEW_TAG
+    - git tag "$NEW_TAG" "$MAIN_COMMIT"
+    - git push "$GL_REPO_URL" "$NEW_TAG"
+    - echo "✅ tag $NEW_TAG 已推送到 GitLab"
+
+    - git remote add github "$GH_REPO_URL" || git remote set-url github "$GH_REPO_URL"
+    - git push github "$NEW_TAG"
     - echo "✅ tag $NEW_TAG 已同步至 GitHub"
-  tags:
-    - java
 
 # 📦 发布至 GitLab 与 GitHub Maven 仓库
+# publish job: 将构建产物发布到GitLab和GitHub的Maven仓库
+# 参数:
+#   stage: 指定该job属于publish阶段
+#   needs: 指定依赖tag job完成后再执行
+#   rules: 定义触发规则，仅当提交到main分支且提交信息不包含"ci"(忽略大小写)时触发
+#   cache: 定义缓存策略，缓存Gradle相关目录以加速构建
+#   script: 执行发布到Maven仓库的具体脚本
+#   tags: 指定运行该job的runner标签为java
 publish:
   stage: publish
   needs: [ "tag" ]
@@ -80,53 +117,63 @@ publish:
       - .gradle/kotlin-profile/
       - .kotlin/
     policy: pull-push
+  tags: [ java ]
   script:
     - echo "🔧 授予 gradlew 执行权限..."
     - chmod +x gradlew
     - ./gradlew publishMavenJavaPublicationToGitLabRepository
     - ./gradlew publishMavenJavaPublicationToGitHubRepository --continue
-  tags:
-    - java
 
 # 🔄 重建 test 分支
+# reset job: 基于main分支重建test分支
+# 参数:
+#   stage: 指定该job属于reset阶段
+#   image: 指定使用alpine/git镜像，并清空entrypoint避免git sh问题
+#   rules: 定义触发规则，仅当提交到main分支时触发
+#   script: 执行重建test分支的具体脚本
+#   tags: 指定运行该job的runner标签为java
 reset:
   stage: reset
-  image: alpine:latest
+  <<: *alpine_git_image
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+  tags: [ java ]
+  before_script:
+    - *git_identity
+    - *remotes
   script:
     - set -euo pipefail
-    - apk add --no-cache git
-    - git config --global user.email "pipeline@${GITLAB_URL}"
-    - git config --global user.name "Project Pipeline Bot"
-    - git clone --branch main https://oauth2:${PIPELINE_BOT_TOKEN}@${GITLAB_URL}/${CI_PROJECT_PATH}.git repo
+    - echo "🔄 重建 test 分支..."
+    - git clone --branch main "$GL_REPO_URL" repo
     - cd repo
     - git checkout -B test
     - git push origin test --force
     - echo "✅ test 分支已重建完成"
-  tags:
-    - java
-#  Mirror to GitHub
+
+# 🔁 同步到 GitHub
+# mirror-to-github job: 将GitLab的main分支同步到GitHub
+# 参数:
+#   stage: 指定该job属于mirror阶段
+#   image: 指定使用alpine/git镜像，并清空entrypoint避免git sh问题
+#   rules: 定义触发规则，仅当提交到main分支时触发
+#   script: 执行同步到GitHub的具体脚本
+#   tags: 指定运行该job的runner标签为java
 mirror-to-github:
   stage: mirror
-  image: alpine:latest
+  <<: *alpine_git_image
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+  tags: [ java ]
+  before_script:
+    - *git_identity
+    - *remotes
   script:
     - set -euo pipefail
-    - apk add --no-cache git openssh
-    - git config --global user.name "Project Pipeline Bot"
-    - git config --global user.email "pipeline@${GITLAB_URL}"
-
-    - echo "🔄 正在 clone 当前 GitLab 仓库..."
-    - git clone --branch main https://oauth2:${PIPELINE_BOT_TOKEN}@${GITLAB_URL}/${CI_PROJECT_PATH}.git repo
+    - echo "🔄 clone GitLab 仓库..."
+    - git clone --branch main "$GL_REPO_URL" repo
     - cd repo
-
-    - echo "🔗 添加 GitHub 远程地址..."
-    - git remote add github https://x-access-token:${GITHUB_PUSH_TOKEN}@github.com/GeWuYou/forgeboot.git
-
-    - echo "🚀 推送 main 分支到 GitHub..."
+    - echo "🔗 添加/更新 GitHub 远程..."
+    - git remote add github "$GH_REPO_URL" || git remote set-url github "$GH_REPO_URL"
+    - echo "🚀 推送 main 到 GitHub..."
     - git push github main --force
     - echo "✅ GitHub 同步完成"
-  tags:
-    - java
