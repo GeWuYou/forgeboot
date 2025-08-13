@@ -1,14 +1,12 @@
 // This file is used to define the repositories used by the project.
 repositories {
     mavenLocal()
-    val host = System.getenv("GITEA_HOST")
-//    host?.let {
-//        maven{
-//            url = uri("${host}/api/packages/gewuyou/maven")
-//        }
-//    }
     maven {
         url = uri("https://maven.aliyun.com/repository/public/")
+        content {
+            excludeModule("io.ktor", "ktor-client-mock")
+            excludeModule("io.ktor", "ktor-client-mock-jvm") // 如果你之前用的是 jvm 变体，也一并排除
+        }
     }
     maven {
         url = uri("https://maven.aliyun.com/repository/spring/")

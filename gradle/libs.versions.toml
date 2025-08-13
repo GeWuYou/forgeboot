@@ -18,11 +18,14 @@ redisson-version = "3.50.0"
 org-pf4j-version = "3.13.0"
 org-pf4j-spring-version = "0.10.0"
 org-yaml-snakeyaml-version = "2.4"
-jimmer-version = "0.9.101"
+jimmer-version = "0.9.105"
+ktor-version = "3.2.3"
+junit-jupiter-version = "5.13.4"
 [libraries]
 org-babyfish-jimmer-springBootStarter = { group = "org.babyfish.jimmer", name = "jimmer-spring-boot-starter", version.ref = "jimmer-version" }
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
 kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime-version" }
+kotlinxCorountinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version = "1.10.2" }
 kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJSON-version" }
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin-version" }
 #kotlinxCoroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines-version" }
@@ -39,6 +42,7 @@ springBootStarter-webflux = { group = "org.springframework.boot", name = "spring
 springBootStarter-jpa = { group = "org.springframework.boot", name = "spring-boot-starter-data-jpa" }
 springBootStarter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
 springBootStarter-redis = { group = "org.springframework.boot", name = "spring-boot-starter-data-redis" }
+springBootStarter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test" }
 
 redisson-springBootStarter = { group = "org.redisson", name = "redisson-spring-boot-starter", version.ref = "redisson-version" }
 springBoot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot-version" }
@@ -57,6 +61,9 @@ jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackso
 
 reactor-core = { group = "io.projectreactor", name = "reactor-core" }
 #org
+org-junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-jupiter-version" }
+org-junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-jupiter-version" }
+org-junit-platform = { group = "org.junit.platform", name = "junit-platform-launcher", version = "1.13.4" }
 org-yaml-snakeyaml = { group = "org.yaml", name = "snakeyaml", version.ref = "org-yaml-snakeyaml-version" }
 org-pf4j = { group = "org.pf4j", name = "pf4j", version.ref = "org-pf4j-version" }
 org-pf4jSpring = { group = "org.pf4j", name = "pf4j-spring", version.ref = "org-pf4j-spring-version" }
@@ -68,6 +75,12 @@ jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt-ve
 # com
 com-github-benManes-caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine-version" }
 # io
+io-ktor-clientCore = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor-version" }
+io-ktor-clientContentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor-version" }
+io-ktor-serializationKotlinxJson = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor-version" }
+io-ktor-clientLogging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor-version" }
+io-ktor-clientCio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor-version" }
+io-ktor-clientMock = { group = "io.ktor", name = "ktor-client-mock-jvm", version.ref = "ktor-version" }
 
 [bundles]
 kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines-core"]
