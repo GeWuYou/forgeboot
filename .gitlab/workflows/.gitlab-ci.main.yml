@@ -13,14 +13,21 @@ before_script:
 # 🏷️ 自动打标签
 tag:
   stage: tag
-  image: alpine:latest
+  image:
+    name: alpine/git:latest
+    entrypoint: [ "" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE !~ /ci/i'
   script:
-    - set -euo pipefail
-    - apk add --no-cache git
     - git config --global user.email "pipeline@${GITLAB_URL}"
     - git config --global user.name "Project Pipeline Bot"
+    - echo "🧹 删除所有本地 tag..."
+    - git tag -l | xargs -r git tag -d || true
+    - echo "🔍 拉取远程 tag 和 main"
+    - git fetch --tags --force --prune
+    - git fetch origin main --force
+    - MAIN_COMMIT=$(git rev-parse origin/main)
+    - echo "🔗 当前 main commit -> $MAIN_COMMIT"
     - git fetch --tags
     - git fetch origin main
     - MAIN_COMMIT=$(git rev-parse origin/main)
