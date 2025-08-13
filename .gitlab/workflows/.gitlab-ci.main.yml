@@ -36,6 +36,7 @@ tag:
     - PATCH=$(echo "$VERSION" | cut -d. -f3)
 
     - PATCH=$((PATCH + 1))
+    - if [ "$PATCH" -ge 10 ]; then PATCH=0; MINOR=$((MINOR+1)); echo "🔁 patch 达到 10，进位：MINOR=$MINOR, PATCH=$PATCH"; fi
     - NEW_TAG="${MAJOR}.${MINOR}.${PATCH}"
     - echo "🏷️ 新 tag -> $NEW_TAG"
 

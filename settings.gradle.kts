@@ -154,6 +154,7 @@ include(
     ":forgeboot-demo:forgeboot-plugin-demo:forgeboot-plugin-demo-server",
 )
 //endregion
+
 //region module plugin
 include(
     "forgeboot-plugin",
@@ -164,7 +165,8 @@ project(":forgeboot-plugin").name = "forgeboot-plugin-spring-boot-starter"
 project(":forgeboot-plugin:forgeboot-plugin-core").name = "forgeboot-plugin-core"
 project(":forgeboot-plugin:forgeboot-plugin-spring").name = "forgeboot-plugin-spring"
 //endregion
-//region module  cache
+
+//region module cache
 include(
     "forgeboot-cache",
     ":forgeboot-cache:forgeboot-cache-api",
@@ -175,4 +177,13 @@ project(":forgeboot-cache").name = "forgeboot-cache-spring-boot-starter"
 project(":forgeboot-cache:forgeboot-cache-api").name = "forgeboot-cache-api"
 project(":forgeboot-cache:forgeboot-cache-impl").name = "forgeboot-cache-impl"
 project(":forgeboot-cache:forgeboot-cache-autoconfigure").name = "forgeboot-cache-autoconfigure"
+//endregion
+
+//region module http
+include(
+    "forgeboot-http",
+    ":forgeboot-http:forgeboot-http-ktor",
+)
+project(":forgeboot-http").name = "forgeboot-http"
+project(":forgeboot-http:forgeboot-http-ktor").name = "forgeboot-http-ktor"
 //endregion
