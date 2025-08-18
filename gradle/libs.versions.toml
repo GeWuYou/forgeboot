@@ -21,6 +21,7 @@ org-yaml-snakeyaml-version = "2.4"
 jimmer-version = "0.9.105"
 ktor-version = "3.2.3"
 junit-jupiter-version = "5.13.4"
+okHttp-version = "4.12.0"
 [libraries]
 org-babyfish-jimmer-springBootStarter = { group = "org.babyfish.jimmer", name = "jimmer-spring-boot-starter", version.ref = "jimmer-version" }
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
@@ -81,7 +82,9 @@ io-ktor-serializationKotlinxJson = { group = "io.ktor", name = "ktor-serializati
 io-ktor-clientLogging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor-version" }
 io-ktor-clientCio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor-version" }
 io-ktor-clientMock = { group = "io.ktor", name = "ktor-client-mock-jvm", version.ref = "ktor-version" }
-
+# OkHttp
+okHttp3-okHttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okHttp-version" }
+okHttp3-loggingInterceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okHttp-version" }
 [bundles]
 kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines-core"]
 jacksonAll = [
