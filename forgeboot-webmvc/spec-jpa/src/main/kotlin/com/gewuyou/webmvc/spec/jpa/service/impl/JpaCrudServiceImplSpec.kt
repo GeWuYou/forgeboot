@@ -66,14 +66,6 @@ abstract class JpaCrudServiceImplSpec<Entity : Any, Id : Any>(
         repository.deleteAllById(ids)
     }
 
-    /**
-     * 删除指定的单个实体。
-     *
-     * @param entity 要删除的实体对象
-     */
-    override fun deleteByOne(entity: Entity) {
-        repository.delete(entity)
-    }
 
     /**
      * 批量删除多个实体。

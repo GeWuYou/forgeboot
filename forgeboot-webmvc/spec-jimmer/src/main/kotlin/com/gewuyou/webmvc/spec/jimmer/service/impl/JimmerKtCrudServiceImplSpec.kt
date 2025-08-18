@@ -13,12 +13,12 @@ import org.babyfish.jimmer.spring.repository.fetchSpringPage
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode
 
 /**
- *JimmerCrud服务实现规范
+ *JimmerCrud Kt 服务实现规范
  *
  * @since 2025-07-30 21:30:05
  * @author gewuyou
  */
-open class JimmerCrudServiceImplSpec<Entity : Any, Id : Any>(
+open class JimmerKtCrudServiceImplSpec<Entity : Any, Id : Any>(
     open val repository: KRepository<Entity, Id>,
 ) : JimmerCrudServiceSpec<Entity, Id> {
     /**
@@ -102,65 +102,6 @@ open class JimmerCrudServiceImplSpec<Entity : Any, Id : Any>(
     }
 
     /**
-     * 删除一个实体
-     *
-     * @param entity 要删除的实体
-     */
-    override fun deleteByOne(entity: Entity) {
-        repository.delete(entity)
-    }
-
-
-    /**
-     * 软删除
-     *
-     * 本函数用于标记实体为删除状态，而不是真正从数据库中移除
-     * 这种方法可以保留历史数据，同时避免数据泄露
-     *
-     * @param id 实体的唯一标识符
-     */
-    override fun softDelete(id: Id) {
-        throw UnsupportedOperationException("softDelete Not supported yet.")
-    }
-
-    /**
-     * 批量软删除
-     *
-     * @param ids 要软删除的实体ID列表
-     */
-    override fun softDeleteByIds(ids: List<Id>) {
-        throw UnsupportedOperationException("softDeleteByIds Not supported yet.")
-    }
-
-    /**
-     * 取消软删除（恢复已删除实体）
-     *
-     * @param id 要恢复的实体ID
-     */
-    override fun restore(id: Id) {
-        throw UnsupportedOperationException("restore Not supported yet.")
-    }
-
-    /**
-     * 批量取消软删除
-     *
-     * @param ids 要恢复的实体ID列表
-     */
-    override fun restoreByIds(ids: List<Id>) {
-        throw UnsupportedOperationException("restoreByIds Not supported yet.")
-    }
-
-    /**
-     * 判断实体是否已被软删除
-     *
-     * @param id 实体ID
-     * @return 如果是软删除状态返回 true，否则返回 false
-     */
-    override fun isSoftDeleted(id: Id): Boolean {
-        throw UnsupportedOperationException("isSoftDeleted Not supported yet.")
-    }
-
-    /**
      * 根据ID检查实体是否存在
      *
      * @param id 实体的ID
@@ -178,16 +119,6 @@ open class JimmerCrudServiceImplSpec<Entity : Any, Id : Any>(
      */
     override fun saveAll(entities: List<Entity>): List<Entity> {
         return repository.saveAll(entities)
-    }
-
-    /**
-     * 查询记录总数
-     *
-     *
-     * @return 返回记录总数
-     */
-    override fun count(): Long {
-        return count()
     }
 
     /**
