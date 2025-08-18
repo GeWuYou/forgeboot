@@ -2,8 +2,8 @@ package com.gewuyou.forgeboot.webmvc.logger.config
 
 import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.webmvc.logger.aspect.MethodRecordingAspect
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
 /**
  * Logger自动配置
@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration
  * @since 2025-04-26 21:02:56
  * @author gewuyou
  */
-@Configuration
-open class LoggerAutoConfiguration {
+@AutoConfiguration
+class LoggerAutoConfiguration {
     /**
      * 创建并返回一个MethodRecordingAspect切面对象
      *
@@ -25,7 +25,7 @@ open class LoggerAutoConfiguration {
      * @return MethodRecordingAspect切面对象
      */
     @Bean
-    open fun methodRecordingAspect(): MethodRecordingAspect {
+    fun methodRecordingAspect(): MethodRecordingAspect {
         log.info("创建方法记录切面!")
         return MethodRecordingAspect()
     }

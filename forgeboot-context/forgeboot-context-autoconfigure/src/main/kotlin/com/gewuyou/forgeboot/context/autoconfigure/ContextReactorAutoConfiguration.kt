@@ -2,9 +2,9 @@ package com.gewuyou.forgeboot.context.autoconfigure
 
 import com.gewuyou.forgeboot.context.api.FieldRegistry
 import com.gewuyou.forgeboot.context.impl.processor.ReactorProcessor
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
 /**
  * Context Reactor 自动配置
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration
  * @since 2025-06-24 22:14:18
  * @author gewuyou
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass(name = ["reactor.util.context.Context"])
 class ContextReactorAutoConfiguration {
 

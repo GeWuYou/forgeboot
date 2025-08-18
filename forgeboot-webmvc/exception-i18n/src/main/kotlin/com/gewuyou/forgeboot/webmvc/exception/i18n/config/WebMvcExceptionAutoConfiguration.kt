@@ -5,10 +5,10 @@ import com.gewuyou.forgeboot.i18n.api.MessageResolver
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
 import com.gewuyou.forgeboot.webmvc.exception.i18n.config.entities.WebMvcExceptionI18nProperties
 import com.gewuyou.forgeboot.webmvc.exception.i18n.handler.GlobalExceptionHandler
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 
 /**
@@ -18,7 +18,7 @@ import org.springframework.core.annotation.Order
  * @author gewuyou
  */
 @EnableConfigurationProperties(WebMvcExceptionI18nProperties::class)
-@Configuration
+@AutoConfiguration
 class WebMvcExceptionAutoConfiguration {
     /**
      *默认消息解析器

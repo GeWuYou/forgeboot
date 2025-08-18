@@ -1,19 +1,10 @@
 stages:
   - publish
-
 # 🧪 test 发布 SNAPSHOT 包（允许覆盖）
 publish:
   stage: publish
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "test" && $CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
     - echo "🔧 授予 gradlew 执行权限..."
     - chmod +x gradlew
-    # 强制刷新 SNAPSHOT 缓存并发布
-    - ./gradlew clean publishMavenJavaPublicationToGitLabRepository \
-      --no-daemon \
-      --refresh-dependencies \
-      -Porg.gradle.caching=false \
-      -Dorg.gradle.configuration-cache=false
-  tags:
-    - java
+    - ./gradlew clean publishMavenJavaPublicationToGitLabRepository --no-daemon --refresh-dependencies
+  tags: [ java ]

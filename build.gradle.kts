@@ -32,6 +32,19 @@ scmVersion {
         pre("commit")
         post("push")
     }
+    snapshotCreator.set { _, _ ->
+        val branch = System.getenv("CI_COMMIT_BRANCH") ?: "local"
+        val iid = System.getenv("CI_PIPELINE_IID") ?: "0"
+        val sha8 = (System.getenv("CI_COMMIT_SHORT_SHA") ?: "dev").take(8)
+
+        // main/master 上保持默认的 -SNAPSHOT；其他分支追加自增后缀
+        if (branch == "main" || branch == "master") {
+            "-SNAPSHOT"
+        } else {
+            // 例：0.1.4-SNAPSHOT.1234-deadbeef
+            "-SNAPSHOT.$iid-$sha8"
+        }
+    }
 }
 
 // 设置项目版本

@@ -2,9 +2,9 @@ package com.gewuyou.forgeboot.context.autoconfigure
 
 import com.gewuyou.forgeboot.context.api.ContextProcessor
 import com.gewuyou.forgeboot.context.impl.ContextHolder
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.core.task.TaskDecorator
-import kotlin.collections.forEach
 
 /**
  * Context Task Decorator 自动配置
@@ -15,6 +15,7 @@ import kotlin.collections.forEach
  * @since 2025-06-24 22:18:51
  * @author gewuyou
  */
+@AutoConfiguration
 class ContextTaskDecoratorAutoConfiguration {
     /**
      * 创建 TaskDecorator Bean，用于在异步执行中保持上下文一致性。

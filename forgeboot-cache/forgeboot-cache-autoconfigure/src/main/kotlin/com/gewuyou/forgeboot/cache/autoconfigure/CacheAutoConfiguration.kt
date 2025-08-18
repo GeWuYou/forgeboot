@@ -2,6 +2,7 @@ package com.gewuyou.forgeboot.cache.autoconfigure
 
 import com.gewuyou.forgeboot.cache.api.config.CacheProperties
 import com.gewuyou.forgeboot.cache.autoconfigure.config.*
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Import
 
@@ -40,4 +41,5 @@ import org.springframework.context.annotation.Import
     LockServiceConfig::class
 )
 @EnableConfigurationProperties(CacheProperties::class)
+@AutoConfiguration
 class CacheAutoConfiguration

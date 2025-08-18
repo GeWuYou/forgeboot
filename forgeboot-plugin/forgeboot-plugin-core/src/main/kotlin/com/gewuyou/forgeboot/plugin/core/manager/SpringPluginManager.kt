@@ -1,4 +1,4 @@
-package com.gewuyou.forgeboot.plugin.spring.manager
+package com.gewuyou.forgeboot.plugin.core.manager
 
 import com.gewuyou.forgeboot.plugin.core.finder.YamlPluginDescriptorFinder
 import org.pf4j.CompoundPluginDescriptorFinder

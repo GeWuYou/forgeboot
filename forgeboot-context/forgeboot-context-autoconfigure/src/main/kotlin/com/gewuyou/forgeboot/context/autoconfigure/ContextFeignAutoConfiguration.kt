@@ -2,10 +2,10 @@ package com.gewuyou.forgeboot.context.autoconfigure
 
 import com.gewuyou.forgeboot.context.api.FieldRegistry
 import com.gewuyou.forgeboot.context.impl.ContextHolder
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
 /**
  * 上下文Feign自动配置类
@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration
  * @since 2025-06-24 22:17:46
  * @author gewuyou
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass(name = ["feign.RequestInterceptor"])
 class ContextFeignAutoConfiguration {
     /**

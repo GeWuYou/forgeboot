@@ -7,9 +7,9 @@ import com.gewuyou.forgeboot.context.impl.ContextHolder
 import com.gewuyou.forgeboot.context.impl.DefaultFieldRegistry
 import com.gewuyou.forgeboot.core.serialization.serializer.ValueSerializer
 import com.gewuyou.forgeboot.core.serialization.serializer.impl.serializer.JacksonValueSerializer
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
 /**
  * Context Common 自动配置
@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration
  * @since 2025-06-24 22:09:55
  * @author gewuyou
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 class ContextCommonAutoConfiguration {
 
     /**
