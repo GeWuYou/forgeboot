@@ -9,4 +9,5 @@ import com.gewuyou.webmvc.spec.core.service.CrudServiceSpec
  * @author gewuyou
  */
 interface JimmerCrudServiceSpec<Entity : Any, Id : Any> : CrudServiceSpec<Entity, Id> {
+
 }
