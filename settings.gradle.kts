@@ -1,3 +1,23 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 /**
  * This settings.gradle.kts file configures the Gradle build for the forgeboot project.
  * It sets up dependency resolution, plugins, and includes all relevant subprojects.
@@ -177,13 +197,4 @@ project(":forgeboot-cache").name = "forgeboot-cache-spring-boot-starter"
 project(":forgeboot-cache:forgeboot-cache-api").name = "forgeboot-cache-api"
 project(":forgeboot-cache:forgeboot-cache-impl").name = "forgeboot-cache-impl"
 project(":forgeboot-cache:forgeboot-cache-autoconfigure").name = "forgeboot-cache-autoconfigure"
-//endregion
-
-//region module http
-include(
-    "forgeboot-http",
-    ":forgeboot-http:forgeboot-http-ktor",
-)
-project(":forgeboot-http").name = "forgeboot-http"
-project(":forgeboot-http:forgeboot-http-ktor").name = "forgeboot-http-ktor"
 //endregion
