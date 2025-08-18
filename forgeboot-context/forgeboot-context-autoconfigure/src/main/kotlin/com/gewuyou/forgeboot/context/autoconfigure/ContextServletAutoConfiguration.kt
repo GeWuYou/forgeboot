@@ -3,11 +3,11 @@ package com.gewuyou.forgeboot.context.autoconfigure
 import com.gewuyou.forgeboot.context.api.ContextProcessor
 import com.gewuyou.forgeboot.context.impl.ContextHolder
 import com.gewuyou.forgeboot.context.impl.filter.ContextServletFilter
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 
@@ -22,7 +22,7 @@ import org.springframework.core.annotation.Order
  * @since 2025-06-24 22:15:23
  * @author gewuyou
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnProperty(name = ["spring.main.web-application-type"], havingValue = "servlet", matchIfMissing = true)
 @ConditionalOnClass(name = ["jakarta.servlet.Filter"])
 class ContextServletAutoConfiguration {

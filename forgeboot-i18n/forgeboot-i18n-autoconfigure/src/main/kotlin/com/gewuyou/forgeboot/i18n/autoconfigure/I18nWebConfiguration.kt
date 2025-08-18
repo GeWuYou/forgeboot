@@ -1,9 +1,8 @@
 package com.gewuyou.forgeboot.i18n.autoconfigure
 
 import com.gewuyou.forgeboot.core.extension.log
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor
@@ -14,11 +13,10 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor
  * @since 2025-02-18 23:33:39
  * @author gewuyou
  */
-@Configuration
+@AutoConfiguration
 @ConditionalOnProperty(name = ["spring.main.web-application-type"], havingValue = "servlet", matchIfMissing = true)
-open class I18nWebConfiguration(
-    @Autowired
-    private val localeChangeInterceptor: LocaleChangeInterceptor
+class I18nWebConfiguration(
+    private val localeChangeInterceptor: LocaleChangeInterceptor,
 ) : WebMvcConfigurer {
 
     /**

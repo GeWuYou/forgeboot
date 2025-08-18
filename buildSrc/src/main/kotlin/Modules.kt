@@ -122,9 +122,9 @@ object Modules {
         }
     }
     object Plugin {
-        private const val PLUGIN = ":forgeboot-plugin-spring-boot-starter"
-        const val CORE = "${PLUGIN}:forgeboot-plugin-core"
-        const val SPRING = "${PLUGIN}:forgeboot-plugin-spring"
+        const val STARTER = ":forgeboot-plugin-spring-boot-starter"
+        const val CORE = "${STARTER}:forgeboot-plugin-core"
+        const val SPRING = "${STARTER}:forgeboot-plugin-spring"
     }
     object Demo{
         private const val ROOT = ":forgeboot-demo"

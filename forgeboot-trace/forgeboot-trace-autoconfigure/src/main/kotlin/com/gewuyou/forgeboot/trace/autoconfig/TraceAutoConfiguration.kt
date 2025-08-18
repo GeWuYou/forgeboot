@@ -9,11 +9,11 @@ import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
 import com.gewuyou.forgeboot.trace.api.config.TraceProperties
 import com.gewuyou.forgeboot.trace.impl.provider.TraceRequestIdProvider
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import java.util.UUID
+import java.util.*
 
 /**
  * 跟踪自动配置
@@ -22,7 +22,7 @@ import java.util.UUID
  * @since 2025-03-17 16:33:40
  * @author gewuyou
  */
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(TraceProperties::class)
 class TraceAutoConfiguration(
     private val traceProperties: TraceProperties,

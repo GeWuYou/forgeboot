@@ -1,6 +1,6 @@
 package com.gewuyou.forgeboot.plugin.demo.impl
 
-import com.gewuyou.forgeboot.plugin.spring.MergedSpringPlugin
+import com.gewuyou.forgeboot.plugin.core.MergedSpringPlugin
 import org.pf4j.PluginWrapper
 
 /**

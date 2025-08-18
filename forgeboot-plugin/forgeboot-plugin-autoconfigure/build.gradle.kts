@@ -1,6 +1,4 @@
 dependencies {
-    api(libs.org.yaml.snakeyaml)
-    api(libs.org.pf4jSpring)
     compileOnly(libs.springBoot.starter)
     implementation(project(Modules.Plugin.CORE))
     implementation(project(Modules.Core.EXTENSION))

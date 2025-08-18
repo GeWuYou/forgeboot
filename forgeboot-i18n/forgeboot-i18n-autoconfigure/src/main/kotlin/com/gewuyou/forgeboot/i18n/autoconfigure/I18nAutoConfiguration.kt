@@ -7,13 +7,13 @@ import com.gewuyou.forgeboot.i18n.api.config.I18nProperties
 import com.gewuyou.forgeboot.i18n.impl.filter.ReactiveLocaleResolver
 import com.gewuyou.forgeboot.i18n.impl.resolver.I18nMessageResolver
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.MessageSource
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.util.StringUtils
@@ -29,10 +29,10 @@ import java.util.*
  * @author gewuyou
  * @since 2024-11-11 00:46:01
  */
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(I18nProperties::class)
-open class I18nAutoConfiguration(
-    private val i18nProperties: I18nProperties
+class I18nAutoConfiguration(
+    private val i18nProperties: I18nProperties,
 ) {
     /**
      * 配置并创建一个国际化的消息源
@@ -43,7 +43,7 @@ open class I18nAutoConfiguration(
      */
     @Bean
     @ConditionalOnMissingBean
-    open fun messageSource(): MessageSource {
+    fun messageSource(): MessageSource {
         log.info("开始加载 I18n 配置...")
         val messageSource = ReloadableResourceBundleMessageSource()
         // 动态扫描所有 i18n 子目录下的 messages.properties 文件
@@ -66,7 +66,7 @@ open class I18nAutoConfiguration(
      */
     @Bean
     @ConditionalOnMissingBean(MessageResolver::class)
-    open fun i18nMessageResolver(i18nMessageSource: MessageSource): MessageResolver {
+    fun i18nMessageResolver(i18nMessageSource: MessageSource): MessageResolver {
         return I18nMessageResolver(i18nMessageSource)
     }
 
@@ -114,7 +114,7 @@ open class I18nAutoConfiguration(
      */
     @Bean
     @ConditionalOnClass(name = ["org.springframework.web.servlet.DispatcherServlet"])
-    open fun localeResolver(i18nProperties: I18nProperties): LocaleResolver {
+    fun localeResolver(i18nProperties: I18nProperties): LocaleResolver {
         return object : AcceptHeaderLocaleResolver() {
             override fun resolveLocale(request: HttpServletRequest): Locale {
                 log.info("开始解析URL参数 lang 语言配置...")
@@ -141,7 +141,7 @@ open class I18nAutoConfiguration(
      */
     @Bean
     @ConditionalOnProperty(name = ["spring.main.web-application-type"], havingValue = "servlet", matchIfMissing = true)
-    open fun localeChangeInterceptor(i18nProperties: I18nProperties): LocaleChangeInterceptor {
+    fun localeChangeInterceptor(i18nProperties: I18nProperties): LocaleChangeInterceptor {
         log.info("创建区域设置更改拦截器...")
         val interceptor = LocaleChangeInterceptor()
         // 设置 URL 参数名，例如 ?lang=en 或 ?lang=zh
@@ -159,7 +159,7 @@ open class I18nAutoConfiguration(
      */
     @Bean
     @ConditionalOnProperty(name = ["spring.main.web-application-type"], havingValue = "reactive")
-    open fun createReactiveLocaleResolver(i18nProperties: I18nProperties): ReactiveLocaleResolver {
+    fun createReactiveLocaleResolver(i18nProperties: I18nProperties): ReactiveLocaleResolver {
         log.info("创建 WebFlux 区域设置解析器...")
         return ReactiveLocaleResolver(i18nProperties)
     }

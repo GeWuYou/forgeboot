@@ -5,11 +5,11 @@ import com.gewuyou.forgeboot.context.impl.ContextHolder
 import com.gewuyou.forgeboot.context.impl.filter.ContextWebFilter
 import com.gewuyou.forgeboot.context.impl.filter.CoroutineMdcWebFilter
 import com.gewuyou.forgeboot.context.impl.processor.ReactorProcessor
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 
@@ -22,7 +22,7 @@ import org.springframework.core.annotation.Order
  * @since 2025-06-24 22:16:19
  * @author gewuyou
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnProperty(name = ["spring.main.web-application-type"], havingValue = "reactive")
 @ConditionalOnClass(name = ["org.springframework.web.server.WebFilter"])
 class ContextWebFluxAutoConfiguration {

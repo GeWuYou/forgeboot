@@ -159,11 +159,11 @@ include(
 include(
     "forgeboot-plugin",
     ":forgeboot-plugin:forgeboot-plugin-core",
-    ":forgeboot-plugin:forgeboot-plugin-spring",
+    ":forgeboot-plugin:forgeboot-plugin-autoconfigure",
 )
 project(":forgeboot-plugin").name = "forgeboot-plugin-spring-boot-starter"
 project(":forgeboot-plugin:forgeboot-plugin-core").name = "forgeboot-plugin-core"
-project(":forgeboot-plugin:forgeboot-plugin-spring").name = "forgeboot-plugin-spring"
+project(":forgeboot-plugin:forgeboot-plugin-autoconfigure").name = "forgeboot-plugin-autoconfigure"
 //endregion
 
 //region module cache

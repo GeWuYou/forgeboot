@@ -1,7 +1,8 @@
 
 dependencies {
-    api(libs.org.yaml.snakeyaml)
+    implementation(libs.org.yaml.snakeyaml)
     api(libs.org.pf4j)
+    api(libs.org.pf4jSpring)
 }
 // 全局排除 slf4j-reload4j
 configurations.all {

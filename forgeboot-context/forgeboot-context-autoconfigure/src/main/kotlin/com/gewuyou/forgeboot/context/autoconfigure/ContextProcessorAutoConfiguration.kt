@@ -4,8 +4,8 @@ import com.gewuyou.forgeboot.context.api.FieldRegistry
 import com.gewuyou.forgeboot.context.impl.processor.GeneratorProcessor
 import com.gewuyou.forgeboot.context.impl.processor.HeaderProcessor
 import com.gewuyou.forgeboot.context.impl.processor.MdcProcessor
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
 /**
  * 上下文处理器自动配置
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration
  * @since 2025-06-24 22:12:58
  * @author gewuyou
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 class ContextProcessorAutoConfiguration {
 
     /**

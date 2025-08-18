@@ -1,4 +1,4 @@
-package com.gewuyou.forgeboot.plugin.spring
+package com.gewuyou.forgeboot.plugin.core
 
 import org.pf4j.PluginWrapper
 import org.pf4j.spring.SpringPluginManager

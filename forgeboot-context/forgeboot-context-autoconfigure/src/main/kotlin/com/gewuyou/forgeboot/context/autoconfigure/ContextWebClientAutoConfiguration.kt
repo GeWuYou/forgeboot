@@ -2,10 +2,10 @@ package com.gewuyou.forgeboot.context.autoconfigure
 
 import com.gewuyou.forgeboot.context.api.FieldRegistry
 import com.gewuyou.forgeboot.context.impl.ContextHolder
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.client.ClientRequest
 
 /**
@@ -17,7 +17,7 @@ import org.springframework.web.reactive.function.client.ClientRequest
  * @since 2025-06-24 22:20:10
  * @author gewuyou
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass(name = ["org.springframework.web.reactive.function.client.WebClient"])
 class ContextWebClientAutoConfiguration {
     /**

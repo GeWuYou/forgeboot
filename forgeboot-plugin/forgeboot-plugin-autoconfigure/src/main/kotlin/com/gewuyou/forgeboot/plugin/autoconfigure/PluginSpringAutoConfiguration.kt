@@ -1,14 +1,14 @@
-package com.gewuyou.forgeboot.plugin.spring.config
+package com.gewuyou.forgeboot.plugin.autoconfigure
 
-import com.gewuyou.forgeboot.plugin.spring.manager.SpringPluginManager
-import org.pf4j.DefaultPluginManager.PLUGINS_DIR_CONFIG_PROPERTY_NAME
+import com.gewuyou.forgeboot.plugin.core.manager.SpringPluginManager
+import org.pf4j.DefaultPluginManager
 import org.pf4j.ExtensionFactory
 import org.pf4j.PluginManager
 import org.pf4j.spring.SingletonSpringExtensionFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import java.nio.file.Paths
 
 /**
@@ -20,7 +20,7 @@ import java.nio.file.Paths
  * @since 2025-07-23 13:01:27
  * @author gewuyou
  */
-@Configuration
+@AutoConfiguration
 class PluginSpringAutoConfiguration() {
     /**
      * 提供一个默认的插件管理器Bean。
@@ -32,11 +32,12 @@ class PluginSpringAutoConfiguration() {
      * @param pluginPath 插件存放路径，从配置文件中读取，默认值为"plugins"
      * @return 返回一个配置好的PluginManager实例，用于管理插件的生命周期和功能
      */
-    @Bean
-    @ConditionalOnMissingBean
-    fun pluginManager(@Value("\${forgeboot.plugin.path}") pluginPath: String = PLUGINS_DIR_CONFIG_PROPERTY_NAME): PluginManager {
+    @Bean("forgebootPluginManager")
+    @ConditionalOnMissingBean(PluginManager::class)
+    fun pluginManager(@Value("\${forgeboot.plugin.path}") pluginPath: String = DefaultPluginManager.PLUGINS_DIR_CONFIG_PROPERTY_NAME): PluginManager {
         return SpringPluginManager(listOf(Paths.get(pluginPath)))
     }
+
     /**
      * 创建并配置ExtensionFactory实例
      * 该方法在插件管理器初始化之后调用，用于创建扩展工厂，进一步扩展系统功能
@@ -44,8 +45,8 @@ class PluginSpringAutoConfiguration() {
      * @param pluginManager 已初始化并启动的插件管理器，用于扩展工厂的构建
      * @return ExtensionFactory 初始化后的扩展工厂实例
      */
-    @Bean
-    @ConditionalOnMissingBean
+    @Bean("forgebootExtensionFactory")
+    @ConditionalOnMissingBean(ExtensionFactory::class)
     fun extensionFactory(pluginManager: PluginManager): ExtensionFactory {
         return SingletonSpringExtensionFactory(pluginManager)
     }
