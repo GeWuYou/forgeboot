@@ -1,11 +1,31 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.i18n.autoconfigure
 
 
 import com.gewuyou.forgeboot.core.extension.log
-import com.gewuyou.forgeboot.i18n.api.MessageResolver
+import com.gewuyou.forgeboot.i18n.api.InfoResolver
 import com.gewuyou.forgeboot.i18n.api.config.I18nProperties
 import com.gewuyou.forgeboot.i18n.impl.filter.ReactiveLocaleResolver
-import com.gewuyou.forgeboot.i18n.impl.resolver.I18nMessageResolver
+import com.gewuyou.forgeboot.i18n.impl.resolver.MessageSourceInfoResolver
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -41,9 +61,9 @@ class I18nAutoConfiguration(
      *
      * @return MessageSource 国际化消息源
      */
-    @Bean
+    @Bean("forgebootI18nMessageSource")
     @ConditionalOnMissingBean
-    fun messageSource(): MessageSource {
+    fun forgebootI18nMessageSource(): MessageSource {
         log.info("开始加载 I18n 配置...")
         val messageSource = ReloadableResourceBundleMessageSource()
         // 动态扫描所有 i18n 子目录下的 messages.properties 文件
@@ -56,18 +76,21 @@ class I18nAutoConfiguration(
         return messageSource
     }
 
+
     /**
-     * 创建并配置一个国际化的消息解析器
-     * 该方法通过Spring的条件注解有选择性地创建一个MessageResolver实例
-     * 主要用于解决国际化消息的解析问题
+     * 创建并配置一个基于MessageSource的信息解析器
      *
-     * @param i18nMessageSource 一个MessageSource实例，用于解析国际化消息
-     * @return 返回一个MessageResolver实例，用于在国际化的环境中解析消息
+     * 该方法通过Spring的条件注解有选择性地创建一个InfoResolver实例，
+     * 当容器中不存在InfoResolver类型的Bean时，才会创建此Bean。
+     * 主要用于解决国际化消息的解析问题，将InfoLike对象解析为具体的本地化消息。
+     *
+     * @param forgebootI18nMessageSource 一个MessageSource实例，用于解析国际化消息
+     * @return 返回一个InfoResolver实例，用于在国际化的环境中解析消息
      */
     @Bean
-    @ConditionalOnMissingBean(MessageResolver::class)
-    fun i18nMessageResolver(i18nMessageSource: MessageSource): MessageResolver {
-        return I18nMessageResolver(i18nMessageSource)
+    @ConditionalOnMissingBean(InfoResolver::class)
+    fun messageSourceInfoResolver(forgebootI18nMessageSource: MessageSource): InfoResolver {
+        return MessageSourceInfoResolver(forgebootI18nMessageSource)
     }
 
 
@@ -92,7 +115,7 @@ class I18nAutoConfiguration(
                 val path = resource.uri.toString()
                 log.info("找到 I18n 文件路径: {}", path)
                 // 转换路径为 Spring 的 basename 格式（去掉 .properties 后缀）
-                val baseName = path.substring(0, path.lastIndexOf(suffix))
+                val baseName = path.take(path.lastIndexOf(suffix))
                 if (!baseNames.contains(baseName)) {
                     baseNames.add(baseName)
                 }

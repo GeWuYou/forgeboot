@@ -1,3 +1,23 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 /**
  * Modules对象用于统一管理项目中的各个模块路径
  * 主要作用是提供一个集中定义和访问模块路径的地方，以便在项目中保持一致性和可维护性
@@ -20,12 +40,23 @@ object Modules {
 
     /**
      * Webmvc模块：Spring Boot Starter对WebMVC的支持模块
-     * 提供Web开发相关的功能，包括数据传输对象（DTO）、验证、版本控制及日志功能
+     * 提供Web开发相关的功能，包括数据传输对象（DTO2）、验证、版本控制及日志功能
      */
     object Webmvc {
+        object DTO {
+            const val STARTER = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-dto-spring-boot-starter"
+            const val API = "${STARTER}:forgeboot-webmvc-dto-api"
+            const val IMPL = "${STARTER}:forgeboot-webmvc-dto-impl"
+            const val AUTOCONFIGURE = "${STARTER}:forgeboot-webmvc-dto-autoconfigure"
+        }
+
+        object EXCEPTION {
+            const val STARTER = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-exception-spring-boot-starter"
+            const val API = "${STARTER}:forgeboot-webmvc-exception-api"
+            const val IMPL = "${STARTER}:forgeboot-webmvc-exception-impl"
+            const val AUTOCONFIGURE = "${STARTER}:forgeboot-webmvc-exception-autoconfigure"
+        }
         const val STARTER = ":forgeboot-webmvc-spring-boot-starter"
-        const val DTO = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-dto"
-        const val EXCEPTION = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-exception-spring-boot-starter"
         const val VALIDATION = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-validation"
         const val VERSION = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-version-spring-boot-starter"
         const val LOGGER = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-logger-spring-boot-starter"
