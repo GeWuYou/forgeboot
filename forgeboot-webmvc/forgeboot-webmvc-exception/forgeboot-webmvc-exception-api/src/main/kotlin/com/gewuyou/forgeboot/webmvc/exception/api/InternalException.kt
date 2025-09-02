@@ -32,7 +32,7 @@ import com.gewuyou.forgeboot.webmvc.exception.api.shared.BaseException
  * @since 2025-09-02 14:02:03
  * @author gewuyou
  */
-class InternalException(
+open class InternalException(
     override val info: InfoLike,
     cause: Throwable? = null,
     override val extras: Map<String, Any?> = emptyMap(),
