@@ -20,7 +20,8 @@
 
 package com.gewuyou.webmvc.spec.jimmer.service.impl
 
-import com.gewuyou.forgeboot.webmvc.dto.PageResult
+
+import com.gewuyou.forgeboot.webmvc.dto.api.entities.PageResult
 import com.gewuyou.webmvc.spec.core.extension.toPageRequest
 import com.gewuyou.webmvc.spec.core.extension.toPageResult
 import com.gewuyou.webmvc.spec.core.page.Pageable

@@ -85,15 +85,20 @@ project(":forgeboot-banner:forgeboot-banner-launcher").name = "forgeboot-banner-
 /**
  * Includes and configures projects related to 'forgeboot-webmvc'
  * This module seems to handle Spring WebMVC-related functionalities like logging,
- * exceptions, DTO handling, validation, etc.
+ * exceptions, DTO2 handling, validation, etc.
  */
 include(
     "forgeboot-webmvc",
     ":forgeboot-webmvc:version",
     ":forgeboot-webmvc:logger",
-    ":forgeboot-webmvc:exception",
-    ":forgeboot-webmvc:exception-i18n",
-    ":forgeboot-webmvc:dto",
+    ":forgeboot-webmvc:forgeboot-webmvc-exception",
+    ":forgeboot-webmvc:forgeboot-webmvc-exception:forgeboot-webmvc-exception-api",
+    ":forgeboot-webmvc:forgeboot-webmvc-exception:forgeboot-webmvc-exception-impl",
+    ":forgeboot-webmvc:forgeboot-webmvc-exception:forgeboot-webmvc-exception-autoconfigure",
+    ":forgeboot-webmvc:forgeboot-webmvc-dto",
+    ":forgeboot-webmvc:forgeboot-webmvc-dto:forgeboot-webmvc-dto-api",
+    ":forgeboot-webmvc:forgeboot-webmvc-dto:forgeboot-webmvc-dto-impl",
+    ":forgeboot-webmvc:forgeboot-webmvc-dto:forgeboot-webmvc-dto-autoconfigure",
     ":forgeboot-webmvc:validation",
     ":forgeboot-webmvc:spec-core",
     ":forgeboot-webmvc:spec-jpa",
@@ -102,9 +107,18 @@ include(
 project(":forgeboot-webmvc").name = "forgeboot-webmvc-spring-boot-starter"
 project(":forgeboot-webmvc:version").name = "forgeboot-webmvc-version-spring-boot-starter"
 project(":forgeboot-webmvc:logger").name = "forgeboot-webmvc-logger-spring-boot-starter"
-project(":forgeboot-webmvc:exception").name = "forgeboot-webmvc-exception-spring-boot-starter"
-project(":forgeboot-webmvc:exception-i18n").name = "forgeboot-webmvc-exception-i18n-spring-boot-starter"
-project(":forgeboot-webmvc:dto").name = "forgeboot-webmvc-dto"
+project(":forgeboot-webmvc:forgeboot-webmvc-exception").name = "forgeboot-webmvc-exception-spring-boot-starter"
+project(":forgeboot-webmvc:forgeboot-webmvc-exception:forgeboot-webmvc-exception-api").name =
+    "forgeboot-webmvc-exception-api"
+project(":forgeboot-webmvc:forgeboot-webmvc-exception:forgeboot-webmvc-exception-impl").name =
+    "forgeboot-webmvc-exception-impl"
+project(":forgeboot-webmvc:forgeboot-webmvc-exception:forgeboot-webmvc-exception-autoconfigure").name =
+    "forgeboot-webmvc-exception-autoconfigure"
+project(":forgeboot-webmvc:forgeboot-webmvc-dto").name = "forgeboot-webmvc-dto-spring-boot-starter"
+project(":forgeboot-webmvc:forgeboot-webmvc-dto:forgeboot-webmvc-dto-api").name = "forgeboot-webmvc-dto-api"
+project(":forgeboot-webmvc:forgeboot-webmvc-dto:forgeboot-webmvc-dto-impl").name = "forgeboot-webmvc-dto-impl"
+project(":forgeboot-webmvc:forgeboot-webmvc-dto:forgeboot-webmvc-dto-autoconfigure").name =
+    "forgeboot-webmvc-dto-autoconfigure"
 project(":forgeboot-webmvc:validation").name = "forgeboot-webmvc-validation"
 project(":forgeboot-webmvc:spec-core").name = "forgeboot-webmvc-spec-core"
 project(":forgeboot-webmvc:spec-jpa").name = "forgeboot-webmvc-spec-jpa"
