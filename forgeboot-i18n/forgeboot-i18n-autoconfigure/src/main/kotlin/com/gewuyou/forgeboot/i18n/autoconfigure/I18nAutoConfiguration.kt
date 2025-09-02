@@ -39,7 +39,6 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.util.StringUtils
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver
-import org.springframework.web.servlet.i18n.LocaleChangeInterceptor
 import java.io.IOException
 import java.util.*
 
@@ -135,12 +134,12 @@ class I18nAutoConfiguration(
      * @param i18nProperties 本地化属性配置
      * @return LocaleResolver 区域设置解析器
      */
-    @Bean
+    @Bean("forgebootI18nLocaleResolver")
     @ConditionalOnClass(name = ["org.springframework.web.servlet.DispatcherServlet"])
     fun localeResolver(i18nProperties: I18nProperties): LocaleResolver {
         return object : AcceptHeaderLocaleResolver() {
             override fun resolveLocale(request: HttpServletRequest): Locale {
-                log.info("开始解析URL参数 lang 语言配置...")
+                log.debug("开始解析URL参数 lang 语言配置...")
                 // 先检查URL参数 ?lang=xx
                 val lang = request.getParameter(i18nProperties.langRequestParameter)
                 if (StringUtils.hasText(lang)) {
@@ -152,24 +151,6 @@ class I18nAutoConfiguration(
                 return super.resolveLocale(request)
             }
         }
-    }
-
-    /**
-     * 创建一个区域设置更改拦截器
-     *
-     * 此方法在项目为 Servlet 类型且配置了相应的属性时被调用，创建的拦截器用于处理 URL 参数中的语言变更请求
-     *
-     * @param i18nProperties 本地化属性配置
-     * @return LocaleChangeInterceptor 区域设置更改拦截器
-     */
-    @Bean
-    @ConditionalOnProperty(name = ["spring.main.web-application-type"], havingValue = "servlet", matchIfMissing = true)
-    fun localeChangeInterceptor(i18nProperties: I18nProperties): LocaleChangeInterceptor {
-        log.info("创建区域设置更改拦截器...")
-        val interceptor = LocaleChangeInterceptor()
-        // 设置 URL 参数名，例如 ?lang=en 或 ?lang=zh
-        interceptor.paramName = i18nProperties.langRequestParameter
-        return interceptor
     }
 
     /**
