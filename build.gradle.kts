@@ -1,9 +1,31 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     // 基本 Java 支持
     alias(libs.plugins.java)
     alias(libs.plugins.javaLibrary)
     // Maven 发布支持
-    alias(libs.plugins.maven.publish)
+//    alias(libs.plugins.maven.publish)
     // 语义版本插件
     alias(libs.plugins.axionRelease)
     // Kotlin Spring 支持
@@ -11,7 +33,9 @@ plugins {
     // Kotlin kapt 支持
     alias(libs.plugins.kotlin.kapt)
     id(libs.plugins.kotlin.jvm.get().pluginId)
-//    alias(libs.plugins.gradleMavenPublishPlugin)
+    id(libs.plugins.signing.get().pluginId)
+
+    alias(libs.plugins.gradleMavenPublishPlugin)
 }
 
 
@@ -90,12 +114,6 @@ subprojects {
     }
     // 应用插件和配置
     val libs = rootProject.libs
-    plugins.withId(libs.plugins.java.get().pluginId) {
-        extensions.configure<JavaPluginExtension> {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
     plugins.withId(libs.plugins.forgeboot.i18n.keygen.get().pluginId) {
         tasks.named("kotlinSourcesJar") {
             dependsOn("generateI18nKeys")
@@ -111,7 +129,8 @@ subprojects {
 //        plugin(libs.plugins.java.get().pluginId)
 //        plugin(libs.plugins.javaLibrary.get().pluginId)
         if (!project.name.contains("demo")) {
-            plugin(libs.plugins.maven.publish.get().pluginId)
+            plugin(libs.plugins.gradleMavenPublishPlugin.get().pluginId)
+            plugin(libs.plugins.signing.get().pluginId)
         }
         plugin(libs.plugins.kotlin.plugin.spring.get().pluginId)
         plugin(libs.plugins.kotlin.jvm.get().pluginId)
@@ -121,13 +140,43 @@ subprojects {
         // 导入仓库配置
         from(file("$configDir/repositories.gradle.kts"))
     }
-//    // 中央仓库
-//    mavenPublishing {
-//        publishToMavenCentral("https://s01.oss.sonatype.org/", true)
-//        signAllPublications()
-//    }
+    val projectName = project.name
     // 发布配置
-    if (!project.name.contains("demo")) {
+    if (!projectName.contains("demo")) {
+        java {
+//            withJavadocJar()
+            withSourcesJar()
+        }
+        // 中央仓库
+        mavenPublishing {
+            coordinates(groupId = "io.github.gewuyou", artifactId = projectName, version = project.version.toString())
+            publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+            signAllPublications()
+            pom {
+                name.set(projectName)
+                description.set("Part of Forgeboot Starters")
+                url.set("https://github.com/GeWuYou/forgeboot")
+
+                licenses {
+                    license {
+                        name.set("Apache-2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("gewuyou")
+                        name.set("gewuyou")
+                        email.set("gewuyou1024@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/GeWuYou/forgeboot.git")
+                    developerConnection.set("scm:git:ssh://github.com/GeWuYou/forgeboot.git")
+                    url.set("https://github.com/GeWuYou/forgeboot")
+                }
+            }
+        }
         publishing {
             repositories {
                 // 本地仓库
@@ -169,40 +218,7 @@ subprojects {
                             create("header", HttpHeaderAuthentication::class.java)
                         }
                     }
-                }
-            }
-            publications {
-                create<MavenPublication>("mavenJava") {
-                    val projectName = project.name
-                    from(components["java"])
-                    groupId = project.group.toString()
-                    artifactId = projectName
-                    version = project.version.toString()
 
-                    pom {
-                        name.set(projectName)
-                        description.set("Part of Forgeboot Starters")
-                        url.set("https://github.com/GeWuYou/forgeboot")
-
-                        licenses {
-                            license {
-                                name.set("Apache-2.0")
-                                url.set("https://www.apache.org/licenses/LICENSE-2.0")
-                            }
-                        }
-                        developers {
-                            developer {
-                                id.set("gewuyou")
-                                name.set("gewuyou")
-                                email.set("gewuyou1024@gmail.com")
-                            }
-                        }
-                        scm {
-                            connection.set("scm:git:git://github.com/GeWuYou/forgeboot.git")
-                            developerConnection.set("scm:git:ssh://github.com/GeWuYou/forgeboot.git")
-                            url.set("https://github.com/GeWuYou/forgeboot")
-                        }
-                    }
                 }
             }
         }
@@ -234,6 +250,7 @@ subprojects {
     tasks.named<Test>("test") {
         useJUnitPlatform()
     }
+
 }
 /**
  * 注册一个 Gradle 任务用于清理项目中的无用文件。

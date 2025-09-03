@@ -121,8 +121,10 @@ publish:
   script:
     - echo "🔧 授予 gradlew 执行权限..."
     - chmod +x gradlew
-    - ./gradlew publishMavenJavaPublicationToGitLabRepository
-    - ./gradlew publishMavenJavaPublicationToGitHubRepository --continue
+    - ./gradlew publishMavenPublicationToGitLabRepository
+    - ./gradlew publishMavenPublicationToGitHubRepository --continue
+    - ./gradlew publishMavenPublicationToMavenCentralRepository --no-configuration-cache
+    - echo "✅ 发布完成"
 
 # 🔄 重建 test 分支
 # reset job: 基于main分支重建test分支

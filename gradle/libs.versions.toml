@@ -107,6 +107,7 @@ spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot-vers
 maven-publish = { id = "maven-publish" }
 # 引入 Kotlin 支持
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
+signing = { id = "signing" }
 # 支持 Spring 的 Kotlin 插件
 kotlin-plugin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin-version" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt" }
