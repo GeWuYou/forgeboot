@@ -1,7 +1,27 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.context.impl.filter
 
+import com.gewuyou.forgeboot.context.ContextHolders
 import com.gewuyou.forgeboot.context.api.ContextProcessor
-import com.gewuyou.forgeboot.context.impl.ContextHolder
 import com.gewuyou.forgeboot.context.impl.processor.ReactorProcessor
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
@@ -23,7 +43,6 @@ import reactor.core.publisher.Mono
 class ContextWebFilter(
     private val contextProcessors: List<ContextProcessor>,
     private val reactorProc: ReactorProcessor,
-    private val contextHolder: ContextHolder
 ) : WebFilter {
     /**
      * 执行过滤逻辑，在请求链中插入上下文管理操作。
@@ -43,12 +62,12 @@ class ContextWebFilter(
         exchange: ServerWebExchange,
         chain: WebFilterChain,
     ): Mono<Void> {
-        // 从 ContextHolder 快照获取当前上下文并转换为可变 Map
-        val ctx = contextHolder.snapshot().toMutableMap()
+        // 从ContextHolders 快照获取当前上下文并转换为可变 Map
+        val ctx = ContextHolders.snapshot().toMutableMap()
         // 遍历所有 ContextProcessor，从请求中提取上下文信息到 ctx
         contextProcessors.forEach { it.extract(exchange, ctx) }
-        // 将上下文写入 ContextHolder（ThreadLocal）
-        ctx.forEach(contextHolder::put)
+        // 将上下文写入ContextHolders（ThreadLocal）
+        ctx.forEach(ContextHolders::put)
         // 使用 MdcProcessor 将上下文注入到 MDC 中
         contextProcessors.forEach { it.inject(Unit, ctx) }
         // 构建新的 ServerWebExchange 实例
@@ -61,7 +80,7 @@ class ContextWebFilter(
             .doFinally {
                 // 清理 ThreadLocal + MDC 上下文
                 contextProcessors.forEach { it.inject(Unit, mutableMapOf()) }
-                contextHolder.clear()
+                ContextHolders.clear()
             }
     }
 }

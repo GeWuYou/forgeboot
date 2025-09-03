@@ -20,10 +20,8 @@
 
 package com.gewuyou.forgeboot.webmvc.logger.api.entities
 
-import kotlinx.coroutines.CoroutineScope
+import com.gewuyou.forgeboot.context.impl.coroutine.ContextAwareCoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 
 /**
  * 协程日志对象，用于在协程环境中安全地记录日志
@@ -32,8 +30,21 @@ import kotlinx.coroutines.launch
  * @author gewuyou
  */
 object CoroutineLogger {
-    // 创建一个协程作用域，使用SupervisorJob和IO调度器，适合进行IO密集型的日志记录任务
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    /**
+     * 协程作用域，用于启动日志记录协程
+     * 使用@Volatile注解确保多线程环境下的可见性
+     */
+    @Volatile
+    private var scope: ContextAwareCoroutineScope? = null
+
+    /**
+     * 初始化协程日志记录器的作用域
+     *
+     * @param scope 协程作用域，如果为null则创建默认作用域使用SupervisorJob和IO调度器
+     */
+    fun init(scope: ContextAwareCoroutineScope) {
+        this.scope = scope
+    }
 
     /**
      * 安全地执行日志记录block，异常会被捕获并忽略，确保日志记录的稳定性
@@ -42,13 +53,16 @@ object CoroutineLogger {
      */
     fun safeLog(block: suspend () -> Unit) {
         // 在协程作用域中启动一个新的协程来执行日志记录任务
-        scope.launch {
+        scope?.launchWithContext(
+            dispatcher = Dispatchers.IO
+        ) {
             try {
                 // 尝试执行日志记录block
                 block()
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 // 吞噬日志错误，确保协程稳定运行，不会因单个日志记录失败而崩溃
             }
         }
     }
 }
+

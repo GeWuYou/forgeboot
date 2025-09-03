@@ -19,6 +19,7 @@
  */
 
 dependencies {
+    compileOnly(project(Modules.Context.STARTER))
     compileOnly(project(Modules.Webmvc.LOGGER.API))
     compileOnly(project(Modules.Core.EXTENSION))
     compileOnly(libs.springBootStarter.web)

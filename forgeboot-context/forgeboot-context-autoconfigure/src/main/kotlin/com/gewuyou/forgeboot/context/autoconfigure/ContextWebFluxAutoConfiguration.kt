@@ -1,7 +1,26 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.context.autoconfigure
 
 import com.gewuyou.forgeboot.context.api.ContextProcessor
-import com.gewuyou.forgeboot.context.impl.ContextHolder
 import com.gewuyou.forgeboot.context.impl.filter.ContextWebFilter
 import com.gewuyou.forgeboot.context.impl.filter.CoroutineMdcWebFilter
 import com.gewuyou.forgeboot.context.impl.processor.ReactorProcessor
@@ -36,7 +55,6 @@ class ContextWebFluxAutoConfiguration {
      *
      * @param chain 处理器链，包含多个 ContextProcessor 实例
      * @param reactorProcessor ReactorProcessor 实例，用于反应式上下文传播
-     * @param contextHolder 上下文持有者，用于存储和获取当前上下文
      * @return 构建完成的 ContextWebFilter 实例
      */
     @Bean
@@ -45,8 +63,7 @@ class ContextWebFluxAutoConfiguration {
     fun contextWebFilter(
         chain: List<ContextProcessor>,
         reactorProcessor: ReactorProcessor,
-        contextHolder: ContextHolder
-    ) = ContextWebFilter(chain, reactorProcessor, contextHolder)
+    ) = ContextWebFilter(chain, reactorProcessor)
     /**
      * 注册 CoroutineMdcWebFilter Bean，用于在协程环境中传播 MDC 上下文信息。
      *
@@ -59,5 +76,5 @@ class ContextWebFluxAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @Order(Ordered.HIGHEST_PRECEDENCE + 11) // 稍晚于 ContextWebFilter 执行
-    fun coroutineMdcWebFilter(contextHolder: ContextHolder): CoroutineMdcWebFilter = CoroutineMdcWebFilter(contextHolder)
+    fun coroutineMdcWebFilter(): CoroutineMdcWebFilter = CoroutineMdcWebFilter()
 }

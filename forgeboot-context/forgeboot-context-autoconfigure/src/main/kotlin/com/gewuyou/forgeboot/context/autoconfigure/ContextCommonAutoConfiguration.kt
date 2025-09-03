@@ -1,12 +1,34 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.context.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.gewuyou.forgeboot.context.ContextHolders
 import com.gewuyou.forgeboot.context.api.ContextFieldContributor
 import com.gewuyou.forgeboot.context.api.FieldRegistry
 import com.gewuyou.forgeboot.context.impl.ContextHolder
 import com.gewuyou.forgeboot.context.impl.DefaultFieldRegistry
 import com.gewuyou.forgeboot.core.serialization.serializer.ValueSerializer
 import com.gewuyou.forgeboot.core.serialization.serializer.impl.serializer.JacksonValueSerializer
+import jakarta.annotation.PostConstruct
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -53,6 +75,22 @@ class ContextCommonAutoConfiguration {
         return ContextHolder(valueSerializer)
     }
 
+    /**
+     * 创建 ContextHolderBridge Bean，用于初始化 ContextHolders。
+     *
+     * 该方法定义了一个对象，用于在 Bean 初始化完成后调用 ContextHolders 的初始化方法，
+     * 将当前 ContextHolder 实例传递给 ContextHolders 进行管理。
+     *
+     * @param contextHolder 当前 ContextHolder 实例
+     * @return 构建完成的对象
+     */
+    @Bean
+    fun contextHolderBridge(contextHolder: ContextHolder) = object {
+        @PostConstruct
+        fun init() {
+            ContextHolders.init(contextHolder)
+        }
+    }
 
     /**
      * 创建 FieldRegistry Bean，用于注册上下文中所有字段定义。
