@@ -21,7 +21,6 @@
 package com.gewuyou.forgeboot.trace.demo.controller
 
 import com.gewuyou.forgeboot.context.api.ContextProcessor
-import com.gewuyou.forgeboot.context.impl.ContextHolder
 import com.gewuyou.forgeboot.context.impl.coroutine.ContextAwareCoroutineScope
 import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
@@ -42,7 +41,6 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/trace")
 class TraceTestController(
     private val requestIdProvider: RequestIdProvider,
-    private val contextHolder: ContextHolder,
     private val processors: List<ContextProcessor>,
 ) {
     @GetMapping("/coroutine")
@@ -52,7 +50,7 @@ class TraceTestController(
         log.info("→ Controller RequestId: $requestId")
 
         // 模拟内部异步任务（3秒后完成）
-        val scope = ContextAwareCoroutineScope(contextHolder,processors)
+        val scope = ContextAwareCoroutineScope(processors)
         scope.launchWithContext {
             log.info("RID: ${requestIdProvider.getRequestId()}")
         }

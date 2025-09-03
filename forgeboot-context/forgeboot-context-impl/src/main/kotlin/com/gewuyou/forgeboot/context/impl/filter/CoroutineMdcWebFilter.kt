@@ -1,6 +1,26 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.context.impl.filter
 
-import com.gewuyou.forgeboot.context.impl.ContextHolder
+import com.gewuyou.forgeboot.context.ContextHolders
 import com.gewuyou.forgeboot.context.impl.element.CoroutineContextMapElement
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactor.mono
@@ -16,14 +36,11 @@ import java.util.stream.Collectors
  * 用于在响应式编程环境下，将上下文（如 MDC）从 Reactor Context 传递到 Kotlin 协程中，
  * 确保日志上下文信息能够正确传播。
  *
- * @property contextHolder 上下文持有者实例，用于存储和管理 MDC 上下文数据
  *
  * @since 2025-07-16 11:07:44
  * @author gewuyou
  */
-class CoroutineMdcWebFilter(
-    private val contextHolder: ContextHolder
-) : WebFilter {
+class CoroutineMdcWebFilter : WebFilter {
 
     /**
      * 执行过滤操作的方法
@@ -52,11 +69,11 @@ class CoroutineMdcWebFilter(
             /**
              * 创建带有 MDC 上下文的协程环境并执行过滤链
              * 1. 将 MDC 数据注入协程上下文
-             * 2. 将上下文数据同步到 ContextHolder
+             * 2. 将上下文数据同步到 ContextHolders
              * 3. 执行后续过滤器链并等待结果
              */
-            mono(CoroutineContextMapElement(contextHolder,mdcMap)) {
-                contextHolder.putAll(mdcMap)
+            mono(CoroutineContextMapElement(mdcMap)) {
+                ContextHolders.putAll(mdcMap)
                 chain.filter(exchange).awaitFirstOrNull()
             }
         }

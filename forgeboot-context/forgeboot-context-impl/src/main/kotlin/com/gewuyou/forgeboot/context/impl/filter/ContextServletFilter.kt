@@ -1,7 +1,27 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.context.impl.filter
 
+import com.gewuyou.forgeboot.context.ContextHolders
 import com.gewuyou.forgeboot.context.api.ContextProcessor
-import com.gewuyou.forgeboot.context.impl.ContextHolder
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -20,7 +40,6 @@ import org.springframework.web.filter.OncePerRequestFilter
  */
 class ContextServletFilter(
     private val chain: List<ContextProcessor>,
-    private val contextHolder: ContextHolder
 ) : OncePerRequestFilter() {
 
     /**
@@ -39,13 +58,13 @@ class ContextServletFilter(
         filterChain: FilterChain,
     ) {
         // 创建当前线程上下文快照的可变副本，确保后续操作不影响原始上下文
-        val ctx = contextHolder.snapshot().toMutableMap()
+        val ctx = ContextHolders.snapshot().toMutableMap()
 
         // 遍历上下文处理器链，依次从请求中提取上下文信息并更新临时上下文容器
         chain.forEach { it.extract(request, ctx) }
 
         // 将提取后的上下文写入当前线程的上下文持有者，供后续组件访问
-        ctx.forEach(contextHolder::put)
+        ctx.forEach(ContextHolders::put)
 
         // 调用下一个过滤器或最终的目标处理器
         chain.forEach { it.inject(request, ctx) }
@@ -57,7 +76,7 @@ class ContextServletFilter(
             // 向处理器链注入空上下文，触发清理操作（如有）
             chain.forEach { it.inject(Unit, mutableMapOf()) }
             // 显式清除当前线程的上下文持有者，防止上下文泄露
-            contextHolder.clear()
+            ContextHolders.clear()
         }
     }
 }

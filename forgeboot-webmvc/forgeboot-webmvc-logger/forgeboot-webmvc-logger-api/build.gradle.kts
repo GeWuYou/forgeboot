@@ -20,4 +20,5 @@
 
 dependencies {
     compileOnly(libs.kotlinxCoroutines.reactor)
+    compileOnly(project(Modules.Context.STARTER))
 }

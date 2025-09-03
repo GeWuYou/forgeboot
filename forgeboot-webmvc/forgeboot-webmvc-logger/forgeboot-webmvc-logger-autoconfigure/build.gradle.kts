@@ -23,6 +23,7 @@ dependencies {
     compileOnly(project(Modules.Webmvc.LOGGER.API))
     compileOnly(project(Modules.Webmvc.LOGGER.IMPL))
     compileOnly(libs.springBootStarter.web)
+    implementation(project(Modules.Context.STARTER))
     implementation(project(Modules.Core.EXTENSION))
     implementation(libs.springBootStarter.aop)
     implementation(libs.kotlinxCoroutines.reactor)

@@ -111,7 +111,6 @@ class MethodRecordingAspect {
             ),
             start = System.currentTimeMillis()
         )
-
         return try {
             when (val result = joinPoint.proceed()) {
                 is Mono<*> -> instrumentMono(result, meta)

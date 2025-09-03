@@ -1,10 +1,29 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.trace.autoconfig
 
 
 import com.gewuyou.forgeboot.context.api.ContextFieldContributor
 import com.gewuyou.forgeboot.context.api.entities.FieldDef
 import com.gewuyou.forgeboot.context.api.enums.Scope
-import com.gewuyou.forgeboot.context.impl.ContextHolder
 import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
 import com.gewuyou.forgeboot.trace.api.config.TraceProperties
@@ -31,14 +50,13 @@ class TraceAutoConfiguration(
      * 创建请求ID提供者Bean
      *
      * 用于生成分布式请求链路追踪所需的唯一请求标识
-     * @param contextHolder 上下文持有者，用于跨组件传递请求上下文
      * @return 初始化完成的TraceRequestIdProvider实例
      */
     @Bean
     @ConditionalOnMissingBean(RequestIdProvider::class)
-    fun traceRequestIdProvider(contextHolder: ContextHolder): TraceRequestIdProvider {
+    fun traceRequestIdProvider(): TraceRequestIdProvider {
         log.info("TraceRequestIdProvider 已创建！")
-        return TraceRequestIdProvider(traceProperties,contextHolder)
+        return TraceRequestIdProvider(traceProperties)
     }
 
     /**

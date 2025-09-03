@@ -20,8 +20,12 @@
 
 package com.gewuyou.forgeboot.webmvc.logger.autoconfigure
 
+import com.gewuyou.forgeboot.context.api.ContextProcessor
+import com.gewuyou.forgeboot.context.impl.coroutine.ContextAwareCoroutineScope
 import com.gewuyou.forgeboot.core.extension.log
+import com.gewuyou.forgeboot.webmvc.logger.api.entities.CoroutineLogger
 import com.gewuyou.forgeboot.webmvc.logger.impl.aspect.MethodRecordingAspect
+import jakarta.annotation.PostConstruct
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
 
@@ -49,4 +53,13 @@ class LoggerAutoConfiguration {
         log.info("创建方法记录切面!")
         return MethodRecordingAspect()
     }
+
+    @Bean
+    fun coroutineLoggerInit(processors: List<ContextProcessor>) =
+        object {
+            @PostConstruct
+            fun init() {
+                CoroutineLogger.init(ContextAwareCoroutineScope(processors))
+            }
+        }
 }
