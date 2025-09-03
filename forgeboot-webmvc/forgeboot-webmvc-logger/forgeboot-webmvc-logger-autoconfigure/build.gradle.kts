@@ -18,13 +18,12 @@
  *
  */
 
-dependencies {
-    implementation(libs.springBootStarter.web)
-    implementation(project(Modules.TRACE.STARTER))
-    implementation(project(Modules.Context.STARTER))
-    implementation(project(Modules.Webmvc.DTO.STARTER))
-    implementation(project(Modules.Webmvc.LOGGER.STARTER))
-    implementation(libs.kotlinxCoroutines.reactor)
-    implementation(libs.kotlinxCoroutines.core)
-}
 
+dependencies {
+    compileOnly(project(Modules.Webmvc.LOGGER.API))
+    compileOnly(project(Modules.Webmvc.LOGGER.IMPL))
+    compileOnly(libs.springBootStarter.web)
+    implementation(project(Modules.Core.EXTENSION))
+    implementation(libs.springBootStarter.aop)
+    implementation(libs.kotlinxCoroutines.reactor)
+}
