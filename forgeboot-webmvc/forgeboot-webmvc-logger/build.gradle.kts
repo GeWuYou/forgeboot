@@ -18,13 +18,9 @@
  *
  */
 
-dependencies {
-    implementation(libs.springBootStarter.web)
-    implementation(project(Modules.TRACE.STARTER))
-    implementation(project(Modules.Context.STARTER))
-    implementation(project(Modules.Webmvc.DTO.STARTER))
-    implementation(project(Modules.Webmvc.LOGGER.STARTER))
-    implementation(libs.kotlinxCoroutines.reactor)
-    implementation(libs.kotlinxCoroutines.core)
+extra {
+    setProperty(ProjectFlags.IS_ROOT_MODULE, true)
 }
+dependencies {
 
+}

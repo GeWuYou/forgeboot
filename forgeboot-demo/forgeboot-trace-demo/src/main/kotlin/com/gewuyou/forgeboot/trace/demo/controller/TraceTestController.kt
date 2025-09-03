@@ -27,6 +27,7 @@ import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
 import com.gewuyou.forgeboot.webmvc.dto.api.entities.SuccessMessage
 import com.gewuyou.forgeboot.webmvc.dto.impl.Responses
+import com.gewuyou.forgeboot.webmvc.logger.api.annotation.MethodRecording
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -45,6 +46,7 @@ class TraceTestController(
     private val processors: List<ContextProcessor>,
 ) {
     @GetMapping("/coroutine")
+    @MethodRecording(description = "测试方法记录")
     suspend fun coroutine(): SuccessMessage {
         val requestId = requestIdProvider.getRequestId()
         log.info("→ Controller RequestId: $requestId")

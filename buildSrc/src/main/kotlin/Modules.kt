@@ -59,7 +59,13 @@ object Modules {
         const val STARTER = ":forgeboot-webmvc-spring-boot-starter"
         const val VALIDATION = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-validation"
         const val VERSION = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-version-spring-boot-starter"
-        const val LOGGER = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-logger-spring-boot-starter"
+
+        object LOGGER {
+            const val STARTER = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-logger-spring-boot-starter"
+            const val API = "${STARTER}:forgeboot-webmvc-logger-api"
+            const val IMPL = "${STARTER}:forgeboot-webmvc-logger-impl"
+            const val AUTOCONFIGURE = "${STARTER}:forgeboot-webmvc-logger-autoconfigure"
+        }
         object Spec{
             const val CORE = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-spec-core"
             const val JPA = ":forgeboot-webmvc-spring-boot-starter:forgeboot-webmvc-spec-jpa"

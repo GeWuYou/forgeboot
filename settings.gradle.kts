@@ -90,7 +90,10 @@ project(":forgeboot-banner:forgeboot-banner-launcher").name = "forgeboot-banner-
 include(
     "forgeboot-webmvc",
     ":forgeboot-webmvc:version",
-    ":forgeboot-webmvc:logger",
+    ":forgeboot-webmvc:forgeboot-webmvc-logger",
+    ":forgeboot-webmvc:forgeboot-webmvc-logger:forgeboot-webmvc-logger-api",
+    ":forgeboot-webmvc:forgeboot-webmvc-logger:forgeboot-webmvc-logger-impl",
+    ":forgeboot-webmvc:forgeboot-webmvc-logger:forgeboot-webmvc-logger-autoconfigure",
     ":forgeboot-webmvc:forgeboot-webmvc-exception",
     ":forgeboot-webmvc:forgeboot-webmvc-exception:forgeboot-webmvc-exception-api",
     ":forgeboot-webmvc:forgeboot-webmvc-exception:forgeboot-webmvc-exception-impl",
@@ -106,7 +109,11 @@ include(
 )
 project(":forgeboot-webmvc").name = "forgeboot-webmvc-spring-boot-starter"
 project(":forgeboot-webmvc:version").name = "forgeboot-webmvc-version-spring-boot-starter"
-project(":forgeboot-webmvc:logger").name = "forgeboot-webmvc-logger-spring-boot-starter"
+project(":forgeboot-webmvc:forgeboot-webmvc-logger").name = "forgeboot-webmvc-logger-spring-boot-starter"
+project(":forgeboot-webmvc:forgeboot-webmvc-logger:forgeboot-webmvc-logger-api").name = "forgeboot-webmvc-logger-api"
+project(":forgeboot-webmvc:forgeboot-webmvc-logger:forgeboot-webmvc-logger-impl").name = "forgeboot-webmvc-logger-impl"
+project(":forgeboot-webmvc:forgeboot-webmvc-logger:forgeboot-webmvc-logger-autoconfigure").name =
+    "forgeboot-webmvc-logger-autoconfigure"
 project(":forgeboot-webmvc:forgeboot-webmvc-exception").name = "forgeboot-webmvc-exception-spring-boot-starter"
 project(":forgeboot-webmvc:forgeboot-webmvc-exception:forgeboot-webmvc-exception-api").name =
     "forgeboot-webmvc-exception-api"
