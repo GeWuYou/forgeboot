@@ -21,6 +21,7 @@
 package com.gewuyou.forgeboot.context.impl
 
 import com.gewuyou.forgeboot.context.api.AbstractContext
+import com.gewuyou.forgeboot.context.api.AnyValueSupport
 import com.gewuyou.forgeboot.core.serialization.serializer.ValueSerializer
 
 /**
@@ -30,8 +31,8 @@ import com.gewuyou.forgeboot.core.serialization.serializer.ValueSerializer
  * @author gewuyou
  */
 open class ContextHolder(
-    private val valueSerializer: ValueSerializer
-) : AbstractContext<String, String>() {
+    private val valueSerializer: ValueSerializer,
+) : AbstractContext<String, String>(), AnyValueSupport {
 
     /**
      * 存储键值对到上下文中。如果值为 null，则不会存储。
@@ -60,5 +61,15 @@ open class ContextHolder(
      */
     override fun putAll(map: Map<String, Any?>) {
         map.forEach { (k, v) -> put(k, v) }
+    }
+
+    /**
+     * 存储键值对，值为任意类型
+     *
+     * @param key 键名
+     * @param value 任意类型的值，可为null
+     */
+    override fun putAny(key: String, value: Any?) {
+        super.put(key, value?.let { valueSerializer.serialize(it) })
     }
 }
