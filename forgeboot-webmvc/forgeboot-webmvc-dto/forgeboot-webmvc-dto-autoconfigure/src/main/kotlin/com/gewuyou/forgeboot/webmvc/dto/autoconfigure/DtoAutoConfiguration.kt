@@ -28,7 +28,7 @@ import com.gewuyou.forgeboot.webmvc.dto.api.entities.ApiResponses
 import com.gewuyou.forgeboot.webmvc.dto.api.entities.ExtraContributor
 import com.gewuyou.forgeboot.webmvc.dto.impl.DefaultApiResponses
 import com.gewuyou.forgeboot.webmvc.dto.impl.Responses
-import jakarta.annotation.PostConstruct
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -105,21 +105,17 @@ class DtoAutoConfiguration {
     )
 
     /**
-     * 创建并配置API响应桥接器Bean
+     * 创建并配置API响应桥接Bean
+     * 该函数用于初始化API响应处理机制，将ApiResponses配置注入到Responses工具类中
      *
-     * @param apiResponses API响应配置对象，用于初始化全局响应处理
-     * @return 包含初始化逻辑的匿名对象
+     * @param apiResponses API响应配置对象，包含各种响应码和响应信息的配置
+     * @return 包含初始化逻辑的匿名对象，用于在Spring容器中执行Responses的初始化操作
      */
     @Bean
-    fun responsesBridge(apiResponses: ApiResponses) = object {
-        /**
-         * 初始化API响应处理器
-         * 在Bean创建完成后自动调用，将API响应配置注入到全局响应管理器中
-         */
-        @PostConstruct
-        fun init() {
-            Responses.init(apiResponses)
-        }
+    fun responsesBridge(apiResponses: ApiResponses): InitializingBean = InitializingBean {
+        // 初始化Responses工具类，注入API响应配置
+        Responses.init(apiResponses)
     }
+
 
 }

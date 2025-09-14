@@ -82,4 +82,58 @@ interface Context<K, V> {
      * @return 与指定键关联的值，如果键不存在则返回 null
      */
     fun remove(key: K): V?
+
+    /**
+     * 返回上下文中当前所有的键。
+     *
+     * @return 当前上下文中所有键组成的集合
+     */
+    fun keys(): Set<K>
+
+    /**
+     * 判断上下文中是否包含指定的键。
+     *
+     * @param key 要检查的键
+     * @return 如果上下文中包含该键返回 true，否则返回 false
+     */
+    fun containsKey(key: K): Boolean
+
+    /**
+     * 判断上下文是否为空。
+     *
+     * @return 如果上下文中没有键值对返回 true，否则返回 false
+     */
+    fun isEmpty(): Boolean
+
+    /**
+     * 获取上下文中键值对的数量。
+     *
+     * @return 上下文中键值对的总数
+     */
+    fun size(): Int
+
+    /**
+     * 使用给定快照替换当前上下文
+     *
+     * @param map 快照
+     */
+    fun setAll(map: Map<K, V?>)
+
+    /**
+     * 获取指定键对应的值，如果键不存在则返回默认值
+     *
+     * @param key 要查找的键
+     * @param defaultValue 当键不存在时返回的默认值
+     * @return 键对应的值，如果键不存在则返回默认值
+     */
+    fun getOrDefault(key: K, defaultValue: V): V
+
+    /**
+     * 如果指定键不存在，则使用提供的供应函数计算并存储新值
+     *
+     * @param key 要查找或计算的键
+     * @param supplier 用于生成新值的供应函数
+     * @return 键对应的现有值，或新计算并存储的值
+     */
+    fun computeIfAbsent(key: K, supplier: () -> V): V
 }
