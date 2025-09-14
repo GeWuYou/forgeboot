@@ -149,8 +149,8 @@ reset:
     - git clone --branch main "$GL_REPO_URL" repo
     - cd repo
     - git checkout -B test
-    - git push origin test --force
-    - echo "✅ test 分支已重建完成"
+    - git push -o ci.skip origin test --force
+    - echo "✅ test 分支已重建完成（已跳过 CI）"
 
 # 🔁 同步到 GitHub
 # mirror-to-github job: 将GitLab的main分支同步到GitHub
