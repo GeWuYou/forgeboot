@@ -119,7 +119,7 @@ object Modules {
      * 负责自定义应用启动时显示的横幅信息
      */
     object Banner {
-        const val STARTER = ":forgeboot-banner"
+        const val ALL = ":forgeboot-banner"
         const val API = ":forgeboot-banner:forgeboot-banner-api"
         const val IMPL = ":forgeboot-banner:forgeboot-banner-impl"
         const val AUTOCONFIGURE = ":forgeboot-banner:forgeboot-banner-autoconfigure"
