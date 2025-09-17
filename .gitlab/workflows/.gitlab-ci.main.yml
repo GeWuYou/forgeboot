@@ -122,7 +122,7 @@ publish:
     - echo "🔧 授予 gradlew 执行权限..."
     - chmod +x gradlew
     - ./gradlew publishMavenPublicationToGitLabRepository
-    - ./gradlew publishMavenPublicationToGitHubRepository --continue
+    # - ./gradlew publishMavenPublicationToGitHubRepository --continue
     - ./gradlew publishMavenPublicationToMavenCentralRepository --no-configuration-cache
     - echo "✅ 发布完成"
 
