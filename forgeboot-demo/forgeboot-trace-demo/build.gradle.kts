@@ -24,6 +24,7 @@ dependencies {
     implementation(project(Modules.Context.STARTER))
     implementation(project(Modules.Webmvc.DTO.STARTER))
     implementation(project(Modules.Webmvc.LOGGER.STARTER))
+    implementation(project(Modules.Banner.ALL))
     implementation(libs.kotlinxCoroutines.reactor)
     implementation(libs.kotlinxCoroutines.core)
 }
