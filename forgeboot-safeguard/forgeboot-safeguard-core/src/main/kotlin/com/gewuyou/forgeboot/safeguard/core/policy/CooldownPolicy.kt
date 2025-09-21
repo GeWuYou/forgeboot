@@ -18,10 +18,17 @@
  *
  */
 
-dependencies {
-    val libs = rootProject.libs
-    compileOnly(libs.slf4j.api)
-    implementation(libs.kotlinReflect)
-    implementation(libs.kotlinxCoroutines.reactor)
-    implementation(libs.kotlinxCoroutines.slf4j)
-}
+package com.gewuyou.forgeboot.safeguard.core.policy
+
+import java.time.Duration
+
+/**
+ * 冷却策略数据类，用于定义缓存或操作的过期时间策略
+ *
+ * @property ttl 时间间隔，表示冷却时间的持续时间
+ * @since 2025-09-21 09:55:45
+ * @author gewuyou
+ */
+data class CooldownPolicy(
+    val ttl: Duration,
+)

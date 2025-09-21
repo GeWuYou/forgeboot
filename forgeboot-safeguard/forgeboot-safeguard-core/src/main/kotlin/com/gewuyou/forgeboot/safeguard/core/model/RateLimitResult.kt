@@ -18,10 +18,21 @@
  *
  */
 
-dependencies {
-    val libs = rootProject.libs
-    compileOnly(libs.slf4j.api)
-    implementation(libs.kotlinReflect)
-    implementation(libs.kotlinxCoroutines.reactor)
-    implementation(libs.kotlinxCoroutines.slf4j)
-}
+package com.gewuyou.forgeboot.safeguard.core.model
+
+import java.time.Instant
+
+/**
+ * 限流结果数据类
+ *
+ * @property allowed 是否允许通过限流检查
+ * @property remaining 剩余可用次数
+ * @property resetAt 限流重置时间
+ * @since 2025-09-21 10:54:46
+ * @author gewuyou
+ */
+data class RateLimitResult(
+    val allowed: Boolean,
+    val remaining: Long,
+    val resetAt: Instant?,
+)

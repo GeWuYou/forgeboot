@@ -163,6 +163,13 @@ object Modules {
         const val CORE = "${STARTER}:forgeboot-plugin-core"
         const val SPRING = "${STARTER}:forgeboot-plugin-spring"
     }
+
+    object Safeguard {
+        const val STARTER = ":forgeboot-safeguard-spring-boot-starter"
+        const val CORE = "${STARTER}:forgeboot-safeguard-core"
+        const val REDIS = "${STARTER}:forgeboot-safeguard-redis"
+        const val AUTOCONFIGURE = "${STARTER}:forgeboot-safeguard-autoconfigure"
+    }
     object Demo{
         private const val ROOT = ":forgeboot-demo"
         object Plugin{

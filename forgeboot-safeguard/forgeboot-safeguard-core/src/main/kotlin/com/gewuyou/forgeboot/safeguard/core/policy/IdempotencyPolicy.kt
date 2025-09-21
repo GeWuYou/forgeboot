@@ -18,10 +18,22 @@
  *
  */
 
-dependencies {
-    val libs = rootProject.libs
-    compileOnly(libs.slf4j.api)
-    implementation(libs.kotlinReflect)
-    implementation(libs.kotlinxCoroutines.reactor)
-    implementation(libs.kotlinxCoroutines.slf4j)
-}
+package com.gewuyou.forgeboot.safeguard.core.policy
+
+import com.gewuyou.forgeboot.safeguard.core.enums.IdemMode
+import java.time.Duration
+
+/**
+ * 幂等性策略配置类
+ *
+ * 用于定义接口幂等性控制的策略配置，包括超时时间和处理模式
+ *
+ * @property ttl 幂等性记录的存活时间，超过该时间后记录将被清除
+ * @property mode 幂等性处理模式，默认为返回已保存的结果
+ * @since 2025-09-21 09:57:03
+ * @author gewuyou
+ */
+data class IdempotencyPolicy(
+    val ttl: Duration,
+    val mode: IdemMode = IdemMode.RETURN_SAVED,
+)

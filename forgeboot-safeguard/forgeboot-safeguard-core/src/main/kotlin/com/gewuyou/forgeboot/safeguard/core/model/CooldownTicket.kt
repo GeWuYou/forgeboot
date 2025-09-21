@@ -18,10 +18,16 @@
  *
  */
 
-dependencies {
-    val libs = rootProject.libs
-    compileOnly(libs.slf4j.api)
-    implementation(libs.kotlinReflect)
-    implementation(libs.kotlinxCoroutines.reactor)
-    implementation(libs.kotlinxCoroutines.slf4j)
-}
+package com.gewuyou.forgeboot.safeguard.core.model
+
+/**
+ * 冷却票据数据类
+ * 用于表示某个操作是否已获得执行权限的票据状态
+ *
+ * @property acquired 表示是否已获得票据，true表示已获得，false表示未获得
+ * @since 2025-09-21 10:55:33
+ * @author gewuyou
+ */
+data class CooldownTicket(
+    val acquired: Boolean,
+)

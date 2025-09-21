@@ -18,10 +18,14 @@
  *
  */
 
-dependencies {
-    val libs = rootProject.libs
-    compileOnly(libs.slf4j.api)
-    implementation(libs.kotlinReflect)
-    implementation(libs.kotlinxCoroutines.reactor)
-    implementation(libs.kotlinxCoroutines.slf4j)
+package com.gewuyou.forgeboot.safeguard.demo
+
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+
+@SpringBootApplication
+class ForgebootSafeguardDemoApplication
+
+fun main(args: Array<String>) {
+    runApplication<ForgebootSafeguardDemoApplication>(*args)
 }

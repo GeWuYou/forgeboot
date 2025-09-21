@@ -19,9 +19,15 @@
  */
 
 dependencies {
-    val libs = rootProject.libs
-    compileOnly(libs.slf4j.api)
-    implementation(libs.kotlinReflect)
-    implementation(libs.kotlinxCoroutines.reactor)
+    compileOnly(project(Modules.Safeguard.CORE))
+    compileOnly(project(Modules.Safeguard.REDIS))
+    compileOnly(libs.io.micrometer.core)
+    compileOnly(libs.springBootStarter.actuator)
+    implementation(project(Modules.Core.EXTENSION))
+    implementation(libs.springBootStarter.redis)
+    implementation(libs.springBootStarter.aop)
+    implementation(libs.org.redisson.springBootStarter)
+    implementation(libs.com.bucket4.core)
+    implementation(libs.com.bucket4.redis.redisson)
     implementation(libs.kotlinxCoroutines.slf4j)
 }

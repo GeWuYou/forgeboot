@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: forgeboot-safeguard-demo
+  profiles:
+    active: dev
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 8491
+      timeout: 10s
+      lettuce:
+        pool:
+          # 连接池最大连接数
+          max-active: 200
+          # 连接池最大阻塞等待时间（使用负值表示没有限制）
+          max-wait: -1ms
+          # 连接池中的最大空闲连接
+          max-idle: 10
+          # 连接池中的最小空闲连接
+          min-idle: 0
+      # password: 114514
+forgeboot:
+  safeguard:
+    rate-limiter-engine: bucket4j
