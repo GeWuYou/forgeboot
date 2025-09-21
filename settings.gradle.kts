@@ -190,6 +190,7 @@ include(
     "forgeboot-demo",
     ":forgeboot-demo:forgeboot-trace-demo",
     ":forgeboot-demo:forgeboot-plugin-demo",
+    ":forgeboot-demo:forgeboot-safeguard-demo",
     ":forgeboot-demo:forgeboot-plugin-demo:forgeboot-plugin-demo-api",
     ":forgeboot-demo:forgeboot-plugin-demo:forgeboot-plugin-demo-impl",
     ":forgeboot-demo:forgeboot-plugin-demo:forgeboot-plugin-demo-server",
@@ -218,4 +219,21 @@ project(":forgeboot-cache").name = "forgeboot-cache-spring-boot-starter"
 project(":forgeboot-cache:forgeboot-cache-api").name = "forgeboot-cache-api"
 project(":forgeboot-cache:forgeboot-cache-impl").name = "forgeboot-cache-impl"
 project(":forgeboot-cache:forgeboot-cache-autoconfigure").name = "forgeboot-cache-autoconfigure"
+//endregion
+
+//region module context
+/**
+ * Includes and configures projects related to 'forgeboot-context'
+ * This module appears to be focused on contextual functionality within the application.
+ */
+include(
+    "forgeboot-safeguard",
+    ":forgeboot-safeguard:forgeboot-safeguard-core",
+    ":forgeboot-safeguard:forgeboot-safeguard-redis",
+    ":forgeboot-safeguard:forgeboot-safeguard-autoconfigure",
+)
+project(":forgeboot-safeguard").name = "forgeboot-safeguard-spring-boot-starter"
+project(":forgeboot-safeguard:forgeboot-safeguard-core").name = "forgeboot-safeguard-core"
+project(":forgeboot-safeguard:forgeboot-safeguard-redis").name = "forgeboot-safeguard-redis"
+project(":forgeboot-safeguard:forgeboot-safeguard-autoconfigure").name = "forgeboot-safeguard-autoconfigure"
 //endregion

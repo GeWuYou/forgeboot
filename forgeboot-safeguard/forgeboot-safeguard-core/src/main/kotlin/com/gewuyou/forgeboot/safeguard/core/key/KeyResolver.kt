@@ -18,10 +18,20 @@
  *
  */
 
-dependencies {
-    val libs = rootProject.libs
-    compileOnly(libs.slf4j.api)
-    implementation(libs.kotlinReflect)
-    implementation(libs.kotlinxCoroutines.reactor)
-    implementation(libs.kotlinxCoroutines.slf4j)
+package com.gewuyou.forgeboot.safeguard.core.key
+
+/**
+ * 键解析器
+ *
+ * @since 2025-09-21 09:53:17
+ * @author gewuyou
+ */
+fun interface KeyResolver<C> {
+    /**
+     * 解析键值
+     *
+     * @param context 解析上下文对象
+     * @return 解析得到的键对象
+     */
+    fun resolve(context: C): Key
 }

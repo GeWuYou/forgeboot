@@ -14,7 +14,7 @@ spring-cloud-version = "2024.0.1"
 spring-boot-version = "3.5.3"
 slf4j-version = "2.0.17"
 caffeine-version = "3.2.1"
-redisson-version = "3.50.0"
+redisson-version = "3.51.0"
 org-pf4j-version = "3.13.0"
 org-pf4j-spring-version = "0.10.0"
 org-yaml-snakeyaml-version = "2.4"
@@ -22,6 +22,7 @@ jimmer-version = "0.9.105"
 ktor-version = "3.2.3"
 junit-jupiter-version = "5.13.4"
 okHttp-version = "4.12.0"
+bucket4j-version = "8.15.0"
 [libraries]
 org-babyfish-jimmer-springBootStarter = { group = "org.babyfish.jimmer", name = "jimmer-spring-boot-starter", version.ref = "jimmer-version" }
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
@@ -31,6 +32,7 @@ kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-j
 kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin-version" }
 #kotlinxCoroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines-version" }
 kotlinxCoroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" }
+kotlinxCoroutines-slf4j = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-slf4j" }
 # kotlinx
 # 响应式协程库
 kotlinxCoroutines-reactor = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-reactor" }
@@ -44,8 +46,8 @@ springBootStarter-jpa = { group = "org.springframework.boot", name = "spring-boo
 springBootStarter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
 springBootStarter-redis = { group = "org.springframework.boot", name = "spring-boot-starter-data-redis" }
 springBootStarter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test" }
+springBootStarter-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator" }
 
-redisson-springBootStarter = { group = "org.redisson", name = "redisson-spring-boot-starter", version.ref = "redisson-version" }
 springBoot-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "spring-boot-version" }
 springBoot-autoconfigure = { group = "org.springframework.boot", name = "spring-boot-autoconfigure" }
 springBoot-starter = { group = "org.springframework.boot", name = "spring-boot-starter" }
@@ -62,6 +64,7 @@ jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackso
 
 reactor-core = { group = "io.projectreactor", name = "reactor-core" }
 #org
+org-redisson-springBootStarter = { group = "org.redisson", name = "redisson-spring-boot-starter", version.ref = "redisson-version" }
 org-junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-jupiter-version" }
 org-junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-jupiter-version" }
 org-junit-platform = { group = "org.junit.platform", name = "junit-platform-launcher", version = "1.13.4" }
@@ -75,7 +78,10 @@ jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt-version"
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt-version" }
 # com
 com-github-benManes-caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine-version" }
+com-bucket4-core = { module = "com.bucket4j:bucket4j_jdk17-core", version.ref = "bucket4j-version" }
+com-bucket4-redis-redisson = { module = "com.bucket4j:bucket4j_jdk17-redisson", version.ref = "bucket4j-version" }
 # io
+io-micrometer-core = { module = "io.micrometer:micrometer-core" }
 io-ktor-clientCore = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor-version" }
 io-ktor-clientContentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor-version" }
 io-ktor-serializationKotlinxJson = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor-version" }

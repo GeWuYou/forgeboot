@@ -18,10 +18,11 @@
  *
  */
 
+extra {
+    // 标记为根项目
+    setProperty(ProjectFlags.IS_ROOT_MODULE, true)
+}
+
 dependencies {
-    val libs = rootProject.libs
-    compileOnly(libs.slf4j.api)
-    implementation(libs.kotlinReflect)
-    implementation(libs.kotlinxCoroutines.reactor)
-    implementation(libs.kotlinxCoroutines.slf4j)
+
 }
