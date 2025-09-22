@@ -18,31 +18,21 @@
  *
  */
 
-package com.gewuyou.forgeboot.safeguard.core.enums
+package com.gewuyou.forgeboot.safeguard.core.model
 
 /**
- * 幂等性模式枚举类
- * 定义了处理幂等性请求的三种模式
+ * 尝试限制结果数据类
  *
- * @since 2025-09-21 09:57:24
+ * 用于表示一次尝试限制操作的结果，包含是否允许执行、尝试次数的过期时间以及锁定时间等信息
+ *
+ * @property allowed 是否允许执行操作
+ * @property attemptsTtlMs 尝试次数的过期时间（毫秒）
+ * @property lockTtlMs 锁定时间（毫秒）
+ * @since 2025-09-22 10:49:59
  * @author gewuyou
  */
-enum class IdemMode {
-    /**
-     * 返回已保存的结果
-     * 当检测到重复请求时，直接返回之前保存的处理结果
-     */
-    RETURN_SAVED,
-
-    /**
-     * 抛出异常
-     * 当检测到重复请求时，抛出一个异常，阻止后续处理
-     */
-    THROW_EXCEPTION,
-
-    /**
-     * 等待直到处理完成
-     * 当检测到重复请求时，等待前一个相同请求处理完成后返回结果
-     */
-    WAIT_UNTIL_DONE
-}
+data class AttemptLimitResult(
+    val allowed: Boolean,
+    val attemptsTtlMs: Long,
+    val lockTtlMs: Long,
+)

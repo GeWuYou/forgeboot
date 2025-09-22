@@ -30,7 +30,7 @@ import com.gewuyou.forgeboot.safeguard.core.policy.RateLimitPolicy
  * @since 2025-09-21 11:39:12
  * @author gewuyou
  */
-fun interface RateLimiter {
+interface RateLimiter {
     /**
      * 尝试消费一个限流令牌
      *
@@ -39,4 +39,14 @@ fun interface RateLimiter {
      * @return 限流结果，包含是否允许执行以及相关限流信息
      */
     fun tryConsume(key: Key, policy: RateLimitPolicy): RateLimitResult
+
+    /**
+     * 退还指定数量的限流令牌
+     *
+     * @param key 限流键，用于标识不同的限流对象
+     * @param requested 请求退还的令牌数量
+     * @param policy 限流策略，定义限流规则和参数
+     * @return 实际退还的令牌数量
+     */
+    fun refund(key: Key, requested: Long, policy: RateLimitPolicy): Long
 }

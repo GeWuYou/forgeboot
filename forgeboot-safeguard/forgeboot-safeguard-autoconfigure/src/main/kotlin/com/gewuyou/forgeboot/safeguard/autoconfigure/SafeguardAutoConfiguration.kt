@@ -22,10 +22,12 @@ package com.gewuyou.forgeboot.safeguard.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.gewuyou.forgeboot.core.extension.log
+import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.AttemptLimitAspect
 import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.CooldownAspect
 import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.IdempotentAspect
 import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.RateLimitAspect
 import com.gewuyou.forgeboot.safeguard.autoconfigure.key.KeyResolutionSupport
+import com.gewuyou.forgeboot.safeguard.core.api.AttemptLimitManager
 import com.gewuyou.forgeboot.safeguard.core.api.CooldownGuard
 import com.gewuyou.forgeboot.safeguard.core.api.IdempotencyManager
 import com.gewuyou.forgeboot.safeguard.core.api.RateLimiter
@@ -34,19 +36,22 @@ import com.gewuyou.forgeboot.safeguard.core.key.KeyTemplateRegistry
 import com.gewuyou.forgeboot.safeguard.core.metrics.NoopSafeguardMetrics
 import com.gewuyou.forgeboot.safeguard.core.metrics.SafeguardMetrics
 import com.gewuyou.forgeboot.safeguard.core.serialize.PayloadCodec
+import com.gewuyou.forgeboot.safeguard.redis.attemptlimit.Bucket4jAttemptLimitManager
+import com.gewuyou.forgeboot.safeguard.redis.attemptlimit.LuaAttemptLimitManager
 import com.gewuyou.forgeboot.safeguard.redis.codec.JacksonPayloadCodec
 import com.gewuyou.forgeboot.safeguard.redis.config.SafeguardProperties
 import com.gewuyou.forgeboot.safeguard.redis.cooldown.RedisCooldownGuard
 import com.gewuyou.forgeboot.safeguard.redis.idem.RedisIdempotencyManager
 import com.gewuyou.forgeboot.safeguard.redis.key.RedisKeyBuilder
 import com.gewuyou.forgeboot.safeguard.redis.key.RedisKeyTemplateRegistry
-import com.gewuyou.forgeboot.safeguard.redis.ratelimit.B4jRedisRateLimiter
+import com.gewuyou.forgeboot.safeguard.redis.ratelimit.Bucket4jRateLimiter
 import com.gewuyou.forgeboot.safeguard.redis.ratelimit.LuaRedisRateLimiter
 import com.gewuyou.forgeboot.safeguard.redis.support.LuaScriptExecutor
 import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy
 import io.github.bucket4j.distributed.proxy.ProxyManager
 import io.github.bucket4j.distributed.serialization.Mapper
 import io.github.bucket4j.redis.redisson.Bucket4jRedisson
+import jakarta.servlet.http.HttpServletRequest
 import org.redisson.Redisson
 import org.redisson.api.RedissonClient
 import org.springframework.beans.factory.BeanFactory
@@ -215,9 +220,53 @@ class SafeguardAutoConfiguration {
     ): RateLimiter =
         when (props.rateLimiterEngine.lowercase()) {
             "lua" -> LuaRedisRateLimiter(lua, key)
-            "bucket4j" -> B4jRedisRateLimiter(proxyManager)
+            "bucket4j" -> Bucket4jRateLimiter(proxyManager)
             else -> LuaRedisRateLimiter(lua, key)
         }
+
+    /**
+     * 创建尝试限制管理器实例，根据配置选择使用 Lua 或 Bucket4j 实现。
+     *
+     * @param props 防护配置属性
+     * @param lua Lua 脚本执行器
+     * @param key Redis 键构建器
+     * @param proxyManager 分布式代理管理器
+     * @return AttemptLimitManager 实例
+     */
+    @Bean
+    @ConditionalOnMissingBean(AttemptLimitManager::class)
+    fun attemptLimitManager(
+        props: SafeguardProperties,
+        lua: LuaScriptExecutor,
+        key: RedisKeyBuilder,
+        proxyManager: ProxyManager<String>,
+        redisson: RedissonClient,
+    ): AttemptLimitManager =
+        when (props.attemptLimiterEngine.lowercase()) {
+            "lua" -> LuaAttemptLimitManager(lua, key)
+            "bucket4j" -> Bucket4jAttemptLimitManager(proxyManager, redisson, key)
+            else -> LuaAttemptLimitManager(lua, key)
+        }
+
+    /**
+     * 创建尝试限制切面实例。
+     *
+     * @param limiter 尝试限制管理器
+     * @param metrics 指标收集器
+     * @param keyResolutionSupport 键解析支持类
+     * @return AttemptLimitAspect 实例
+     */
+    @Bean
+    @ConditionalOnMissingBean(AttemptLimitAspect::class)
+    fun attemptLimitAspect(
+        limiter: AttemptLimitManager,
+        metrics: SafeguardMetrics,
+        keyResolutionSupport: KeyResolutionSupport,
+        request: HttpServletRequest,
+    ): AttemptLimitAspect {
+        log.info("已启用尝试限制切面...")
+        return AttemptLimitAspect(limiter, metrics, keyResolutionSupport, request)
+    }
 
     /**
      * 创建冷却时间切面实例。

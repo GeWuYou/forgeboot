@@ -21,9 +21,11 @@
 package com.gewuyou.forgeboot.safeguard.demo.controller
 
 
+import com.gewuyou.forgeboot.safeguard.autoconfigure.annotations.AttemptLimit
 import com.gewuyou.forgeboot.safeguard.autoconfigure.annotations.Cooldown
 import com.gewuyou.forgeboot.safeguard.autoconfigure.annotations.Idempotent
 import com.gewuyou.forgeboot.safeguard.autoconfigure.annotations.RateLimit
+import com.gewuyou.forgeboot.safeguard.core.enums.KeyProcessingMode
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 import java.time.Instant
@@ -86,6 +88,43 @@ class SafeguardTestController {
             "source" to "body-idem"
         )
     }
+
+    /**
+     * 模拟“验证码登录”：
+     * - code == "000000" 视为成功（未抛异常 → 成功路径，触发 successReset）
+     * - 其他 code 抛异常（→ 失败路径，累计一次尝试）
+     *
+     * Key 规则：
+     * - namespace: "safeguard:al:<ip>"  (由切面根据 IP_KEY 帮你拼)
+     * - value: "login:user:<username>" (由 SpEL 生成)
+     */
+    @PostMapping("/attempt/login")
+    @AttemptLimit(
+        window = "PT1M",                  // 1 分钟滑窗
+        max = 3,                          // 窗口内最多 3 次失败
+        lock = "PT5M",                    // 触发后锁定 5 分钟
+        escalate = "5:PT1H,8:P1D",        // 阶梯：≥5 锁 1h，≥8 锁 1d
+        mode = KeyProcessingMode.IP_KEY,  // 默认命名空间带上 IP
+        key = "'login:user:' + #req.username", // value = login:user:<username>
+        successReset = true,
+    )
+    fun login(@RequestBody req: LoginReq): LoginResp {
+        if (req.code != "000000") {
+            // 任何异常都会走失败路径并累计一次
+            throw IllegalArgumentException("验证码错误")
+        }
+        return LoginResp(true, "登录成功")
+    }
+
+    data class LoginReq(
+        val username: String,
+        val code: String,
+    )
+
+    data class LoginResp(
+        val success: Boolean,
+        val message: String,
+    )
 }
 
 // 业务异常示例：用于 Cooldown 回滚演示

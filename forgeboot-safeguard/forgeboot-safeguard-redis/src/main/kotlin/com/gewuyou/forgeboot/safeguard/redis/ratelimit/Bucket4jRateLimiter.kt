@@ -30,14 +30,14 @@ import io.github.bucket4j.distributed.proxy.ProxyManager
 import java.time.Instant
 
 /**
- * Redis实现的限流器类
+ * Bucket4j实现的限流器类
  * 使用Redisson代理管理器实现分布式限流功能
  *
  * @property proxyManager Redisson代理管理器，用于构建分布式令牌桶
  * @since 2025-09-21 12:25:19
  * @author gewuyou
  */
-class B4jRedisRateLimiter(
+class Bucket4jRateLimiter(
     private val proxyManager: ProxyManager<String>,
 ) : RateLimiter {
 
@@ -93,8 +93,9 @@ class B4jRedisRateLimiter(
      * @param key 限流键值，用于标识不同的限流对象
      * @param requested 请求退还的令牌数量
      * @param policy 限流策略，包含容量和 refill 规则
+     * @return 实际退还的令牌数量
      */
-    fun refund(key: Key, requested: Long, policy: RateLimitPolicy) {
+    override fun refund(key: Key, requested: Long, policy: RateLimitPolicy): Long {
         val conf = BucketConfiguration.builder()
             .addLimit(
                 Bandwidth.builder()
@@ -106,10 +107,13 @@ class B4jRedisRateLimiter(
         // 使用代理管理器构建指定key的令牌桶实例
         val bucket = proxyManager.builder().build(key.full()) { conf }
         // 如果有预消费令牌的需求，则执行令牌消费操作
-        if (requested > 0) {
+        return if (requested > 0) {
             // 保护：最多补到容量上限（Bucket4j 内部也会处理不超过容量，这里显式一下）
             val add = requested.coerceAtMost(policy.capacity)
             bucket.addTokens(add)
+            add
+        } else {
+            0L
         }
     }
 }

@@ -21,28 +21,22 @@
 package com.gewuyou.forgeboot.safeguard.core.enums
 
 /**
- * 幂等性模式枚举类
- * 定义了处理幂等性请求的三种模式
+ * 处理模式枚举类
+ * 定义了数据处理的不同模式选项
  *
- * @since 2025-09-21 09:57:24
+ * @since 2025-09-22 12:55:55
  * @author gewuyou
  */
-enum class IdemMode {
+enum class KeyProcessingMode {
     /**
-     * 返回已保存的结果
-     * 当检测到重复请求时，直接返回之前保存的处理结果
+     * 无处理模式
+     * 表示不进行任何特殊处理
      */
-    RETURN_SAVED,
+    NONE,
 
     /**
-     * 抛出异常
-     * 当检测到重复请求时，抛出一个异常，阻止后续处理
+     * IP键处理模式
+     * 表示基于IP地址作为前缀键进行处理
      */
-    THROW_EXCEPTION,
-
-    /**
-     * 等待直到处理完成
-     * 当检测到重复请求时，等待前一个相同请求处理完成后返回结果
-     */
-    WAIT_UNTIL_DONE
+    IP_KEY
 }

@@ -42,5 +42,7 @@ data class SafeguardProperties(
 
     var rateLimiterEngine: String = "lua",
 
+    var attemptLimiterEngine: String = "lua",
+
     var redisKeyTemplatePrefix: String = "safeguard:key_tpl",
 )

@@ -27,12 +27,14 @@ import java.time.Instant
  *
  * @property allowed 是否允许通过限流检查
  * @property remaining 剩余可用次数
- * @property resetAt 限流重置时间
+ * @property waitMs 需要等待的毫秒数
+ * @property resetAt 限流重置时间，当不允许通过且需要等待时，根据等待时间计算得出重置时间
  * @since 2025-09-21 10:54:46
  * @author gewuyou
  */
 data class RateLimitResult(
     val allowed: Boolean,
     val remaining: Long,
-    val resetAt: Instant?,
+    val waitMs: Long = 0,
+    val resetAt: Instant? = if (!allowed && waitMs > 0) Instant.now().plusMillis(waitMs) else null,
 )

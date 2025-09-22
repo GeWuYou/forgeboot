@@ -18,31 +18,28 @@
  *
  */
 
-package com.gewuyou.forgeboot.safeguard.core.enums
+package com.gewuyou.forgeboot.safeguard.core.util
 
 /**
- * 幂等性模式枚举类
- * 定义了处理幂等性请求的三种模式
+ * 类型转换工具类
  *
- * @since 2025-09-21 09:57:24
+ * @since 2025-09-22 10:31:33
  * @author gewuyou
  */
-enum class IdemMode {
+object ConversionUtils {
     /**
-     * 返回已保存的结果
-     * 当检测到重复请求时，直接返回之前保存的处理结果
+     * 将任意类型转换为 Long 类型。
+     *
+     * @param x 待转换的值
+     * @return 转换后的 Long 值
      */
-    RETURN_SAVED,
+    fun asLong(x: Any?): Long = when (x) {
+        null -> 0L
+        is Number -> x.toLong()
+        is String -> x.toLong()
+        is ByteArray -> String(x, Charsets.UTF_8).toLong()
+        else -> error("Unexpected type: ${x::class}")
+    }
 
-    /**
-     * 抛出异常
-     * 当检测到重复请求时，抛出一个异常，阻止后续处理
-     */
-    THROW_EXCEPTION,
 
-    /**
-     * 等待直到处理完成
-     * 当检测到重复请求时，等待前一个相同请求处理完成后返回结果
-     */
-    WAIT_UNTIL_DONE
 }
