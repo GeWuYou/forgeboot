@@ -18,31 +18,16 @@
  *
  */
 
-package com.gewuyou.forgeboot.safeguard.core.enums
+package com.gewuyou.forgeboot.safeguard.core.extensions
+
+import java.time.Duration
 
 /**
- * 幂等性模式枚举类
- * 定义了处理幂等性请求的三种模式
+ * 将Map<Int, Duration>转换为CSV格式的字符串
  *
- * @since 2025-09-21 09:57:24
- * @author gewuyou
+ * @return 返回格式为"k1:v1,k2:v2,..."的字符串，其中k是键，v是持续时间的毫秒值
+ *         结果按键的升序排列
  */
-enum class IdemMode {
-    /**
-     * 返回已保存的结果
-     * 当检测到重复请求时，直接返回之前保存的处理结果
-     */
-    RETURN_SAVED,
-
-    /**
-     * 抛出异常
-     * 当检测到重复请求时，抛出一个异常，阻止后续处理
-     */
-    THROW_EXCEPTION,
-
-    /**
-     * 等待直到处理完成
-     * 当检测到重复请求时，等待前一个相同请求处理完成后返回结果
-     */
-    WAIT_UNTIL_DONE
-}
+fun Map<Int, Duration>.toCsv(): String =
+    entries.sortedBy { it.key } // 按键排序
+        .joinToString(",") { (k, v) -> "$k:${v.toMillis()}" } // 转换为key:millis格式并用逗号连接

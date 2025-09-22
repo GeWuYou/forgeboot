@@ -29,8 +29,6 @@ import com.gewuyou.forgeboot.safeguard.core.key.Key
 import com.gewuyou.forgeboot.safeguard.core.metrics.NoopSafeguardMetrics
 import com.gewuyou.forgeboot.safeguard.core.metrics.SafeguardMetrics
 import com.gewuyou.forgeboot.safeguard.core.policy.RateLimitPolicy
-import com.gewuyou.forgeboot.safeguard.redis.ratelimit.B4jRedisRateLimiter
-import com.gewuyou.forgeboot.safeguard.redis.ratelimit.LuaRedisRateLimiter
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -106,11 +104,7 @@ class RateLimitAspect(
         } catch (ex: Throwable) {
             // 如果方法执行失败且满足退款条件，则尝试退还令牌
             if (rl.refundOn.any { it.java.isAssignableFrom(ex.javaClass) }) {
-                when (limiter) {
-                    is LuaRedisRateLimiter -> limiter.refund(key, requested, policy)
-                    is B4jRedisRateLimiter -> limiter.refund(key, requested, policy)
-                    // 如果以后有 RefundableRateLimiter 接口，在此改为接口分派
-                }
+                limiter.refund(key, requested, policy)
             }
             throw ex
         }

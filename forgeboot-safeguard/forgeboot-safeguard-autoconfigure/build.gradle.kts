@@ -23,6 +23,7 @@ dependencies {
     compileOnly(project(Modules.Safeguard.REDIS))
     compileOnly(libs.io.micrometer.core)
     compileOnly(libs.springBootStarter.actuator)
+    compileOnly(libs.springBootStarter.web)
     implementation(project(Modules.Core.EXTENSION))
     implementation(libs.springBootStarter.redis)
     implementation(libs.springBootStarter.aop)

@@ -86,6 +86,47 @@ interface SafeguardMetrics {
     fun onIdemConflict(namespace: String, key: String) {
         // ignore
     }
+
+    /**
+     * 当尝试被记录时调用此函数，失败被计入窗口但尚未锁定
+     * @param namespace 命名空间标识
+     * @param key 键值标识
+     * @param windowMs 窗口时间（毫秒）
+     */
+    fun onAttemptRecorded(namespace: String, key: String, windowMs: Long) {
+        // ignore
+    }
+
+    /**
+     * 当尝试被锁定时调用此函数，已进入或仍处于锁定状态
+     * @param namespace 命名空间标识
+     * @param key 键值标识
+     * @param lockMs 本次或现存锁的剩余毫秒数
+     */
+    fun onAttemptLocked(namespace: String, key: String, lockMs: Long) {
+        // ignore
+    }
+
+    /**
+     * 当尝试成功后调用此函数，用于清理 attempts/lock
+     * @param namespace 命名空间标识
+     * @param key 键值标识
+     */
+    fun onAttemptReset(namespace: String, key: String) {
+        // ignore
+    }
+
+    /**
+     * 当尝试被阻止时的回调函数
+     *
+     * @param namespace 命名空间标识符
+     * @param key 被阻止的键值
+     * @param lockTtl 锁定的生存时间（毫秒）
+     */
+    fun onAttemptBlocked(namespace: String, key: String, lockTtl: Long) {
+        // ignore
+    }
+
 }
 
 /**

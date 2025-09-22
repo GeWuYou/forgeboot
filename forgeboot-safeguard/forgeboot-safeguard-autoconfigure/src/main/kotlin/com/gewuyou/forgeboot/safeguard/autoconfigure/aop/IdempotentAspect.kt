@@ -107,7 +107,7 @@ class IdempotentAspect(
                 IdempotencyStatus.SUCCESS -> throw ReturnValueFromRecordException(rec)
                 IdempotencyStatus.PENDING -> when (idemAnn.mode) {
                     IdemMode.RETURN_SAVED,
-                    IdemMode.CONFLICT_409,
+                    IdemMode.THROW_EXCEPTION,
                         -> {
                         metrics.onIdemConflict(key.namespace, key.value)
                         throw IdempotencyConflictException(key)

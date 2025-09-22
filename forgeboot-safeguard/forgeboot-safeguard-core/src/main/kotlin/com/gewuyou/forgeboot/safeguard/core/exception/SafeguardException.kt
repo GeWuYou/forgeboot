@@ -60,3 +60,11 @@ class CooldownActiveException(key: Key) :
  */
 class IdempotencyConflictException(key: Key) :
     SafeguardException("Idempotency conflict: ${key.full()}", key, "IDEMPOTENCY_CONFLICT")
+
+/**
+ * 当尝试次数超过限制时抛出的异常类
+ *
+ * @param key 触发异常的键值对象，用于标识具体的限制项
+ */
+class AttemptLimitExceededException(key: Key) :
+    SafeguardException("Attempt limit exceeded: ${key.full()}", key, "ATTEMPT_LIMIT_EXCEEDED")

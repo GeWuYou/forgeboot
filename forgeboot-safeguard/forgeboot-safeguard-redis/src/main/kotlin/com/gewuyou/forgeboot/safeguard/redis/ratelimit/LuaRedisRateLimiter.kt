@@ -20,17 +20,12 @@
 
 package com.gewuyou.forgeboot.safeguard.redis.ratelimit
 
-/**
-
- *
- * @since 2025-09-21 13:10:01
- * @author gewuyou
- */
 import com.gewuyou.forgeboot.core.extension.withMdc
 import com.gewuyou.forgeboot.safeguard.core.api.RateLimiter
 import com.gewuyou.forgeboot.safeguard.core.key.Key
 import com.gewuyou.forgeboot.safeguard.core.model.RateLimitResult
 import com.gewuyou.forgeboot.safeguard.core.policy.RateLimitPolicy
+import com.gewuyou.forgeboot.safeguard.core.util.ConversionUtils
 import com.gewuyou.forgeboot.safeguard.redis.key.RedisKeyBuilder
 import com.gewuyou.forgeboot.safeguard.redis.support.LuaScriptExecutor
 import kotlinx.coroutines.Dispatchers
@@ -75,7 +70,7 @@ class LuaRedisRateLimiter(
      */
     override fun tryConsume(key: Key, policy: RateLimitPolicy): RateLimitResult {
         return if (policy.timeout.isZero) {
-            evalOnceBlocking(key, policy).toResult()
+            evalOnceBlocking(key, policy)
         } else {
             runBlocking(context.withMdc()) { tryConsumeAwait(key, policy) }
         }
@@ -92,23 +87,23 @@ class LuaRedisRateLimiter(
      */
     suspend fun tryConsumeAwait(key: Key, policy: RateLimitPolicy): RateLimitResult {
         val timeoutMs = policy.timeout.toMillis()
-        if (timeoutMs <= 0) return evalOnceSuspend(key, policy).toResult()
+        if (timeoutMs <= 0) return evalOnceSuspend(key, policy)
 
         if (policy.requested > policy.capacity) {
             // 请求大于容量，不可能成功，直接失败
-            return RateLimitResult(allowed = false, remaining = 0, resetAt = null)
+            return RateLimitResult(allowed = false, remaining = 0, waitMs = 0, resetAt = null)
         }
 
         val deadline = System.currentTimeMillis() + timeoutMs
-        var last: Eval
+        var last: RateLimitResult
         while (true) {
             last = evalOnceSuspend(key, policy)
-            if (last.allowed) return last.toResult()
+            if (last.allowed) return last
 
             val now = System.currentTimeMillis()
             val left = deadline - now
             if (last.waitMs <= 0 || left <= 0) {
-                return last.toResult(nowInstant = Instant.now())
+                return last
             }
 
             // 等待不超过脚本建议(waitMs)与剩余超时(left)的较小值
@@ -119,39 +114,16 @@ class LuaRedisRateLimiter(
         }
     }
 
-    /**
-     * 封装 Lua 脚本执行结果的数据类。
-     *
-     * @property allowed 是否允许请求
-     * @property remaining 剩余令牌数
-     * @property waitMs 需要等待的毫秒数
-     */
-    private data class Eval(
-        val allowed: Boolean,
-        val remaining: Long,
-        /** 距满足请求所需的等待毫秒数（由 Lua 基于 TIME 计算） */
-        val waitMs: Long,
-    ) {
-        /**
-         * 将 Eval 结果转换为 RateLimitResult。
-         *
-         * @param nowInstant 当前时间戳，默认为 Instant.now()
-         * @return RateLimitResult 包含是否允许、剩余令牌数和重置时间的结果对象
-         */
-        fun toResult(nowInstant: Instant = Instant.now()): RateLimitResult {
-            val resetAt = if (!allowed && waitMs > 0) nowInstant.plusMillis(waitMs) else null
-            return RateLimitResult(allowed = allowed, remaining = remaining, resetAt = resetAt)
-        }
-    }
 
     /**
      * 执行一次 Lua 脚本以尝试消费令牌（阻塞方式）。
      *
      * @param key 限流的唯一标识键
      * @param policy 限流策略
-     * @return Eval 封装了 Lua 脚本执行结果的对象
+     * @return 限流结果，包含是否允许执行、剩余令牌数和重置时间等信息
      */
-    private fun evalOnceBlocking(key: Key, policy: RateLimitPolicy): Eval {
+    private fun evalOnceBlocking(key: Key, policy: RateLimitPolicy): RateLimitResult {
+        // 执行 Lua 脚本进行限流判断，脚本返回是否允许、剩余令牌数和等待时间
         val r = lua.eval(
             sha = sha,
             keys = listOf(keyBuilder.rateLimit(key)),
@@ -164,36 +136,25 @@ class LuaRedisRateLimiter(
                 policy.requested
             )
         ) as List<*>
-        return Eval(
-            allowed = asLong(r.getOrNull(0)) == 1L,
-            remaining = asLong(r.getOrNull(1)),
-            waitMs = asLong(r.getOrNull(2)),
-        )
+        val allowed = ConversionUtils.asLong(r.getOrNull(0)) == 1L
+        val remaining = ConversionUtils.asLong(r.getOrNull(1))
+        val waitMs = ConversionUtils.asLong(r.getOrNull(2))
+        // 计算重置时间：如果不允许执行且需要等待，则设置重置时间为当前时间加上等待时间
+        val resetAt = if (!allowed && waitMs > 0) Instant.now().plusMillis(waitMs) else null
+        return RateLimitResult(allowed = allowed, remaining = remaining, waitMs = waitMs, resetAt = resetAt)
     }
+
 
     /**
      * 在协程中执行一次 Lua 脚本以尝试消费令牌。
      *
      * @param key 限流的唯一标识键
      * @param policy 限流策略
-     * @return Eval 封装了 Lua 脚本执行结果的对象
+     * @return 限流结果，包含是否允许执行以及相关的限流信息
      */
-    private suspend fun evalOnceSuspend(key: Key, policy: RateLimitPolicy): Eval =
+    private suspend fun evalOnceSuspend(key: Key, policy: RateLimitPolicy): RateLimitResult =
         withContext(context) { evalOnceBlocking(key, policy) }
 
-    /**
-     * 将任意类型转换为 Long 类型。
-     *
-     * @param x 待转换的值
-     * @return 转换后的 Long 值
-     */
-    private fun asLong(x: Any?): Long = when (x) {
-        null -> 0L
-        is Number -> x.toLong()
-        is String -> x.toLong()
-        is ByteArray -> String(x, Charsets.UTF_8).toLong()
-        else -> error("Unexpected type: ${x::class}")
-    }
 
     /**
      * 退还指定数量的令牌到令牌桶中。
@@ -205,7 +166,7 @@ class LuaRedisRateLimiter(
      * @param policy 当前使用的限流策略
      * @return 实际退还的令牌数量
      */
-    fun refund(key: Key, requested: Long, policy: RateLimitPolicy): Long {
+    override fun refund(key: Key, requested: Long, policy: RateLimitPolicy): Long {
         val res = lua.eval(
             sha = refundSha,
             returnType = ReturnType.INTEGER,

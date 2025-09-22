@@ -56,4 +56,12 @@ class RedisKeyBuilder(private val prefix: String = "sg") {
      * @return 构建完成的限流键字符串
      */
     fun rateLimit(key: Key) = "$prefix:rl:${key.namespace}:${key.value}"
+
+    /**
+     * 生成尝试限制的键名
+     *
+     * @param key 用于生成限制键名的Key对象
+     * @return 返回格式化的字符串，格式为"$prefix:al:${key.namespace}:${key.value}"
+     */
+    fun attemptLimit(key: Key) = "$prefix:al:${key.namespace}:${key.value}"
 }
