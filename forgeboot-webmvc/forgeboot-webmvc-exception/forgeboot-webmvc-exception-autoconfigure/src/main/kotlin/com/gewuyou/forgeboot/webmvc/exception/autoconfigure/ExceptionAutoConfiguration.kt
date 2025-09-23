@@ -21,9 +21,13 @@
 package com.gewuyou.forgeboot.webmvc.exception.autoconfigure
 
 import com.gewuyou.forgeboot.core.extension.log
-import com.gewuyou.forgeboot.webmvc.exception.impl.ExceptionHandler
+import com.gewuyou.forgeboot.webmvc.exception.api.config.ExceptionAdviceProperties
+import com.gewuyou.forgeboot.webmvc.exception.api.hook.OtherExceptionHook
+import com.gewuyou.forgeboot.webmvc.exception.impl.GlobalExceptionAdvice
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 
 /**
@@ -33,6 +37,13 @@ import org.springframework.context.annotation.Bean
  * @author gewuyou
  */
 @AutoConfiguration
+@EnableConfigurationProperties(ExceptionAdviceProperties::class)
+@ConditionalOnProperty(
+    prefix = "forgeboot.webmvc.exception",
+    name = ["enabled"],
+    havingValue = "true",
+    matchIfMissing = true
+)
 class ExceptionAutoConfiguration {
     /**
      * 创建异常处理器Bean
@@ -42,9 +53,9 @@ class ExceptionAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    fun exceptionHandler(): ExceptionHandler {
+    fun exceptionHandler(props: ExceptionAdviceProperties, hooks: List<OtherExceptionHook>): GlobalExceptionAdvice {
         // 初始化异常处理组件
         log.info("初始化异常处理")
-        return ExceptionHandler()
+        return GlobalExceptionAdvice(props, hooks)
     }
 }

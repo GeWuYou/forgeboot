@@ -26,7 +26,12 @@ import com.gewuyou.forgeboot.webmvc.dto.api.entities.Failure
 import com.gewuyou.forgeboot.webmvc.dto.api.entities.SimpleInfo
 import com.gewuyou.forgeboot.webmvc.dto.impl.Responses
 import com.gewuyou.forgeboot.webmvc.exception.api.PromptException
+import com.gewuyou.forgeboot.webmvc.exception.api.config.ExceptionAdviceProperties
+import com.gewuyou.forgeboot.webmvc.exception.api.hook.OtherExceptionHook
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -42,25 +47,38 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
  * @since 2024-04-13 上午12:22:18
  */
 @RestControllerAdvice
-class ExceptionHandler {
+@Order(Ordered.LOWEST_PRECEDENCE)
+class GlobalExceptionAdvice(
+    private val props: ExceptionAdviceProperties,
+    private val hooks: List<OtherExceptionHook>,
+) {
     /**
      * 异常处理器
      *
      * 用于处理除特定异常外的所有其他异常
      *
      * @param e 异常
+     * @param request HTTP请求对象
      * @return 响应
      * @since 2024/4/13 上午12:29
      */
     @ExceptionHandler(Exception::class)
-    fun handleOtherException(e: Exception): Failure {
+    fun handleOtherException(e: Exception, request: HttpServletRequest?): Failure {
+        // 1) 链式 SPI：谁先产出 Failure 用谁
+        for (hook in hooks.sortedBy { Ordered.HIGHEST_PRECEDENCE }) {
+            val out = hook.handle(e, request)
+            if (out != null) return out
+        }
+        // 2) 默认逻辑
         log.error("other exception:", e)
         return Responses.fail(
             info = SimpleInfo(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(), "服务器开小差了，请稍后再试!"
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                props.fallbackMessage
             )
         )
     }
+
 
     /**
      * 处理 @Valid 和 @Validated 校验失败抛出的 MethodArgumentNotValidException 异常

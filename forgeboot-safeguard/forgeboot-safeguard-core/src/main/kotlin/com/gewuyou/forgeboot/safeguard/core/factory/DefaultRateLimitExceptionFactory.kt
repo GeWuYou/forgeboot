@@ -20,14 +20,24 @@
 
 package com.gewuyou.forgeboot.safeguard.core.factory
 
-import com.gewuyou.forgeboot.safeguard.core.model.CooldownContext
+import com.gewuyou.forgeboot.safeguard.core.exception.RateLimitExceededException
+import com.gewuyou.forgeboot.safeguard.core.model.RateLimitContext
 
 /**
- *冷却异常工厂
+ *默认限流异常工厂
  *
- * @since 2025-09-23 10:24:39
+ * @since 2025-09-23 21:41:39
  * @author gewuyou
  */
-fun interface CooldownExceptionFactory : ExceptionFactory<CooldownContext> {
-    override fun create(ctx: CooldownContext): RuntimeException
+class DefaultRateLimitExceptionFactory : RateLimitExceptionFactory {
+    /**
+     * 根据限流上下文创建运行时异常
+     *
+     * @param ctx 限流上下文，包含限流相关的信息
+     * @return 创建的运行时异常实例
+     */
+    override fun create(ctx: RateLimitContext): RuntimeException {
+        // 创建限流异常实例，使用上下文中的key作为异常标识
+        return RateLimitExceededException(ctx.key)
+    }
 }

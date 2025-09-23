@@ -176,6 +176,7 @@ class AttemptLimitAspect(
             annotations = method.annotations,
             remainingAttempts = preResult.remainingAttempts,
             policy = policy,
+            currentAnnotation = al,
             retryAt = if (preResult.allowed) null else Instant.now().plusMillis(preResult.retryAfterMs)
         )
     }

@@ -100,7 +100,8 @@ class CooldownAspect(
             method,
             Instant.now(),
             pjp.args,
-            method.annotations
+            method.annotations,
+            cd
         )
         if (!acquired.acquired) {
             // —— 埋点：冷却期内被拦截

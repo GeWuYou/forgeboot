@@ -302,6 +302,7 @@ class SafeguardAutoConfiguration {
      * @param beanFactory Spring Bean 工厂
      * @param metrics 指标收集器
      * @param keyResolutionSupport 键解析支持类
+     * @param applicationContext Spring 应用上下文
      * @return IdempotentAspect 实例
      */
     @Bean
@@ -313,9 +314,10 @@ class SafeguardAutoConfiguration {
         beanFactory: BeanFactory,
         metrics: SafeguardMetrics,
         keyResolutionSupport: KeyResolutionSupport,
+        applicationContext: ApplicationContext,
     ): IdempotentAspect {
         log.info("已启用幂等切面...")
-        return IdempotentAspect(idem, codec, props, beanFactory, metrics, keyResolutionSupport)
+        return IdempotentAspect(idem, codec, props, beanFactory, metrics, keyResolutionSupport, applicationContext)
     }
 
     /**
@@ -325,6 +327,7 @@ class SafeguardAutoConfiguration {
      * @param beanFactory Spring Bean 工厂
      * @param metrics 指标收集器
      * @param keyResolutionSupport 键解析支持类
+     * @param applicationContext Spring 应用上下文
      * @return RateLimitAspect 实例
      */
     @Bean
@@ -335,8 +338,9 @@ class SafeguardAutoConfiguration {
         beanFactory: BeanFactory,
         metrics: SafeguardMetrics,
         keyResolutionSupport: KeyResolutionSupport,
+        applicationContext: ApplicationContext,
     ): RateLimitAspect {
         log.info("已启用限流切面...")
-        return RateLimitAspect(limiter, beanFactory, metrics, keyResolutionSupport)
+        return RateLimitAspect(limiter, beanFactory, metrics, keyResolutionSupport, applicationContext)
     }
 }
