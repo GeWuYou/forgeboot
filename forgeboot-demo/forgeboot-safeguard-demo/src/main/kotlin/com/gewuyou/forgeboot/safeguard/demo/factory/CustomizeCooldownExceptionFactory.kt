@@ -18,6 +18,19 @@
  *
  */
 
-dependencies {
-    compileOnly(libs.springBootStarter.aop)
+package com.gewuyou.forgeboot.safeguard.demo.factory
+
+import com.gewuyou.forgeboot.safeguard.core.factory.CooldownExceptionFactory
+import com.gewuyou.forgeboot.safeguard.core.model.CooldownContext
+
+/**
+ *自定义冷却异常工厂
+ *
+ * @since 2025-09-23 13:08:01
+ * @author gewuyou
+ */
+class CustomizeCooldownExceptionFactory : CooldownExceptionFactory {
+    override fun create(ctx: CooldownContext): RuntimeException {
+        return RuntimeException("自定义冷却异常")
+    }
 }

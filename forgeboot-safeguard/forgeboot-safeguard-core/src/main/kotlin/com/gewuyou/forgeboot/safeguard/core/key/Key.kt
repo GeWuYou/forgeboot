@@ -35,7 +35,7 @@ data class Key(
     /**
      * 获取完整的键字符串表示
      *
-     * @return 返回格式为 "namespace::value" 的完整键字符串
+     * @return 返回格式为 "namespace:value" 的完整键字符串
      */
-    fun full(): String = "$namespace::$value"
+    fun full(): String = "$namespace:$value"
 }

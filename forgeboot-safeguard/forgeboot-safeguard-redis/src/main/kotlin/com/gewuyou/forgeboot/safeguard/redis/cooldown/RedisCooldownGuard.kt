@@ -47,16 +47,25 @@ class RedisCooldownGuard(
      *
      * @param key 冷却键标识
      * @param policy 冷却策略，包含过期时间等配置
-     * @return 冷却令牌，包含获取结果
+     * @return 冷却令牌，包含获取结果和剩余时间
      */
     override fun acquire(key: Key, policy: CooldownPolicy): CooldownTicket {
         val redisKey = keyBuilder.cooldown(key)
         // 使用Redis的SETNX命令实现分布式锁，确保同一时间只有一个操作能获得令牌
         val ok = stringRedis.opsForValue()
             .setIfAbsent(redisKey, "1", policy.ttl) ?: false
-        return CooldownTicket(acquired = ok)
-    }
 
+        // 获取键的剩余过期时间（秒）
+        val remaining = if (ok) {
+            // 如果成功获取到令牌，剩余时间就是设置的ttl
+            policy.ttl.seconds
+        } else {
+            // 如果未获取到令牌，查询现有键的剩余时间
+            stringRedis.getExpire(redisKey)
+        }
+
+        return CooldownTicket(acquired = ok, remainingMillis = remaining)
+    }
     /**
      * 释放冷却令牌
      * 删除Redis中的冷却键，解除冷却状态

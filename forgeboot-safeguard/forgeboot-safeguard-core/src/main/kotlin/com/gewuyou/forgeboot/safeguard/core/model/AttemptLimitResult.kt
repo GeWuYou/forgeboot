@@ -35,4 +35,6 @@ data class AttemptLimitResult(
     val allowed: Boolean,
     val attemptsTtlMs: Long,
     val lockTtlMs: Long,
+    val remainingAttempts: Long,
+    val capacity: Long,
 )
