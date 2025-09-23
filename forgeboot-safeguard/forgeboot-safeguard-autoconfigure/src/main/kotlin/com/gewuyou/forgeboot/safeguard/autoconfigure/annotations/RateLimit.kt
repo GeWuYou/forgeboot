@@ -20,6 +20,8 @@
 
 package com.gewuyou.forgeboot.safeguard.autoconfigure.annotations
 
+import com.gewuyou.forgeboot.safeguard.core.factory.DefaultRateLimitExceptionFactory
+import com.gewuyou.forgeboot.safeguard.core.factory.RateLimitExceptionFactory
 import kotlin.reflect.KClass
 
 /**
@@ -46,4 +48,8 @@ annotation class RateLimit(
     val template: String = "",
     val resolverBean: String = "",
     val refundOn: Array<KClass<out Throwable>> = [], // 失败时归还许可
+    val scene: String = "",
+    val infoCode: String = "",
+    val factory: KClass<out RateLimitExceptionFactory> =
+        DefaultRateLimitExceptionFactory::class,
 )

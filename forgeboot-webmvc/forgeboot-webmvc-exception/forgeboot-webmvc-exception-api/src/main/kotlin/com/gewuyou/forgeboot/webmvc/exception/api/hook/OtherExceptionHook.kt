@@ -18,16 +18,24 @@
  *
  */
 
-package com.gewuyou.forgeboot.safeguard.core.factory
+package com.gewuyou.forgeboot.webmvc.exception.api.hook
 
-import com.gewuyou.forgeboot.safeguard.core.model.CooldownContext
+import com.gewuyou.forgeboot.webmvc.dto.api.entities.Failure
+import jakarta.servlet.http.HttpServletRequest
 
 /**
- *冷却异常工厂
+ * 其他异常钩子
  *
- * @since 2025-09-23 10:24:39
+ * @since 2025-09-23 21:05:04
  * @author gewuyou
  */
-fun interface CooldownExceptionFactory : ExceptionFactory<CooldownContext> {
-    override fun create(ctx: CooldownContext): RuntimeException
+fun interface OtherExceptionHook {
+    /**
+     * 处理异常
+     *
+     * @param e 异常对象
+     * @param request HTTP请求对象，可能为null
+     * @return 处理结果，如果处理成功则返回Failure对象，否则返回null
+     */
+    fun handle(e: Exception, request: HttpServletRequest?): Failure?
 }

@@ -17,7 +17,6 @@
  *
  *
  */
-
 package com.gewuyou.forgeboot.safeguard.core.model
 
 import com.gewuyou.forgeboot.safeguard.core.key.Key
@@ -51,13 +50,14 @@ import java.time.Instant
 data class AttemptLimitContext(
     // ---- GuardContext 公共部分 ----
     override val key: Key,
-    override val remainingMillis: Long?,             // = retryAfterMs，相对时间；allowed 时可为 null
+    val remainingMillis: Long?,             // = retryAfterMs，相对时间；allowed 时可为 null
     override val scene: String?,
     override val infoCode: String?,
     override val joinPoint: ProceedingJoinPoint,
     override val method: Method,
     override val now: Instant,
     override val args: Array<Any?>,
+    override val currentAnnotation: Annotation,
     override val annotations: Array<Annotation>,
 
     // ---- AttemptLimit 特有部分 ----
@@ -66,13 +66,13 @@ data class AttemptLimitContext(
     val retryAt: Instant?,                           // 绝对时间，可选（allowed 时为 null）
 ) : GuardContext(
     key,
-    remainingMillis,
     scene,
     infoCode,
     joinPoint,
     method,
     now,
     args,
+    currentAnnotation,
     annotations
 ) {
     /**
@@ -104,6 +104,7 @@ data class AttemptLimitContext(
         if (method != other.method) return false
         if (now != other.now) return false
         if (!args.contentEquals(other.args)) return false
+        if (currentAnnotation != other.currentAnnotation) return false
         if (!annotations.contentEquals(other.annotations)) return false
         if (policy != other.policy) return false
         if (retryAt != other.retryAt) return false
@@ -124,6 +125,7 @@ data class AttemptLimitContext(
         result = 31 * result + method.hashCode()
         result = 31 * result + now.hashCode()
         result = 31 * result + args.contentHashCode()
+        result = 31 * result + currentAnnotation.hashCode()
         result = 31 * result + annotations.contentHashCode()
         result = 31 * result + policy.hashCode()
         result = 31 * result + (retryAt?.hashCode() ?: 0)

@@ -28,13 +28,17 @@ import com.gewuyou.forgeboot.safeguard.core.exception.RateLimitExceededException
 import com.gewuyou.forgeboot.safeguard.core.key.Key
 import com.gewuyou.forgeboot.safeguard.core.metrics.NoopSafeguardMetrics
 import com.gewuyou.forgeboot.safeguard.core.metrics.SafeguardMetrics
+import com.gewuyou.forgeboot.safeguard.core.model.RateLimitContext
 import com.gewuyou.forgeboot.safeguard.core.policy.RateLimitPolicy
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
+import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.beans.factory.BeanFactory
+import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.Order
 import java.time.Duration
+import java.time.Instant
 
 /**
  * 限流切面类，用于处理带有 @RateLimit 注解的方法调用。
@@ -56,6 +60,7 @@ class RateLimitAspect(
     private val beanFactory: BeanFactory,
     private val metrics: SafeguardMetrics = NoopSafeguardMetrics,
     private val keySupport: KeyResolutionSupport,
+    private val applicationContext: ApplicationContext,
 ) {
     private companion object {
         const val NS = "safeguard:rl"
@@ -90,12 +95,15 @@ class RateLimitAspect(
             refillPeriod = Duration.ofMillis(periodMs),
             requested = requested
         )
-
+        val signature = pjp.signature as MethodSignature
+        val method = signature.method
+        val context =
+            RateLimitContext(key, rl.scene, rl.infoCode, pjp, method, Instant.now(), pjp.args, rl, method.annotations)
         // 执行限流检查（默认消费 1 个令牌）
         val res = limiter.tryConsume(key, policy)
         if (!res.allowed) {
             metrics.onRateLimitBlocked(key.namespace, key.value)
-            throw RateLimitExceededException(key)
+            throw constructException(rl, context)
         }
 
         return try {
@@ -109,4 +117,25 @@ class RateLimitAspect(
             throw ex
         }
     }
+
+    /**
+     * 构造运行时异常实例
+     *
+     * @param rl 限流配置对象，包含异常工厂信息
+     * @param context 限流上下文，提供异常创建所需的上下文信息
+     * @return 构造好的运行时异常实例
+     */
+    private fun constructException(
+        rl: RateLimit,
+        context: RateLimitContext,
+    ): RuntimeException {
+        // 获取异常工厂的Java类类型
+        val factoryType = rl.factory.java
+        // 从应用上下文中获取工厂实例，如果不存在则通过反射创建新实例
+        val factory = applicationContext.getBeanProvider(factoryType).ifAvailable
+            ?: factoryType.getDeclaredConstructor().newInstance()
+        // 使用工厂创建并返回运行时异常
+        return factory.create(context)
+    }
+
 }

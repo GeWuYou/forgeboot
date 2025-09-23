@@ -20,14 +20,23 @@
 
 package com.gewuyou.forgeboot.safeguard.core.factory
 
-import com.gewuyou.forgeboot.safeguard.core.model.CooldownContext
+import com.gewuyou.forgeboot.safeguard.core.exception.IdempotencyConflictException
+import com.gewuyou.forgeboot.safeguard.core.model.IdempotencyContext
 
 /**
- *冷却异常工厂
+ *默认的掌声冲突异常工厂
  *
- * @since 2025-09-23 10:24:39
+ * @since 2025-09-23 21:16:26
  * @author gewuyou
  */
-fun interface CooldownExceptionFactory : ExceptionFactory<CooldownContext> {
-    override fun create(ctx: CooldownContext): RuntimeException
+class DefaultIdempotencyExceptionFactory : IdempotencyExceptionFactory {
+    /**
+     * 根据幂等性上下文创建运行时异常
+     *
+     * @param ctx 幂等性上下文，包含异常创建所需的信息
+     * @return 创建的运行时异常实例
+     */
+    override fun create(ctx: IdempotencyContext): RuntimeException {
+        return IdempotencyConflictException(ctx.key)
+    }
 }

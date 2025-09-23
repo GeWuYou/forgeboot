@@ -26,10 +26,10 @@ import com.gewuyou.forgeboot.safeguard.autoconfigure.spel.SpelEval
 import com.gewuyou.forgeboot.safeguard.core.api.IdempotencyManager
 import com.gewuyou.forgeboot.safeguard.core.enums.IdemMode
 import com.gewuyou.forgeboot.safeguard.core.enums.IdempotencyStatus
-import com.gewuyou.forgeboot.safeguard.core.exception.IdempotencyConflictException
 import com.gewuyou.forgeboot.safeguard.core.key.Key
 import com.gewuyou.forgeboot.safeguard.core.metrics.NoopSafeguardMetrics
 import com.gewuyou.forgeboot.safeguard.core.metrics.SafeguardMetrics
+import com.gewuyou.forgeboot.safeguard.core.model.IdempotencyContext
 import com.gewuyou.forgeboot.safeguard.core.model.IdempotencyRecord
 import com.gewuyou.forgeboot.safeguard.core.policy.IdempotencyPolicy
 import com.gewuyou.forgeboot.safeguard.core.serialize.PayloadCodec
@@ -37,9 +37,12 @@ import com.gewuyou.forgeboot.safeguard.redis.config.SafeguardProperties
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
+import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.beans.factory.BeanFactory
+import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.Order
 import java.time.Duration
+import java.time.Instant
 
 /**
 
@@ -61,6 +64,7 @@ class IdempotentAspect(
     private val beanFactory: BeanFactory,
     private val metrics: SafeguardMetrics = NoopSafeguardMetrics,
     private val keySupport: KeyResolutionSupport,
+    private val applicationContext: ApplicationContext,
 ) {
     private companion object {
         const val NS = "safeguard:idem"
@@ -80,9 +84,21 @@ class IdempotentAspect(
             pjp, idemAnn.resolverBean, idemAnn.template, idemAnn.key, defaultNamespace = NS
         )
         val policy = IdempotencyPolicy(Duration.ofSeconds(ttlSec), idemAnn.mode)
-
+        val signature = pjp.signature as MethodSignature
+        val method = signature.method
+        val context = IdempotencyContext(
+            key,
+            idemAnn.scene,
+            idemAnn.infoCode,
+            pjp,
+            method,
+            Instant.now(),
+            pjp.args,
+            idemAnn,
+            method.annotations
+        )
         // 1) 已有记录的处理（命中/冲突/等待）
-        handleExistingRecord(key, idemAnn)
+        handleExistingRecord(key, idemAnn, context)
         val acquired = idem.tryAcquirePending(key, policy)
         /// 2) 尝试占位：失败视为并发冲突
         if (!acquired) {
@@ -100,9 +116,11 @@ class IdempotentAspect(
      *
      * @param key 幂等键。
      * @param idemAnn 幂等注解对象。
+     * @param context 幂等上下文对象。
      */
-    private fun handleExistingRecord(key: Key, idemAnn: Idempotent) {
+    private fun handleExistingRecord(key: Key, idemAnn: Idempotent, context: IdempotencyContext) {
         idem[key]?.let { rec ->
+            // 根据记录状态进行不同处理
             when (rec.status) {
                 IdempotencyStatus.SUCCESS -> throw ReturnValueFromRecordException(rec)
                 IdempotencyStatus.PENDING -> when (idemAnn.mode) {
@@ -110,31 +128,59 @@ class IdempotentAspect(
                     IdemMode.THROW_EXCEPTION,
                         -> {
                         metrics.onIdemConflict(key.namespace, key.value)
-                        throw IdempotencyConflictException(key)
+                        throw constructException(idemAnn, context)
                     }
 
-                    IdemMode.WAIT_UNTIL_DONE -> waitForCompletion(key)
+                    IdemMode.WAIT_UNTIL_DONE -> waitForCompletion(key, idemAnn, context)
                 }
             }
         }
     }
 
+
+    /**
+     * 构造运行时异常实例
+     *
+     * @param idempotent 幂等注解对象，用于获取异常工厂类型
+     * @param context 幂等性上下文，包含异常构造所需的信息
+     * @return 构造好的运行时异常实例
+     */
+    private fun constructException(
+        idempotent: Idempotent,
+        context: IdempotencyContext,
+    ): RuntimeException {
+        // 获取异常工厂的Java类类型
+        val factoryType = idempotent.factory.java
+        // 从应用上下文中获取工厂实例，如果不存在则通过反射创建新实例
+        val factory = applicationContext.getBeanProvider(factoryType).ifAvailable
+            ?: factoryType.getDeclaredConstructor().newInstance()
+        // 使用工厂创建并返回运行时异常
+        return factory.create(context)
+    }
+
     /**
      * 等待指定幂等键的执行完成。
      *
-     * @param key 幂等键。
+     * @param key 幂等键，用于标识唯一的幂等操作。
+     * @param idemAnn 幂等注解，包含幂等配置信息。
+     * @param context 幂等上下文，提供执行环境相关信息。
      */
-    private fun waitForCompletion(key: Key) {
+    private fun waitForCompletion(key: Key, idemAnn: Idempotent, context: IdempotencyContext) {
+        // 计算等待超时时间
         val deadline = System.currentTimeMillis() + props.idempotencyWaitMax.toMillis()
+        // 轮询检查执行状态直到超时
         while (System.currentTimeMillis() < deadline) {
             Thread.sleep(50)
             val r = idem[key] ?: continue
+            // 如果执行成功，则抛出返回值异常
             if (r.status == IdempotencyStatus.SUCCESS) {
                 throw ReturnValueFromRecordException(r)
             }
         }
-        throw IdempotencyConflictException(key)
+        // 等待超时后抛出异常
+        throw constructException(idemAnn, context)
     }
+
 
     /**
      * 执行目标方法并将结果保存到幂等记录中。
