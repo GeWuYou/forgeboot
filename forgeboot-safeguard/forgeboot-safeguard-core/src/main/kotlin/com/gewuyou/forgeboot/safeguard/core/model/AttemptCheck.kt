@@ -26,6 +26,9 @@ package com.gewuyou.forgeboot.safeguard.core.model
  * @property allowed 是否允许进行尝试操作
  * @property attemptsTtlMs 尝试操作的存活时间（毫秒）
  * @property lockTtlMs 锁定状态的存活时间（毫秒）
+ * @property remainingAttempts 剩余尝试次数
+ * @property capacity 窗口容量（policy.max）
+ * @property retryAfterMs 需要等待重试的时间（毫秒），如果处于锁定状态则返回锁定剩余时间，否则返回尝试操作的存活时间
  * @since 2025-09-22 10:11:10
  * @author gewuyou
  */
@@ -33,4 +36,13 @@ data class AttemptCheck(
     val allowed: Boolean,
     val attemptsTtlMs: Long,
     val lockTtlMs: Long,
-)
+    val remainingAttempts: Long,   // ← 新增：当前还能失败几次（0 表示没有）
+    val capacity: Long,             // ← 新增：窗口容量（policy.max）
+) {
+    /**
+     * 计算需要等待重试的时间
+     * 如果处于锁定状态则返回锁定剩余时间，否则返回尝试操作的存活时间
+     */
+    val retryAfterMs: Long
+        get() = if (lockTtlMs > 0) lockTtlMs else attemptsTtlMs
+}

@@ -18,6 +18,19 @@
  *
  */
 
-dependencies {
-    compileOnly(libs.springBootStarter.aop)
+package com.gewuyou.forgeboot.safeguard.core.factory
+
+import com.gewuyou.forgeboot.safeguard.core.exception.AttemptLimitExceededException
+import com.gewuyou.forgeboot.safeguard.core.model.AttemptLimitContext
+
+/**
+ *默认尝试限制超过异常工厂
+ *
+ * @since 2025-09-23 11:16:51
+ * @author gewuyou
+ */
+class DefaultAttemptLimitExceededExceptionFactory : AttemptLimitExceededExceptionFactory {
+    override fun create(ctx: AttemptLimitContext): RuntimeException {
+        return AttemptLimitExceededException(ctx.key)
+    }
 }

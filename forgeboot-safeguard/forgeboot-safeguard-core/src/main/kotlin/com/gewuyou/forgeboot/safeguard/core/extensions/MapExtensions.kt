@@ -23,11 +23,11 @@ package com.gewuyou.forgeboot.safeguard.core.extensions
 import java.time.Duration
 
 /**
- * 将Map<Int, Duration>转换为CSV格式的字符串
+ * 将Map<Long, Duration>转换为CSV格式的字符串
  *
  * @return 返回格式为"k1:v1,k2:v2,..."的字符串，其中k是键，v是持续时间的毫秒值
  *         结果按键的升序排列
  */
-fun Map<Int, Duration>.toCsv(): String =
+fun Map<Long, Duration>.toCsv(): String =
     entries.sortedBy { it.key } // 按键排序
         .joinToString(",") { (k, v) -> "$k:${v.toMillis()}" } // 转换为key:millis格式并用逗号连接

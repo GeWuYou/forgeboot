@@ -24,16 +24,19 @@ import com.gewuyou.forgeboot.safeguard.autoconfigure.annotations.AttemptLimit
 import com.gewuyou.forgeboot.safeguard.autoconfigure.key.KeyResolutionSupport
 import com.gewuyou.forgeboot.safeguard.core.api.AttemptLimitManager
 import com.gewuyou.forgeboot.safeguard.core.enums.KeyProcessingMode
-import com.gewuyou.forgeboot.safeguard.core.exception.AttemptLimitExceededException
 import com.gewuyou.forgeboot.safeguard.core.key.Key
 import com.gewuyou.forgeboot.safeguard.core.metrics.SafeguardMetrics
+import com.gewuyou.forgeboot.safeguard.core.model.AttemptLimitContext
 import com.gewuyou.forgeboot.safeguard.core.policy.AttemptPolicy
 import jakarta.servlet.http.HttpServletRequest
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
+import org.aspectj.lang.reflect.MethodSignature
+import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.Order
 import java.time.Duration
+import java.time.Instant
 
 /**
  *尝试限制切面
@@ -48,6 +51,7 @@ class AttemptLimitAspect(
     private val metrics: SafeguardMetrics,
     private val keySupport: KeyResolutionSupport,
     private val request: HttpServletRequest,
+    private val applicationContext: ApplicationContext,
 ) {
     private companion object {
         const val NS = "safeguard:al"
@@ -74,10 +78,28 @@ class AttemptLimitAspect(
                 )
             }
         }
+        val signature = pjp.signature as MethodSignature
+        val method = signature.method
         val pre = attemptManager.onCheck(key, policy)
+        val context = AttemptLimitContext(
+            key,
+            pre.lockTtlMs,
+            al.scene,
+            al.infoCode,
+            pjp,
+            method,
+            Instant.now(),
+            pjp.args,
+            method.annotations,
+            policy.max - pre.remainingAttempts,
+            policy.max,
+            policy,
+            retryAt = if (pre.allowed) null else Instant.now().plusMillis(pre.retryAfterMs),
+        )
+
         if (!pre.allowed) {
             metrics.onAttemptBlocked(key.namespace, key.full(), pre.lockTtlMs)
-            throw AttemptLimitExceededException(key)
+            throw constructException(al, context)
         }
         // 先执行业务：未抛异常→成功；抛异常→失败
         return try {
@@ -91,11 +113,26 @@ class AttemptLimitAspect(
             result
         } catch (ex: Throwable) {
             val chk = attemptManager.onFail(key, policy)
+            val failContext = AttemptLimitContext(
+                key,
+                chk.lockTtlMs,
+                al.scene,
+                al.infoCode,
+                pjp,
+                method,
+                Instant.now(),
+                pjp.args,
+                method.annotations,
+                policy.max - chk.remainingAttempts,
+                policy.max,
+                policy,
+                retryAt = if (chk.allowed) null else Instant.now().plusMillis(chk.retryAfterMs),
+            )
             if (!chk.allowed) {
                 // 指标：进入/处于锁定
                 metrics.onAttemptLocked(key.namespace, key.full(), chk.lockTtlMs)
                 // 建议抛“统一的”业务异常信息；原异常挂到 suppressed 方便排障
-                val e = AttemptLimitExceededException(key)
+                val e = constructException(al, failContext)
                 e.addSuppressed(ex)
                 throw e
             } else {
@@ -117,9 +154,19 @@ class AttemptLimitAspect(
             successReset = successReset
         )
 
-    private fun parseEscalate(s: String): Map<Int, Duration> =
+    private fun parseEscalate(s: String): Map<Long, Duration> =
         if (s.isBlank()) emptyMap() else s.split(",").associate { pair ->
             val (th, iso) = pair.split(":")
-            th.trim().toInt() to Duration.parse(iso.trim())
+            th.trim().toLong() to Duration.parse(iso.trim())
         }
+
+    private fun constructException(
+        cd: AttemptLimit,
+        context: AttemptLimitContext,
+    ): RuntimeException {
+        val factoryType = cd.factory.java
+        val factory = applicationContext.getBeanProvider(factoryType).ifAvailable
+            ?: factoryType.getDeclaredConstructor().newInstance()
+        return factory.create(context)
+    }
 }

@@ -26,6 +26,7 @@ import com.gewuyou.forgeboot.safeguard.autoconfigure.annotations.Cooldown
 import com.gewuyou.forgeboot.safeguard.autoconfigure.annotations.Idempotent
 import com.gewuyou.forgeboot.safeguard.autoconfigure.annotations.RateLimit
 import com.gewuyou.forgeboot.safeguard.core.enums.KeyProcessingMode
+import com.gewuyou.forgeboot.safeguard.demo.factory.CustomizeCooldownExceptionFactory
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 import java.time.Instant
@@ -53,7 +54,8 @@ class SafeguardTestController {
     @Cooldown(
         key = "'otp:' + #user",     // 针对用户做冷却
         seconds = "60",             // 冷却 60 秒
-        rollbackOn = [BusinessException::class] // 这些异常时撤销冷却
+        rollbackOn = [BusinessException::class], // 这些异常时撤销冷却
+        factory = CustomizeCooldownExceptionFactory::class
     )
     fun sendOtp(
         @RequestParam user: String,

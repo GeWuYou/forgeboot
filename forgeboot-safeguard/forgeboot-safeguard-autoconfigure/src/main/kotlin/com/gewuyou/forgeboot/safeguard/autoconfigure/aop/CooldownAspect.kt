@@ -28,19 +28,26 @@ import com.gewuyou.forgeboot.safeguard.core.exception.CooldownActiveException
 import com.gewuyou.forgeboot.safeguard.core.key.Key
 import com.gewuyou.forgeboot.safeguard.core.metrics.NoopSafeguardMetrics
 import com.gewuyou.forgeboot.safeguard.core.metrics.SafeguardMetrics
+import com.gewuyou.forgeboot.safeguard.core.model.CooldownContext
 import com.gewuyou.forgeboot.safeguard.core.policy.CooldownPolicy
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
+import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.beans.factory.BeanFactory
+import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.Order
 import java.time.Duration
+import java.time.Instant
 
 /**
  * 冷却注解切面类，用于处理方法级别的冷却控制逻辑
  *
  * @param guard 冷却守卫实例，负责具体的冷却控制
  * @param beanFactory Spring Bean工厂，用于表达式求值
+ * @param metrics 安全防护指标收集器，用于记录冷却相关指标，默认为无操作实现
+ * @param keySupport 键解析支持类，用于解析冷却键
+ * @param applicationContext Spring应用上下文，用于获取异常工厂Bean
  * @since 2025-09-21 14:15:08
  * @author gewuyou
  */
@@ -51,6 +58,7 @@ class CooldownAspect(
     private val beanFactory: BeanFactory,
     private val metrics: SafeguardMetrics = NoopSafeguardMetrics,
     private val keySupport: KeyResolutionSupport,
+    private val applicationContext: ApplicationContext,
 ) {
 
     private companion object {
@@ -59,6 +67,11 @@ class CooldownAspect(
 
     /**
      * 环绕通知方法，处理带有Cooldown注解的方法执行
+     *
+     * 该方法会在目标方法执行前后进行拦截，完成以下操作：
+     * 1. 解析冷却键与持续时间；
+     * 2. 尝试获取冷却锁，若未获取到则抛出异常；
+     * 3. 执行目标方法，若命中回滚异常则提前释放冷却锁。
      *
      * @param pjp 连接点对象，包含被拦截方法的信息
      * @param cd 冷却注解对象，包含冷却配置信息
@@ -73,13 +86,26 @@ class CooldownAspect(
             pjp, cd.resolverBean, cd.template, cd.key, defaultNamespace = NS
         )
         val policy = CooldownPolicy(Duration.ofSeconds(secs))
-
+        // 获取方法对象
+        val methodSignature = pjp.signature as MethodSignature
+        val method = methodSignature.method
         // 2) 尝试获取冷却锁
-        val acquired = guard.acquire(key, policy).acquired
-        if (!acquired) {
+        val acquired = guard.acquire(key, policy)
+        val context = CooldownContext(
+            key,
+            acquired.remainingMillis,
+            cd.scene,
+            cd.infoCode,
+            pjp,
+            method,
+            Instant.now(),
+            pjp.args,
+            method.annotations
+        )
+        if (!acquired.acquired) {
             // —— 埋点：冷却期内被拦截
             metrics.onCooldownBlocked(key.namespace, key.value)
-            throw CooldownActiveException(key)
+            throw constructException(cd, context)
         }
 
         // 3) 执行业务；若命中回滚异常则提前释放冷却锁
@@ -93,5 +119,22 @@ class CooldownAspect(
             }
             throw ex
         }
+    }
+
+    /**
+     * 构造冷却异常实例
+     *
+     * @param cd 冷却注解对象，包含异常工厂信息
+     * @param context 冷却上下文，包含异常构造所需数据
+     * @return 构造好的运行时异常实例
+     */
+    private fun constructException(
+        cd: Cooldown,
+        context: CooldownContext,
+    ): RuntimeException {
+        val factoryType = cd.factory.java
+        val factory = applicationContext.getBeanProvider(factoryType).ifAvailable
+            ?: factoryType.getDeclaredConstructor().newInstance()
+        return factory.create(context)
     }
 }

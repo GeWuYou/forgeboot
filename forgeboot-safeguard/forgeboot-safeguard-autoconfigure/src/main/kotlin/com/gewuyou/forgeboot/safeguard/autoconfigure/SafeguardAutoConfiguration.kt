@@ -60,6 +60,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.data.redis.core.StringRedisTemplate
 import java.time.Duration
@@ -263,9 +264,10 @@ class SafeguardAutoConfiguration {
         metrics: SafeguardMetrics,
         keyResolutionSupport: KeyResolutionSupport,
         request: HttpServletRequest,
+        applicationContext: ApplicationContext,
     ): AttemptLimitAspect {
         log.info("已启用尝试限制切面...")
-        return AttemptLimitAspect(limiter, metrics, keyResolutionSupport, request)
+        return AttemptLimitAspect(limiter, metrics, keyResolutionSupport, request, applicationContext)
     }
 
     /**
@@ -285,9 +287,10 @@ class SafeguardAutoConfiguration {
         beanFactory: BeanFactory,
         metrics: SafeguardMetrics,
         keyResolutionSupport: KeyResolutionSupport,
+        applicationContext: ApplicationContext,
     ): CooldownAspect {
         log.info("已启用冷却时间切面...")
-        return CooldownAspect(guard, beanFactory, metrics, keyResolutionSupport)
+        return CooldownAspect(guard, beanFactory, metrics, keyResolutionSupport, applicationContext)
     }
 
     /**

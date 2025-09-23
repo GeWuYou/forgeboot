@@ -25,9 +25,11 @@ package com.gewuyou.forgeboot.safeguard.core.model
  * 用于表示某个操作是否已获得执行权限的票据状态
  *
  * @property acquired 表示是否已获得票据，true表示已获得，false表示未获得
+ * @property remainingMillis 剩余的冷却时间，如果已获得票据，则表示剩余的冷却时间，否则为null
  * @since 2025-09-21 10:55:33
  * @author gewuyou
  */
 data class CooldownTicket(
     val acquired: Boolean,
+    val remainingMillis: Long,
 )

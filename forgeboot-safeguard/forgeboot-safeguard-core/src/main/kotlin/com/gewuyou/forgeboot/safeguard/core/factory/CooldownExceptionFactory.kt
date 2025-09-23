@@ -18,6 +18,16 @@
  *
  */
 
-dependencies {
-    compileOnly(libs.springBootStarter.aop)
+package com.gewuyou.forgeboot.safeguard.core.factory
+
+import com.gewuyou.forgeboot.safeguard.core.model.CooldownContext
+
+/**
+ *冷却异常工厂
+ *
+ * @since 2025-09-23 10:24:39
+ * @author gewuyou
+ */
+fun interface CooldownExceptionFactory {
+    fun create(ctx: CooldownContext): RuntimeException
 }

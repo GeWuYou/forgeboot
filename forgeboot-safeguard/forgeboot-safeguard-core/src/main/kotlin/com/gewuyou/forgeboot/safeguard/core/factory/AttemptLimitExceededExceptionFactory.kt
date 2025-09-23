@@ -18,6 +18,16 @@
  *
  */
 
-dependencies {
-    compileOnly(libs.springBootStarter.aop)
+package com.gewuyou.forgeboot.safeguard.core.factory
+
+import com.gewuyou.forgeboot.safeguard.core.model.AttemptLimitContext
+
+/**
+ *尝试限制异常工厂
+ *
+ * @since 2025-09-23 10:58:48
+ * @author gewuyou
+ */
+fun interface AttemptLimitExceededExceptionFactory {
+    fun create(ctx: AttemptLimitContext): RuntimeException
 }

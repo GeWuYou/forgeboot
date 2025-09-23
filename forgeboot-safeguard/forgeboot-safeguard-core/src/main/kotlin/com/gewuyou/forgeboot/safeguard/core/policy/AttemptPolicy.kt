@@ -35,8 +35,8 @@ import java.time.Duration
  */
 data class AttemptPolicy(
     val window: Duration,
-    val max: Int,
+    val max: Long,
     val lock: Duration,
-    val escalate: Map<Int, Duration> = emptyMap(),
+    val escalate: Map<Long, Duration> = emptyMap(),
     val successReset: Boolean = true,
 )

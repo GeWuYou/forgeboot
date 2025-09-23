@@ -81,7 +81,7 @@ class Bucket4jRateLimiter(
             RateLimitResult(
                 allowed = ok,
                 remaining = after.remainingTokens,
-                resetAt = null // 已经在超时时间内等到了，不再给 resetAt
+                resetAt = null // 已经在超时时间内等到了，不再给 retryAt
             )
         }
     }
