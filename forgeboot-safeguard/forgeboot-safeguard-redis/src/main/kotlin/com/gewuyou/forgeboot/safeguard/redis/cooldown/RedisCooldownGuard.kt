@@ -26,6 +26,7 @@ import com.gewuyou.forgeboot.safeguard.core.model.CooldownTicket
 import com.gewuyou.forgeboot.safeguard.core.policy.CooldownPolicy
 import com.gewuyou.forgeboot.safeguard.redis.key.RedisKeyBuilder
 import org.springframework.data.redis.core.StringRedisTemplate
+import java.util.concurrent.TimeUnit
 
 /**
  * Redis冷却防护器实现类
@@ -52,20 +53,16 @@ class RedisCooldownGuard(
     override fun acquire(key: Key, policy: CooldownPolicy): CooldownTicket {
         val redisKey = keyBuilder.cooldown(key)
         // 使用Redis的SETNX命令实现分布式锁，确保同一时间只有一个操作能获得令牌
-        val ok = stringRedis.opsForValue()
-            .setIfAbsent(redisKey, "1", policy.ttl) ?: false
-
-        // 获取键的剩余过期时间（秒）
-        val remaining = if (ok) {
-            // 如果成功获取到令牌，剩余时间就是设置的ttl
-            policy.ttl.seconds
-        } else {
-            // 如果未获取到令牌，查询现有键的剩余时间
-            stringRedis.getExpire(redisKey)
+        val ok = stringRedis.opsForValue().setIfAbsent(redisKey, "1", policy.ttl) ?: false
+        // 获取键的剩余过期时间，用于计算冷却剩余时间
+        val remainingMs = when (val ttlMs = stringRedis.getExpire(redisKey, TimeUnit.MILLISECONDS)) {
+            -2L -> if (ok) policy.ttl.toMillis() else 0L
+            // 极端并发下的兜底
+            else -> ttlMs
         }
-
-        return CooldownTicket(acquired = ok, remainingMillis = remaining)
+        return CooldownTicket(acquired = ok, remainingMillis = remainingMs)
     }
+
     /**
      * 释放冷却令牌
      * 删除Redis中的冷却键，解除冷却状态

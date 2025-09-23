@@ -32,26 +32,26 @@ import java.time.Instant
  * 该类用于封装尝试限制（如重试、限流等）相关的上下文信息，继承自 [GuardContext]。
  * 包含当前尝试次数、策略、重置时间等与尝试限制逻辑相关的信息。
  *
- * @property key 上下文的唯一标识键
- * @property retryAfterMillis 剩余时间（毫秒），可为空
- * @property scene 场景标识，可为空
- * @property infoCode 信息码，可为空
+ * @property key 用于标识当前操作的键值，通常用于区分不同的限制策略
+ * @property remainingMillis 剩余的毫秒数，表示在允许继续操作前需要等待的时间；当为 null 时表示允许操作
+ * @property scene 当前操作的场景描述，可用于日志或监控
+ * @property infoCode 信息码，用于标识当前状态或错误类型
  * @property joinPoint 切点对象，表示被拦截的方法执行点
- * @property method 被拦截的方法对象
- * @property now 当前时间戳
- * @property args 方法参数数组
- * @property annotations 方法上的注解数组
- * @property currentAttempts 当前已尝试次数，可为空
- * @property max 最大尝试次数
- * @property policy 尝试限制策略
- * @property retryAt 下次重置时间，可为空
+ * @property method 被拦截的目标方法
+ * @property now 当前时间戳，用于计算时间相关逻辑
+ * @property args 方法参数列表
+ * @property annotations 目标方法上的注解数组
+ * @property remainingAttempts 当前还可失败的次数，即剩余尝试额度
+ * @property policy 尝试限制策略，定义最大尝试次数等规则
+ * @property retryAt 下次可重试的绝对时间，若当前允许操作则为 null
  *
  * @since 2025-09-23 11:00:14
  * @author gewuyou
  */
 data class AttemptLimitContext(
+    // ---- GuardContext 公共部分 ----
     override val key: Key,
-    val retryAfterMillis: Long?,
+    override val remainingMillis: Long?,             // = retryAfterMs，相对时间；allowed 时可为 null
     override val scene: String?,
     override val infoCode: String?,
     override val joinPoint: ProceedingJoinPoint,
@@ -59,13 +59,14 @@ data class AttemptLimitContext(
     override val now: Instant,
     override val args: Array<Any?>,
     override val annotations: Array<Annotation>,
-    val currentAttempts: Long?,
-    val max: Long,
+
+    // ---- AttemptLimit 特有部分 ----
+    val remainingAttempts: Long,                     // 当前可失败的“剩余额度”
     val policy: AttemptPolicy,
-    val retryAt: Instant?,
+    val retryAt: Instant?,                           // 绝对时间，可选（allowed 时为 null）
 ) : GuardContext(
     key,
-    retryAfterMillis,
+    remainingMillis,
     scene,
     infoCode,
     joinPoint,
@@ -74,13 +75,28 @@ data class AttemptLimitContext(
     args,
     annotations
 ) {
+    /**
+     * 容量：表示最大允许尝试次数，由策略中的 max 字段决定
+     */
+    val capacity: Long get() = policy.max
+
+    /**
+     * 当前已尝试次数：通过容量减去剩余尝试次数得到
+     */
+    val currentAttempts: Long get() = capacity - remainingAttempts
+
+    /**
+     * 向上取整的重试秒数：用于异常提示或文案展示，最小为 1 秒
+     */
+    val retryAfterSecondsCeil: Long?
+        get() = remainingMillis?.let { ms -> ((ms + 999) / 1000).coerceAtLeast(1) }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is AttemptLimitContext) return false
 
-        if (retryAfterMillis != other.retryAfterMillis) return false
-        if (currentAttempts != other.currentAttempts) return false
-        if (max != other.max) return false
+        if (remainingMillis != other.remainingMillis) return false
+        if (remainingAttempts != other.remainingAttempts) return false
         if (key != other.key) return false
         if (scene != other.scene) return false
         if (infoCode != other.infoCode) return false
@@ -91,14 +107,16 @@ data class AttemptLimitContext(
         if (!annotations.contentEquals(other.annotations)) return false
         if (policy != other.policy) return false
         if (retryAt != other.retryAt) return false
+        if (capacity != other.capacity) return false
+        if (currentAttempts != other.currentAttempts) return false
+        if (retryAfterSecondsCeil != other.retryAfterSecondsCeil) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = retryAfterMillis?.hashCode() ?: 0
-        result = 31 * result + (currentAttempts?.hashCode() ?: 0)
-        result = 31 * result + max.hashCode()
+        var result = remainingMillis?.hashCode() ?: 0
+        result = 31 * result + remainingAttempts.hashCode()
         result = 31 * result + key.hashCode()
         result = 31 * result + (scene?.hashCode() ?: 0)
         result = 31 * result + (infoCode?.hashCode() ?: 0)
@@ -109,7 +127,9 @@ data class AttemptLimitContext(
         result = 31 * result + annotations.contentHashCode()
         result = 31 * result + policy.hashCode()
         result = 31 * result + (retryAt?.hashCode() ?: 0)
+        result = 31 * result + capacity.hashCode()
+        result = 31 * result + currentAttempts.hashCode()
+        result = 31 * result + (retryAfterSecondsCeil?.hashCode() ?: 0)
         return result
     }
-
 }

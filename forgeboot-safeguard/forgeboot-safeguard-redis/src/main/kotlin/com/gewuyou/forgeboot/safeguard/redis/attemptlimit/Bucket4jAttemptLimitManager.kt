@@ -75,8 +75,8 @@ class Bucket4jAttemptLimitManager(
         return BucketConfiguration.builder()
             .addLimit(
                 Bandwidth.builder()
-                    .capacity(policy.max.toLong())
-                    .refillGreedy(policy.max.toLong(), policy.window)
+                    .capacity(policy.max)
+                    .refillGreedy(policy.max, policy.window)
                     .build()
             )
             .build()
@@ -178,7 +178,7 @@ class Bucket4jAttemptLimitManager(
      * @param policy 尝试策略配置
      * @return 最大尝试次数（Long 类型）
      */
-    private fun capacityOf(policy: AttemptPolicy): Long = policy.max.toLong()
+    private fun capacityOf(policy: AttemptPolicy): Long = policy.max
 
     /**
      * 获取当前可用剩余尝试次数（不消耗令牌）。
