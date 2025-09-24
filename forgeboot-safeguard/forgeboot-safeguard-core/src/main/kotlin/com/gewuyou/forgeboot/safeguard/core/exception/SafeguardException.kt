@@ -21,6 +21,8 @@
 package com.gewuyou.forgeboot.safeguard.core.exception
 
 import com.gewuyou.forgeboot.safeguard.core.key.Key
+import com.gewuyou.forgeboot.safeguard.core.model.IdempotencyRecord
+
 
 /**
  * 异常基类，用于表示各种保护机制触发的异常情况
@@ -31,11 +33,22 @@ import com.gewuyou.forgeboot.safeguard.core.key.Key
  * @since 2025-09-21 11:37:11
  * @author gewuyou
  */
-open class SafeguardException(
+sealed class SafeguardException(
     message: String,
     val key: Key,
     val code: String,
 ) : RuntimeException(message)
+
+/**
+ * 已有记录异常类，用于在检测到已有成功记录时提前返回结果。
+ *
+ * @property key 触发异常的键值对象
+ * @property record 已存在的幂等记录
+ */
+class IdempotencyReturnValueFromRecordException(
+    key: Key,
+    val record: IdempotencyRecord,
+) : SafeguardException("Return value from record : ${key.full()}", key, "RETURN_VALUE_FROM_RECORD")
 
 /**
  * 速率限制异常，当请求超过设定的速率限制时抛出
@@ -68,3 +81,4 @@ class IdempotencyConflictException(key: Key) :
  */
 class AttemptLimitExceededException(key: Key) :
     SafeguardException("Attempt limit exceeded: ${key.full()}", key, "ATTEMPT_LIMIT_EXCEEDED")
+
