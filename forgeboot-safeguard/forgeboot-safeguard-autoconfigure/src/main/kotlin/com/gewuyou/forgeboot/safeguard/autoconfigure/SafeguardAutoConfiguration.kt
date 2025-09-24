@@ -27,6 +27,7 @@ import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.CooldownAspect
 import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.IdempotentAspect
 import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.RateLimitAspect
 import com.gewuyou.forgeboot.safeguard.autoconfigure.key.KeyResolutionSupport
+import com.gewuyou.forgeboot.safeguard.autoconfigure.web.IdempotencyReturnAdvice
 import com.gewuyou.forgeboot.safeguard.core.api.AttemptLimitManager
 import com.gewuyou.forgeboot.safeguard.core.api.CooldownGuard
 import com.gewuyou.forgeboot.safeguard.core.api.IdempotencyManager
@@ -74,6 +75,18 @@ import java.time.Duration
 @AutoConfiguration
 @EnableConfigurationProperties(SafeguardProperties::class)
 class SafeguardAutoConfiguration {
+
+    /**
+     * 创建幂等性返回值处理器的Bean
+     *
+     * @param codec 用于序列化和反序列化的编解码器
+     * @return 幂等性返回值处理器实例
+     */
+    @Bean
+    @ConditionalOnClass
+    fun idempotentReturnAdvice(codec: PayloadCodec): IdempotencyReturnAdvice {
+        return IdempotencyReturnAdvice(codec)
+    }
 
     /**
      * 创建 Redis 键模板注册中心实例。

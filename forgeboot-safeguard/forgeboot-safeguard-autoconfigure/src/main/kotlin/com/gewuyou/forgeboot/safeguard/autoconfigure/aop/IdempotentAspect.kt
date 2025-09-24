@@ -26,6 +26,7 @@ import com.gewuyou.forgeboot.safeguard.autoconfigure.spel.SpelEval
 import com.gewuyou.forgeboot.safeguard.core.api.IdempotencyManager
 import com.gewuyou.forgeboot.safeguard.core.enums.IdemMode
 import com.gewuyou.forgeboot.safeguard.core.enums.IdempotencyStatus
+import com.gewuyou.forgeboot.safeguard.core.exception.IdempotencyReturnValueFromRecordException
 import com.gewuyou.forgeboot.safeguard.core.key.Key
 import com.gewuyou.forgeboot.safeguard.core.metrics.NoopSafeguardMetrics
 import com.gewuyou.forgeboot.safeguard.core.metrics.SafeguardMetrics
@@ -102,8 +103,12 @@ class IdempotentAspect(
         val acquired = idem.tryAcquirePending(key, policy)
         /// 2) 尝试占位：失败视为并发冲突
         if (!acquired) {
-            metrics.onRateLimitBlocked(key.namespace, key.value)
-            return around(pjp, idemAnn) // 并发抢占失败时重试
+            Thread.sleep(20)
+            idem[key]?.let { rec ->
+                if (rec.status == IdempotencyStatus.SUCCESS) throw IdempotencyReturnValueFromRecordException(key, rec)
+            }
+            metrics.onIdemConflict(key.namespace, key.value)
+            throw constructException(idemAnn, context)
         }
         // 3) 首次 MISS：记录埋点并执行业务
         metrics.onIdemMiss(key.namespace, key.value)
@@ -122,7 +127,7 @@ class IdempotentAspect(
         idem[key]?.let { rec ->
             // 根据记录状态进行不同处理
             when (rec.status) {
-                IdempotencyStatus.SUCCESS -> throw ReturnValueFromRecordException(rec)
+                IdempotencyStatus.SUCCESS -> throw IdempotencyReturnValueFromRecordException(key, rec)
                 IdempotencyStatus.PENDING -> when (idemAnn.mode) {
                     IdemMode.RETURN_SAVED,
                     IdemMode.THROW_EXCEPTION,
@@ -174,7 +179,7 @@ class IdempotentAspect(
             val r = idem[key] ?: continue
             // 如果执行成功，则抛出返回值异常
             if (r.status == IdempotencyStatus.SUCCESS) {
-                throw ReturnValueFromRecordException(r)
+                throw IdempotencyReturnValueFromRecordException(key, r)
             }
         }
         // 等待超时后抛出异常
@@ -208,11 +213,4 @@ class IdempotentAspect(
             throw ex
         }
     }
-
-    /**
-     * 自定义异常类，用于在检测到已有成功记录时提前返回结果。
-     *
-     * @property record 已存在的幂等记录。
-     */
-    private class ReturnValueFromRecordException(val record: IdempotencyRecord) : RuntimeException()
 }
