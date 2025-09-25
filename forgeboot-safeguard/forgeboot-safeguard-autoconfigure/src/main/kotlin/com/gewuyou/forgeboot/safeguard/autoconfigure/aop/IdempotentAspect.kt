@@ -22,17 +22,18 @@ package com.gewuyou.forgeboot.safeguard.autoconfigure.aop
 
 import com.gewuyou.forgeboot.safeguard.autoconfigure.annotations.Idempotent
 import com.gewuyou.forgeboot.safeguard.autoconfigure.key.KeyResolutionSupport
+import com.gewuyou.forgeboot.safeguard.autoconfigure.resolver.IdempotentExceptionFactoryResolver
 import com.gewuyou.forgeboot.safeguard.autoconfigure.spel.SpelEval
 import com.gewuyou.forgeboot.safeguard.core.api.IdempotencyManager
 import com.gewuyou.forgeboot.safeguard.core.enums.IdemMode
 import com.gewuyou.forgeboot.safeguard.core.enums.IdempotencyStatus
-import com.gewuyou.forgeboot.safeguard.core.exception.IdempotencyReturnValueFromRecordException
+import com.gewuyou.forgeboot.safeguard.core.exception.IdempotentReturnValueFromRecordException
 import com.gewuyou.forgeboot.safeguard.core.key.Key
 import com.gewuyou.forgeboot.safeguard.core.metrics.NoopSafeguardMetrics
 import com.gewuyou.forgeboot.safeguard.core.metrics.SafeguardMetrics
-import com.gewuyou.forgeboot.safeguard.core.model.IdempotencyContext
-import com.gewuyou.forgeboot.safeguard.core.model.IdempotencyRecord
-import com.gewuyou.forgeboot.safeguard.core.policy.IdempotencyPolicy
+import com.gewuyou.forgeboot.safeguard.core.model.IdempotentContext
+import com.gewuyou.forgeboot.safeguard.core.model.IdempotentRecord
+import com.gewuyou.forgeboot.safeguard.core.policy.IdempotentPolicy
 import com.gewuyou.forgeboot.safeguard.core.serialize.PayloadCodec
 import com.gewuyou.forgeboot.safeguard.redis.config.SafeguardProperties
 import org.aspectj.lang.ProceedingJoinPoint
@@ -40,7 +41,6 @@ import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.beans.factory.BeanFactory
-import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.Order
 import java.time.Duration
 import java.time.Instant
@@ -65,7 +65,7 @@ class IdempotentAspect(
     private val beanFactory: BeanFactory,
     private val metrics: SafeguardMetrics = NoopSafeguardMetrics,
     private val keySupport: KeyResolutionSupport,
-    private val applicationContext: ApplicationContext,
+    private val resolver: IdempotentExceptionFactoryResolver,
 ) {
     private companion object {
         const val NS = "safeguard:idem"
@@ -84,10 +84,10 @@ class IdempotentAspect(
         val key: Key = keySupport.resolveForPjp(
             pjp, idemAnn.resolverBean, idemAnn.template, idemAnn.key, defaultNamespace = NS
         )
-        val policy = IdempotencyPolicy(Duration.ofSeconds(ttlSec), idemAnn.mode)
+        val policy = IdempotentPolicy(Duration.ofSeconds(ttlSec), idemAnn.mode)
         val signature = pjp.signature as MethodSignature
         val method = signature.method
-        val context = IdempotencyContext(
+        val context = IdempotentContext(
             key,
             idemAnn.scene,
             idemAnn.infoCode,
@@ -105,7 +105,7 @@ class IdempotentAspect(
         if (!acquired) {
             Thread.sleep(20)
             idem[key]?.let { rec ->
-                if (rec.status == IdempotencyStatus.SUCCESS) throw IdempotencyReturnValueFromRecordException(key, rec)
+                if (rec.status == IdempotencyStatus.SUCCESS) throw IdempotentReturnValueFromRecordException(key, rec)
             }
             metrics.onIdemConflict(key.namespace, key.value)
             throw constructException(idemAnn, context)
@@ -123,11 +123,11 @@ class IdempotentAspect(
      * @param idemAnn 幂等注解对象。
      * @param context 幂等上下文对象。
      */
-    private fun handleExistingRecord(key: Key, idemAnn: Idempotent, context: IdempotencyContext) {
+    private fun handleExistingRecord(key: Key, idemAnn: Idempotent, context: IdempotentContext) {
         idem[key]?.let { rec ->
             // 根据记录状态进行不同处理
             when (rec.status) {
-                IdempotencyStatus.SUCCESS -> throw IdempotencyReturnValueFromRecordException(key, rec)
+                IdempotencyStatus.SUCCESS -> throw IdempotentReturnValueFromRecordException(key, rec)
                 IdempotencyStatus.PENDING -> when (idemAnn.mode) {
                     IdemMode.RETURN_SAVED,
                     IdemMode.THROW_EXCEPTION,
@@ -152,13 +152,10 @@ class IdempotentAspect(
      */
     private fun constructException(
         idempotent: Idempotent,
-        context: IdempotencyContext,
+        context: IdempotentContext,
     ): RuntimeException {
-        // 获取异常工厂的Java类类型
-        val factoryType = idempotent.factory.java
-        // 从应用上下文中获取工厂实例，如果不存在则通过反射创建新实例
-        val factory = applicationContext.getBeanProvider(factoryType).ifAvailable
-            ?: factoryType.getDeclaredConstructor().newInstance()
+        // 获取异常工厂
+        val factory = resolver.resolve(idempotent)
         // 使用工厂创建并返回运行时异常
         return factory.create(context)
     }
@@ -170,7 +167,7 @@ class IdempotentAspect(
      * @param idemAnn 幂等注解，包含幂等配置信息。
      * @param context 幂等上下文，提供执行环境相关信息。
      */
-    private fun waitForCompletion(key: Key, idemAnn: Idempotent, context: IdempotencyContext) {
+    private fun waitForCompletion(key: Key, idemAnn: Idempotent, context: IdempotentContext) {
         // 计算等待超时时间
         val deadline = System.currentTimeMillis() + props.idempotencyWaitMax.toMillis()
         // 轮询检查执行状态直到超时
@@ -179,7 +176,7 @@ class IdempotentAspect(
             val r = idem[key] ?: continue
             // 如果执行成功，则抛出返回值异常
             if (r.status == IdempotencyStatus.SUCCESS) {
-                throw IdempotencyReturnValueFromRecordException(key, r)
+                throw IdempotentReturnValueFromRecordException(key, r)
             }
         }
         // 等待超时后抛出异常
@@ -195,12 +192,12 @@ class IdempotentAspect(
      * @param policy 幂等策略。
      * @return 方法执行结果。
      */
-    private fun executeAndSaveResult(pjp: ProceedingJoinPoint, key: Key, policy: IdempotencyPolicy): Any? {
+    private fun executeAndSaveResult(pjp: ProceedingJoinPoint, key: Key, policy: IdempotentPolicy): Any? {
         return try {
             val out = pjp.proceed()
             idem.saveSuccess(
                 key,
-                IdempotencyRecord(
+                IdempotentRecord(
                     status = IdempotencyStatus.SUCCESS,
                     payloadType = out?.javaClass?.name,
                     payload = codec.serialize(out)

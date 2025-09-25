@@ -22,6 +22,7 @@ package com.gewuyou.forgeboot.safeguard.autoconfigure.aop
 
 import com.gewuyou.forgeboot.safeguard.autoconfigure.annotations.RateLimit
 import com.gewuyou.forgeboot.safeguard.autoconfigure.key.KeyResolutionSupport
+import com.gewuyou.forgeboot.safeguard.autoconfigure.resolver.RateLimitExceptionFactoryResolver
 import com.gewuyou.forgeboot.safeguard.autoconfigure.spel.SpelEval
 import com.gewuyou.forgeboot.safeguard.core.api.RateLimiter
 import com.gewuyou.forgeboot.safeguard.core.exception.RateLimitExceededException
@@ -35,7 +36,6 @@ import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.beans.factory.BeanFactory
-import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.Order
 import java.time.Duration
 import java.time.Instant
@@ -60,7 +60,7 @@ class RateLimitAspect(
     private val beanFactory: BeanFactory,
     private val metrics: SafeguardMetrics = NoopSafeguardMetrics,
     private val keySupport: KeyResolutionSupport,
-    private val applicationContext: ApplicationContext,
+    private val resolver: RateLimitExceptionFactoryResolver,
 ) {
     private companion object {
         const val NS = "safeguard:rl"
@@ -129,11 +129,8 @@ class RateLimitAspect(
         rl: RateLimit,
         context: RateLimitContext,
     ): RuntimeException {
-        // 获取异常工厂的Java类类型
-        val factoryType = rl.factory.java
-        // 从应用上下文中获取工厂实例，如果不存在则通过反射创建新实例
-        val factory = applicationContext.getBeanProvider(factoryType).ifAvailable
-            ?: factoryType.getDeclaredConstructor().newInstance()
+        // 获取异常工厂
+        val factory = resolver.resolve(rl)
         // 使用工厂创建并返回运行时异常
         return factory.create(context)
     }

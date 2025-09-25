@@ -20,7 +20,6 @@
 
 package com.gewuyou.forgeboot.safeguard.autoconfigure.annotations
 
-import com.gewuyou.forgeboot.safeguard.core.factory.DefaultRateLimitExceptionFactory
 import com.gewuyou.forgeboot.safeguard.core.factory.RateLimitExceptionFactory
 import kotlin.reflect.KClass
 
@@ -33,7 +32,13 @@ import kotlin.reflect.KClass
  * @property refillTokens 每次填充的令牌数量，支持SpEL表达式，如"10"
  * @property refillPeriodMs 令牌填充周期(毫秒)，支持SpEL表达式，如"1000"
  * @property requested 每次请求消耗的令牌数，默认为1，支持SpEL表达式
+ * @property template 限流异常信息模板
+ * @property resolverBean 限流key解析器bean名称
  * @property refundOn 失败时触发令牌归还的异常类型数组，当方法抛出指定异常时会归还已消耗的令牌
+ * @property scene 业务场景标识
+ * @property infoCode 限流信息码
+ * @property factory 限流异常工厂类
+ * @property factoryBean 限流异常工厂bean名称
  * @since 2025-09-21 14:16:31
  * @author gewuyou
  */
@@ -51,5 +56,7 @@ annotation class RateLimit(
     val scene: String = "",
     val infoCode: String = "",
     val factory: KClass<out RateLimitExceptionFactory> =
-        DefaultRateLimitExceptionFactory::class,
+        RateLimitExceptionFactory::class,
+    val factoryBean: String = "",
 )
+

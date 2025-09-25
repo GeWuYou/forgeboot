@@ -20,7 +20,7 @@
 
 package com.gewuyou.forgeboot.safeguard.autoconfigure.web
 
-import com.gewuyou.forgeboot.safeguard.core.exception.IdempotencyReturnValueFromRecordException
+import com.gewuyou.forgeboot.safeguard.core.exception.IdempotentReturnValueFromRecordException
 import com.gewuyou.forgeboot.safeguard.core.serialize.PayloadCodec
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -47,8 +47,8 @@ class IdempotencyReturnAdvice(
      * @param ex 幂等性返回值异常，包含幂等性记录信息
      * @return 从幂等性记录中解析出的原始方法返回值
      */
-    @ExceptionHandler(IdempotencyReturnValueFromRecordException::class)
-    fun onIdemReturn(ex: IdempotencyReturnValueFromRecordException): Any? {
+    @ExceptionHandler(IdempotentReturnValueFromRecordException::class)
+    fun onIdemReturn(ex: IdempotentReturnValueFromRecordException): Any? {
         val rec = ex.record
         val bytes = rec.payload ?: return null
         val typeName = rec.payloadType

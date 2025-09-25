@@ -23,8 +23,8 @@ package com.gewuyou.forgeboot.safeguard.redis.idem
 import com.gewuyou.forgeboot.safeguard.core.api.IdempotencyManager
 import com.gewuyou.forgeboot.safeguard.core.enums.IdempotencyStatus
 import com.gewuyou.forgeboot.safeguard.core.key.Key
-import com.gewuyou.forgeboot.safeguard.core.model.IdempotencyRecord
-import com.gewuyou.forgeboot.safeguard.core.policy.IdempotencyPolicy
+import com.gewuyou.forgeboot.safeguard.core.model.IdempotentRecord
+import com.gewuyou.forgeboot.safeguard.core.policy.IdempotentPolicy
 import com.gewuyou.forgeboot.safeguard.redis.key.RedisKeyBuilder
 import com.gewuyou.forgeboot.safeguard.redis.support.LuaScriptExecutor
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -56,7 +56,7 @@ class RedisIdempotencyManager(
      * @param key 幂等键，用于标识一次请求。
      * @return 幂等记录，如果不存在则返回 null。
      */
-    override fun get(key: Key): IdempotencyRecord? {
+    override fun get(key: Key): IdempotentRecord? {
         val k = keyBuilder.idem(key)
         val map: Map<String, String> = redis.opsForHash<String, String>().entries(k)
         if (map.isEmpty()) return null
@@ -64,7 +64,7 @@ class RedisIdempotencyManager(
         val type = map["type"]
         val bodyB64 = map["body"]
         val payload = bodyB64?.let { Base64.getDecoder().decode(it) }
-        return IdempotencyRecord(status = status, payloadType = type, payload = payload)
+        return IdempotentRecord(status = status, payloadType = type, payload = payload)
     }
 
     /**
@@ -74,7 +74,7 @@ class RedisIdempotencyManager(
      * @param policy 幂等策略，包含超时时间等配置。
      * @return 如果成功获取待处理状态则返回 true，否则返回 false。
      */
-    override fun tryAcquirePending(key: Key, policy: IdempotencyPolicy): Boolean {
+    override fun tryAcquirePending(key: Key, policy: IdempotentPolicy): Boolean {
         val k = keyBuilder.idem(key)
         val ret = lua.evalShaToLong(
             sha = acquireSha,
@@ -91,7 +91,7 @@ class RedisIdempotencyManager(
      * @param record 幂等记录，包含状态、响应类型和响应体。
      * @param policy 幂等策略，包含超时时间等配置。
      */
-    override fun saveSuccess(key: Key, record: IdempotencyRecord, policy: IdempotencyPolicy) {
+    override fun saveSuccess(key: Key, record: IdempotentRecord, policy: IdempotentPolicy) {
         val k = keyBuilder.idem(key)
         val payloadB64 = record.payload?.let { Base64.getEncoder().encodeToString(it) } ?: ""
         lua.evalShaToLong(
@@ -121,7 +121,7 @@ class RedisIdempotencyManager(
      * @param status 新的状态。
      * @param policy 幂等策略，包含超时时间等配置。
      */
-    override fun updateStatus(key: Key, status: IdempotencyStatus, policy: IdempotencyPolicy) {
+    override fun updateStatus(key: Key, status: IdempotencyStatus, policy: IdempotentPolicy) {
         val k = keyBuilder.idem(key)
         redis.opsForHash<String, String>().put(k, "status", status.name)
         // 续命，确保在 TTL 内可见

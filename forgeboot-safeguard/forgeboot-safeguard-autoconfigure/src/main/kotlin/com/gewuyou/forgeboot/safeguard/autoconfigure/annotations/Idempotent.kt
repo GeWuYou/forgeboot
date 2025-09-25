@@ -21,8 +21,7 @@
 package com.gewuyou.forgeboot.safeguard.autoconfigure.annotations
 
 import com.gewuyou.forgeboot.safeguard.core.enums.IdemMode
-import com.gewuyou.forgeboot.safeguard.core.factory.DefaultIdempotencyExceptionFactory
-import com.gewuyou.forgeboot.safeguard.core.factory.IdempotencyExceptionFactory
+import com.gewuyou.forgeboot.safeguard.core.factory.IdempotentExceptionFactory
 import kotlin.reflect.KClass
 
 /**
@@ -33,8 +32,12 @@ import kotlin.reflect.KClass
  * @property ttlSeconds SpEL表达式，指定幂等记录的过期时间，单位为秒，例如"600"
  * @property template 模板字符串，用于生成幂等key的模板
  * @property resolverBean 解析器bean名称，用于自定义key解析逻辑
+ * @property scene 业务场景标识，用于区分不同的业务场景
+ * @property infoCode 信息码，用于标识幂等性检查的相关信息
  * @property mode 幂等处理模式，默认为RETURN_SAVED，表示返回已保存的结果
- * @property factory 异常工厂类，用于创建幂等性检查失败时的异常，默认使用DefaultIdempotencyExceptionFactory
+ * @property factory 异常工厂类，用于创建幂等性检查失败时的异常
+ * @property factoryBean 异常工厂bean名称，用于指定自定义异常工厂bean
+ *
  * @since 2025-09-21 14:17:53
  * @author gewuyou
  */
@@ -48,6 +51,7 @@ annotation class Idempotent(
     val scene: String = "",
     val infoCode: String = "",
     val mode: IdemMode = IdemMode.RETURN_SAVED,
-    val factory: KClass<out IdempotencyExceptionFactory> =
-        DefaultIdempotencyExceptionFactory::class,
+    val factory: KClass<out IdempotentExceptionFactory> =
+        IdempotentExceptionFactory::class,
+    val factoryBean: String = "",
 )

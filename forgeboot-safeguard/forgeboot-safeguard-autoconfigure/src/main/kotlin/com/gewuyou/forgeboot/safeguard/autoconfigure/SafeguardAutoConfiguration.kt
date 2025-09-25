@@ -27,11 +27,16 @@ import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.CooldownAspect
 import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.IdempotentAspect
 import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.RateLimitAspect
 import com.gewuyou.forgeboot.safeguard.autoconfigure.key.KeyResolutionSupport
+import com.gewuyou.forgeboot.safeguard.autoconfigure.resolver.AttemptLimitExceptionFactoryResolver
+import com.gewuyou.forgeboot.safeguard.autoconfigure.resolver.CooldownExceptionFactoryResolver
+import com.gewuyou.forgeboot.safeguard.autoconfigure.resolver.IdempotentExceptionFactoryResolver
+import com.gewuyou.forgeboot.safeguard.autoconfigure.resolver.RateLimitExceptionFactoryResolver
 import com.gewuyou.forgeboot.safeguard.autoconfigure.web.IdempotencyReturnAdvice
 import com.gewuyou.forgeboot.safeguard.core.api.AttemptLimitManager
 import com.gewuyou.forgeboot.safeguard.core.api.CooldownGuard
 import com.gewuyou.forgeboot.safeguard.core.api.IdempotencyManager
 import com.gewuyou.forgeboot.safeguard.core.api.RateLimiter
+import com.gewuyou.forgeboot.safeguard.core.factory.*
 import com.gewuyou.forgeboot.safeguard.core.key.KeyFactory
 import com.gewuyou.forgeboot.safeguard.core.key.KeyTemplateRegistry
 import com.gewuyou.forgeboot.safeguard.core.metrics.NoopSafeguardMetrics
@@ -56,13 +61,14 @@ import jakarta.servlet.http.HttpServletRequest
 import org.redisson.Redisson
 import org.redisson.api.RedissonClient
 import org.springframework.beans.factory.BeanFactory
+import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Primary
 import org.springframework.data.redis.core.StringRedisTemplate
 import java.time.Duration
 
@@ -77,13 +83,133 @@ import java.time.Duration
 class SafeguardAutoConfiguration {
 
     /**
+     * 创建默认的尝试限制异常工厂Bean
+     * 当Spring容器中不存在AttemptLimitExceptionFactory类型的Bean时，创建并注册DefaultAttemptLimitExceptionFactory实例
+     * @return AttemptLimitExceptionFactory 默认的尝试限制异常工厂实例
+     */
+    @Bean
+    @Primary
+    @ConditionalOnMissingBean(AttemptLimitExceptionFactory::class)
+    fun attemptLimitDefault(): AttemptLimitExceptionFactory =
+        DefaultAttemptLimitExceptionFactory()
+
+    /**
+     * 创建默认的冷却期异常工厂Bean
+     * 当Spring容器中不存在CooldownExceptionFactory类型的Bean时，创建并注册DefaultCooldownExceptionFactory实例
+     * @return CooldownExceptionFactory 默认的冷却期异常工厂实例
+     */
+    @Bean
+    @Primary
+    @ConditionalOnMissingBean(CooldownExceptionFactory::class)
+    fun cooldownDefault(): CooldownExceptionFactory =
+        DefaultCooldownExceptionFactory()
+
+    /**
+     * 创建默认的幂等性异常工厂Bean
+     * 当Spring容器中不存在IdempotentExceptionFactory类型的Bean时，创建并注册DefaultIdempotentExceptionFactory实例
+     * @return IdempotentExceptionFactory 默认的幂等性异常工厂实例
+     */
+    @Bean
+    @Primary
+    @ConditionalOnMissingBean(IdempotentExceptionFactory::class)
+    fun idempotentDefault(): IdempotentExceptionFactory =
+        DefaultIdempotentExceptionFactory()
+
+    /**
+     * 创建默认的限流异常工厂Bean
+     * 当Spring容器中不存在RateLimitExceptionFactory类型的Bean时，创建并注册DefaultRateLimitExceptionFactory实例
+     * @return RateLimitExceptionFactory 默认的限流异常工厂实例
+     */
+    @Bean
+    @Primary
+    @ConditionalOnMissingBean(RateLimitExceptionFactory::class)
+    fun rateLimitDefault(): RateLimitExceptionFactory =
+        DefaultRateLimitExceptionFactory()
+
+    /**
+     * 创建限流异常工厂解析器的Bean
+     *
+     * @param applicationContext 应用上下文，用于获取Bean信息
+     * @param defaultFactoryProvider 默认异常工厂提供者，用于获取默认的限流异常工厂实例
+     * @return RateLimitExceptionFactoryResolver 限流异常工厂解析器实例
+     */
+    @Bean
+    @ConditionalOnBean
+    fun rateLimitExceptionFactoryResolver(
+        applicationContext: ApplicationContext,
+        defaultFactoryProvider: ObjectProvider<RateLimitExceptionFactory>,
+    ): RateLimitExceptionFactoryResolver {
+        return RateLimitExceptionFactoryResolver(
+            applicationContext,
+            defaultFactoryProvider
+        )
+    }
+
+    /**
+     * 创建幂等性异常工厂解析器的Bean
+     *
+     * @param applicationContext 应用上下文，用于获取Bean信息
+     * @param defaultFactoryProvider 默认异常工厂提供者，用于获取默认的幂等性异常工厂实例
+     * @return IdempotencyExceptionFactoryResolver 幂等性异常工厂解析器实例
+     */
+    @Bean
+    @ConditionalOnBean
+    fun idempotencyExceptionFactoryResolver(
+        applicationContext: ApplicationContext,
+        defaultFactoryProvider: ObjectProvider<IdempotentExceptionFactory>,
+    ): IdempotentExceptionFactoryResolver {
+        return IdempotentExceptionFactoryResolver(
+            applicationContext,
+            defaultFactoryProvider
+        )
+    }
+
+    /**
+     * 创建冷却期异常工厂解析器的Bean
+     *
+     * @param applicationContext 应用上下文，用于获取Bean信息
+     * @param defaultFactoryProvider 默认异常工厂提供者，用于获取默认的冷却期异常工厂实例
+     * @return CooldownExceptionFactoryResolver 冷却期异常工厂解析器实例
+     */
+    @Bean
+    @ConditionalOnBean
+    fun cooldownExceptionFactoryResolver(
+        applicationContext: ApplicationContext,
+        defaultFactoryProvider: ObjectProvider<CooldownExceptionFactory>,
+    ): CooldownExceptionFactoryResolver {
+        return CooldownExceptionFactoryResolver(
+            applicationContext,
+            defaultFactoryProvider
+        )
+    }
+
+    /**
+     * 创建尝试次数限制异常工厂解析器的Bean
+     *
+     * @param applicationContext 应用上下文，用于获取Bean信息
+     * @param defaultFactoryProvider 默认异常工厂提供者，用于获取默认的尝试次数限制异常工厂实例
+     * @return AttemptLimitExceptionFactoryResolver 尝试次数限制异常工厂解析器实例
+     */
+    @Bean
+    @ConditionalOnBean
+    fun attemptLimitExceptionFactoryResolver(
+        applicationContext: ApplicationContext,
+        defaultFactoryProvider: ObjectProvider<AttemptLimitExceptionFactory>,
+    ): AttemptLimitExceptionFactoryResolver {
+        return AttemptLimitExceptionFactoryResolver(
+            applicationContext,
+            defaultFactoryProvider
+        )
+    }
+
+    /**
      * 创建幂等性返回值处理器的Bean
      *
      * @param codec 用于序列化和反序列化的编解码器
      * @return 幂等性返回值处理器实例
      */
     @Bean
-    @ConditionalOnClass
+    @ConditionalOnBean
     fun idempotentReturnAdvice(codec: PayloadCodec): IdempotencyReturnAdvice {
         return IdempotencyReturnAdvice(codec)
     }
@@ -96,8 +222,7 @@ class SafeguardAutoConfiguration {
      * @return RedisKeyTemplateRegistry 实例
      */
     @Bean
-    @ConditionalOnClass(StringRedisTemplate::class)
-    @ConditionalOnMissingBean(KeyTemplateRegistry::class)
+    @ConditionalOnMissingBean
     fun redisKeyTemplateRegistry(
         redis: StringRedisTemplate,
         safeguardProperties: SafeguardProperties,
@@ -265,10 +390,12 @@ class SafeguardAutoConfiguration {
     /**
      * 创建尝试限制切面实例。
      *
-     * @param limiter 尝试限制管理器
-     * @param metrics 指标收集器
-     * @param keyResolutionSupport 键解析支持类
-     * @return AttemptLimitAspect 实例
+     * @param limiter 尝试限制管理器，用于控制尝试次数
+     * @param metrics 指标收集器，用于记录尝试限制相关的监控数据
+     * @param keyResolutionSupport 键解析支持类，用于生成唯一标识键
+     * @param request HTTP 请求对象，用于获取请求上下文信息
+     * @param resolver 异常工厂解析器，用于处理尝试限制异常
+     * @return AttemptLimitAspect 实例，用于实现尝试限制逻辑的切面
      */
     @Bean
     @ConditionalOnMissingBean(AttemptLimitAspect::class)
@@ -277,20 +404,21 @@ class SafeguardAutoConfiguration {
         metrics: SafeguardMetrics,
         keyResolutionSupport: KeyResolutionSupport,
         request: HttpServletRequest,
-        applicationContext: ApplicationContext,
+        resolver: AttemptLimitExceptionFactoryResolver,
     ): AttemptLimitAspect {
         log.info("已启用尝试限制切面...")
-        return AttemptLimitAspect(limiter, metrics, keyResolutionSupport, request, applicationContext)
+        return AttemptLimitAspect(limiter, metrics, keyResolutionSupport, request, resolver)
     }
 
     /**
      * 创建冷却时间切面实例。
      *
-     * @param guard 冷却守卫
-     * @param beanFactory Spring Bean 工厂
-     * @param metrics 指标收集器
-     * @param keyResolutionSupport 键解析支持类
-     * @return CooldownAspect 实例
+     * @param guard 冷却守卫，用于判断是否处于冷却状态
+     * @param beanFactory Spring Bean 工厂，用于获取其他 Spring 管理的 Bean
+     * @param metrics 指标收集器，用于记录冷却时间相关的监控数据
+     * @param keyResolutionSupport 键解析支持类，用于生成唯一标识键
+     * @param resolver 异常工厂解析器，用于处理冷却时间异常
+     * @return CooldownAspect 实例，用于实现冷却时间控制逻辑的切面
      */
     @Bean
     @ConditionalOnMissingBean(CooldownAspect::class)
@@ -300,23 +428,23 @@ class SafeguardAutoConfiguration {
         beanFactory: BeanFactory,
         metrics: SafeguardMetrics,
         keyResolutionSupport: KeyResolutionSupport,
-        applicationContext: ApplicationContext,
+        resolver: CooldownExceptionFactoryResolver,
     ): CooldownAspect {
         log.info("已启用冷却时间切面...")
-        return CooldownAspect(guard, beanFactory, metrics, keyResolutionSupport, applicationContext)
+        return CooldownAspect(guard, beanFactory, metrics, keyResolutionSupport, resolver)
     }
 
     /**
      * 创建幂等切面实例。
      *
-     * @param idem 幂等管理器
-     * @param codec 负载编解码器
-     * @param props 防护配置属性
-     * @param beanFactory Spring Bean 工厂
-     * @param metrics 指标收集器
-     * @param keyResolutionSupport 键解析支持类
-     * @param applicationContext Spring 应用上下文
-     * @return IdempotentAspect 实例
+     * @param idem 幂等管理器，用于处理幂等逻辑
+     * @param codec 负载编解码器，用于序列化和反序列化请求负载
+     * @param props 防护配置属性，提供幂等相关的配置参数
+     * @param beanFactory Spring Bean 工厂，用于获取其他 Spring 管理的 Bean
+     * @param metrics 指标收集器，用于记录幂等相关的监控数据
+     * @param keyResolutionSupport 键解析支持类，用于生成唯一标识键
+     * @param resolver 异常工厂解析器，用于处理幂等异常
+     * @return IdempotentAspect 实例，用于实现幂等逻辑的切面
      */
     @Bean
     @ConditionalOnMissingBean(IdempotentAspect::class)
@@ -327,21 +455,21 @@ class SafeguardAutoConfiguration {
         beanFactory: BeanFactory,
         metrics: SafeguardMetrics,
         keyResolutionSupport: KeyResolutionSupport,
-        applicationContext: ApplicationContext,
+        resolver: IdempotentExceptionFactoryResolver,
     ): IdempotentAspect {
         log.info("已启用幂等切面...")
-        return IdempotentAspect(idem, codec, props, beanFactory, metrics, keyResolutionSupport, applicationContext)
+        return IdempotentAspect(idem, codec, props, beanFactory, metrics, keyResolutionSupport, resolver)
     }
 
     /**
      * 创建限流切面实例。
      *
-     * @param limiter 限流器
-     * @param beanFactory Spring Bean 工厂
-     * @param metrics 指标收集器
-     * @param keyResolutionSupport 键解析支持类
-     * @param applicationContext Spring 应用上下文
-     * @return RateLimitAspect 实例
+     * @param limiter 限流器，用于控制请求频率
+     * @param beanFactory Spring Bean 工厂，用于获取其他 Spring 管理的 Bean
+     * @param metrics 指标收集器，用于记录限流相关的监控数据
+     * @param keyResolutionSupport 键解析支持类，用于生成唯一标识键
+     * @param resolver 异常工厂解析器，用于处理限流异常
+     * @return RateLimitAspect 实例，用于实现限流逻辑的切面
      */
     @Bean
     @ConditionalOnMissingBean(RateLimitAspect::class)
@@ -351,9 +479,10 @@ class SafeguardAutoConfiguration {
         beanFactory: BeanFactory,
         metrics: SafeguardMetrics,
         keyResolutionSupport: KeyResolutionSupport,
-        applicationContext: ApplicationContext,
+        resolver: RateLimitExceptionFactoryResolver,
     ): RateLimitAspect {
         log.info("已启用限流切面...")
-        return RateLimitAspect(limiter, beanFactory, metrics, keyResolutionSupport, applicationContext)
+        return RateLimitAspect(limiter, beanFactory, metrics, keyResolutionSupport, resolver)
     }
+
 }
