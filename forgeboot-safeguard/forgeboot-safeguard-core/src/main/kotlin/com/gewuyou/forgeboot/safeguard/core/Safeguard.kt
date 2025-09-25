@@ -25,13 +25,13 @@ import com.gewuyou.forgeboot.safeguard.core.api.IdempotencyManager
 import com.gewuyou.forgeboot.safeguard.core.api.RateLimiter
 import com.gewuyou.forgeboot.safeguard.core.enums.IdempotencyStatus
 import com.gewuyou.forgeboot.safeguard.core.exception.CooldownActiveException
-import com.gewuyou.forgeboot.safeguard.core.exception.IdempotencyConflictException
+import com.gewuyou.forgeboot.safeguard.core.exception.IdempotentConflictException
 import com.gewuyou.forgeboot.safeguard.core.exception.RateLimitExceededException
 import com.gewuyou.forgeboot.safeguard.core.key.Key
 import com.gewuyou.forgeboot.safeguard.core.metrics.SafeguardMetrics
-import com.gewuyou.forgeboot.safeguard.core.model.IdempotencyRecord
+import com.gewuyou.forgeboot.safeguard.core.model.IdempotentRecord
 import com.gewuyou.forgeboot.safeguard.core.policy.CooldownPolicy
-import com.gewuyou.forgeboot.safeguard.core.policy.IdempotencyPolicy
+import com.gewuyou.forgeboot.safeguard.core.policy.IdempotentPolicy
 import com.gewuyou.forgeboot.safeguard.core.policy.RateLimitPolicy
 import com.gewuyou.forgeboot.safeguard.core.serialize.PayloadCodec
 
@@ -110,14 +110,14 @@ object Safeguard {
      * @param policy 幂等策略配置。
      * @param block 要执行的业务逻辑代码块。
      * @return 执行结果。
-     * @throws IdempotencyConflictException 当操作正在处理或冲突时抛出。
+     * @throws IdempotentConflictException 当操作正在处理或冲突时抛出。
      */
     fun <T> withIdempotency(
         idem: IdempotencyManager,
         metrics: SafeguardMetrics,
         codec: PayloadCodec,
         key: Key,
-        policy: IdempotencyPolicy,
+        policy: IdempotentPolicy,
         block: () -> T,
     ): T {
         // 检查是否已有记录
@@ -131,21 +131,21 @@ object Safeguard {
 
                 IdempotencyStatus.PENDING -> {
                     metrics.onIdemConflict(key.namespace, key.value)
-                    throw IdempotencyConflictException(key)
+                    throw IdempotentConflictException(key)
                 }
             }
         }
         // 首次：抢占
         if (!idem.tryAcquirePending(key, policy)) {
             metrics.onIdemConflict(key.namespace, key.value)
-            throw IdempotencyConflictException(key)
+            throw IdempotentConflictException(key)
         }
         metrics.onIdemMiss(key.namespace, key.value)
         return try {
             val out = block()
             idem.saveSuccess(
                 key,
-                IdempotencyRecord(
+                IdempotentRecord(
                     status = IdempotencyStatus.SUCCESS,
                     payloadType = out?.javaClass?.name,
                     payload = codec.serialize(out)

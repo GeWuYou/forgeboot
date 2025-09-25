@@ -29,7 +29,7 @@ import com.gewuyou.forgeboot.safeguard.core.model.AttemptLimitContext
  * @since 2025-09-23 11:16:51
  * @author gewuyou
  */
-class DefaultAttemptLimitExceededExceptionFactory : AttemptLimitExceededExceptionFactory {
+class DefaultAttemptLimitExceptionFactory : AttemptLimitExceptionFactory {
     override fun create(ctx: AttemptLimitContext): RuntimeException {
         return AttemptLimitExceededException(ctx.key)
     }

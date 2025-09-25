@@ -21,7 +21,7 @@
 package com.gewuyou.forgeboot.safeguard.core.exception
 
 import com.gewuyou.forgeboot.safeguard.core.key.Key
-import com.gewuyou.forgeboot.safeguard.core.model.IdempotencyRecord
+import com.gewuyou.forgeboot.safeguard.core.model.IdempotentRecord
 
 
 /**
@@ -45,9 +45,9 @@ sealed class SafeguardException(
  * @property key 触发异常的键值对象
  * @property record 已存在的幂等记录
  */
-class IdempotencyReturnValueFromRecordException(
+class IdempotentReturnValueFromRecordException(
     key: Key,
-    val record: IdempotencyRecord,
+    val record: IdempotentRecord,
 ) : SafeguardException("Return value from record : ${key.full()}", key, "RETURN_VALUE_FROM_RECORD")
 
 /**
@@ -71,7 +71,7 @@ class CooldownActiveException(key: Key) :
  *
  * @property key 触发幂等性检查的键值对象
  */
-class IdempotencyConflictException(key: Key) :
+class IdempotentConflictException(key: Key) :
     SafeguardException("Idempotency conflict: ${key.full()}", key, "IDEMPOTENCY_CONFLICT")
 
 /**

@@ -21,8 +21,7 @@
 package com.gewuyou.forgeboot.safeguard.autoconfigure.annotations
 
 import com.gewuyou.forgeboot.safeguard.core.enums.KeyProcessingMode
-import com.gewuyou.forgeboot.safeguard.core.factory.AttemptLimitExceededExceptionFactory
-import com.gewuyou.forgeboot.safeguard.core.factory.DefaultAttemptLimitExceededExceptionFactory
+import com.gewuyou.forgeboot.safeguard.core.factory.AttemptLimitExceptionFactory
 import kotlin.reflect.KClass
 
 /**
@@ -40,7 +39,8 @@ import kotlin.reflect.KClass
  * @param successReset 函数执行成功后是否重置失败计数器，默认为 true。
  * @param scene 场景标识符，可用于区分不同的业务场景，默认为空。
  * @param infoCode 错误码，用于标识触发限制时返回的错误类型，默认为空。
- * @param factory 异常工厂类，用于创建尝试限制异常实例，默认为 DefaultAttemptLimitExceededExceptionFactory。
+ * @param factory 异常工厂类，用于创建尝试限制异常实例。
+ * @param factoryBean 异常工厂对应的 Spring Bean 名称，用于获取异常工厂实例，默认为空。
  *
  * @since 2025-09-22 09:40:46
  * @author gewuyou
@@ -59,6 +59,7 @@ annotation class AttemptLimit(
     val successReset: Boolean = true,         // 成功是否清零
     val scene: String = "",
     val infoCode: String = "",
-    val factory: KClass<out AttemptLimitExceededExceptionFactory> =
-        DefaultAttemptLimitExceededExceptionFactory::class,
+    val factory: KClass<out AttemptLimitExceptionFactory> =
+        AttemptLimitExceptionFactory::class,
+    val factoryBean: String = "",
 )

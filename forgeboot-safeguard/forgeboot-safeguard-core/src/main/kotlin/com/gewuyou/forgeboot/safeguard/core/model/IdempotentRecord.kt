@@ -31,7 +31,7 @@ import com.gewuyou.forgeboot.safeguard.core.enums.IdempotencyStatus
  * @since 2025-09-21 11:11:49
  * @author gewuyou
  */
-data class IdempotencyRecord(
+data class IdempotentRecord(
     val status: IdempotencyStatus,
     val payloadType: String?,
     val payload: ByteArray?,
@@ -45,7 +45,7 @@ data class IdempotencyRecord(
      */
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is IdempotencyRecord) return false
+        if (other !is IdempotentRecord) return false
 
         if (status != other.status) return false
         if (payloadType != other.payloadType) return false

@@ -20,14 +20,21 @@
 
 package com.gewuyou.forgeboot.safeguard.core.factory
 
-import com.gewuyou.forgeboot.safeguard.core.model.AttemptLimitContext
+import com.gewuyou.forgeboot.safeguard.core.model.IdempotentContext
 
 /**
- *尝试限制异常工厂
+ * 幂等性异常工厂接口
+ * 用于创建与幂等性相关的运行时异常
  *
- * @since 2025-09-23 10:58:48
+ * @since 2025-09-23 21:15:14
  * @author gewuyou
  */
-fun interface AttemptLimitExceededExceptionFactory : ExceptionFactory<AttemptLimitContext> {
-    override fun create(ctx: AttemptLimitContext): RuntimeException
+fun interface IdempotentExceptionFactory : ExceptionFactory<IdempotentContext> {
+    /**
+     * 根据幂等性上下文创建运行时异常
+     *
+     * @param ctx 幂等性上下文，包含异常创建所需的信息
+     * @return 创建的运行时异常实例
+     */
+    override fun create(ctx: IdempotentContext): RuntimeException
 }

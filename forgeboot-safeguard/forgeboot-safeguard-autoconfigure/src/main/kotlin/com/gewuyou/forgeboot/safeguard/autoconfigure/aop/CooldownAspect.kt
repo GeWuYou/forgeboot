@@ -22,6 +22,7 @@ package com.gewuyou.forgeboot.safeguard.autoconfigure.aop
 
 import com.gewuyou.forgeboot.safeguard.autoconfigure.annotations.Cooldown
 import com.gewuyou.forgeboot.safeguard.autoconfigure.key.KeyResolutionSupport
+import com.gewuyou.forgeboot.safeguard.autoconfigure.resolver.CooldownExceptionFactoryResolver
 import com.gewuyou.forgeboot.safeguard.autoconfigure.spel.SpelEval
 import com.gewuyou.forgeboot.safeguard.core.api.CooldownGuard
 import com.gewuyou.forgeboot.safeguard.core.exception.CooldownActiveException
@@ -35,7 +36,6 @@ import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.beans.factory.BeanFactory
-import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.Order
 import java.time.Duration
 import java.time.Instant
@@ -47,7 +47,7 @@ import java.time.Instant
  * @param beanFactory Spring Bean工厂，用于表达式求值
  * @param metrics 安全防护指标收集器，用于记录冷却相关指标，默认为无操作实现
  * @param keySupport 键解析支持类，用于解析冷却键
- * @param applicationContext Spring应用上下文，用于获取异常工厂Bean
+ * @param resolver 注解异常工厂解析器
  * @since 2025-09-21 14:15:08
  * @author gewuyou
  */
@@ -58,7 +58,7 @@ class CooldownAspect(
     private val beanFactory: BeanFactory,
     private val metrics: SafeguardMetrics = NoopSafeguardMetrics,
     private val keySupport: KeyResolutionSupport,
-    private val applicationContext: ApplicationContext,
+    private val resolver: CooldownExceptionFactoryResolver,
 ) {
 
     private companion object {
@@ -133,9 +133,7 @@ class CooldownAspect(
         cd: Cooldown,
         context: CooldownContext,
     ): RuntimeException {
-        val factoryType = cd.factory.java
-        val factory = applicationContext.getBeanProvider(factoryType).ifAvailable
-            ?: factoryType.getDeclaredConstructor().newInstance()
+        val factory = resolver.resolve(cd)
         return factory.create(context)
     }
 }

@@ -31,7 +31,7 @@ import java.time.Instant
  * @since 2025-09-23 20:29:43
  * @author gewuyou
  */
-data class IdempotencyContext(
+data class IdempotentContext(
     override val key: Key,
     override val scene: String?,
     override val infoCode: String?,
@@ -55,7 +55,7 @@ data class IdempotencyContext(
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is IdempotencyContext) return false
+        if (other !is IdempotentContext) return false
 
         if (key != other.key) return false
         if (scene != other.scene) return false

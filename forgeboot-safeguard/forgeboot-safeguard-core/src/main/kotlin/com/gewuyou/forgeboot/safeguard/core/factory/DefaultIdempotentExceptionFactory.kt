@@ -18,22 +18,25 @@
  *
  */
 
-package com.gewuyou.forgeboot.safeguard.core.policy
+package com.gewuyou.forgeboot.safeguard.core.factory
 
-import com.gewuyou.forgeboot.safeguard.core.enums.IdemMode
-import java.time.Duration
+import com.gewuyou.forgeboot.safeguard.core.exception.IdempotentConflictException
+import com.gewuyou.forgeboot.safeguard.core.model.IdempotentContext
 
 /**
- * 幂等性策略配置类
+ *默认的掌声冲突异常工厂
  *
- * 用于定义接口幂等性控制的策略配置，包括超时时间和处理模式
- *
- * @property ttl 幂等性记录的存活时间，超过该时间后记录将被清除
- * @property mode 幂等性处理模式，默认为返回已保存的结果
- * @since 2025-09-21 09:57:03
+ * @since 2025-09-23 21:16:26
  * @author gewuyou
  */
-data class IdempotencyPolicy(
-    val ttl: Duration,
-    val mode: IdemMode = IdemMode.RETURN_SAVED,
-)
+class DefaultIdempotentExceptionFactory : IdempotentExceptionFactory {
+    /**
+     * 根据幂等性上下文创建运行时异常
+     *
+     * @param ctx 幂等性上下文，包含异常创建所需的信息
+     * @return 创建的运行时异常实例
+     */
+    override fun create(ctx: IdempotentContext): RuntimeException {
+        return IdempotentConflictException(ctx.key)
+    }
+}

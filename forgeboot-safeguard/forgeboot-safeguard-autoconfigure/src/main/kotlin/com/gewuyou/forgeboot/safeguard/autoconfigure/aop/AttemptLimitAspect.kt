@@ -22,6 +22,7 @@ package com.gewuyou.forgeboot.safeguard.autoconfigure.aop
 
 import com.gewuyou.forgeboot.safeguard.autoconfigure.annotations.AttemptLimit
 import com.gewuyou.forgeboot.safeguard.autoconfigure.key.KeyResolutionSupport
+import com.gewuyou.forgeboot.safeguard.autoconfigure.resolver.AttemptLimitExceptionFactoryResolver
 import com.gewuyou.forgeboot.safeguard.core.api.AttemptLimitManager
 import com.gewuyou.forgeboot.safeguard.core.enums.KeyProcessingMode
 import com.gewuyou.forgeboot.safeguard.core.key.Key
@@ -34,7 +35,6 @@ import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
-import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.Order
 import java.time.Duration
 import java.time.Instant
@@ -46,7 +46,7 @@ import java.time.Instant
  * @property metrics 安全防护指标收集器，用于记录尝试、阻塞、锁定等事件。
  * @property keySupport 密钥解析支持类，用于生成基于方法调用上下文的唯一标识键。
  * @property request 当前 HTTP 请求对象，用于获取客户端 IP 地址。
- * @property applicationContext Spring 应用上下文，用于获取异常工厂 Bean。
+ * @property resolver 异常工厂解析器，用于解析并生成尝试限制异常。
  *
  * @since 2025-09-22 11:56:09
  * @author gewuyou
@@ -58,7 +58,7 @@ class AttemptLimitAspect(
     private val metrics: SafeguardMetrics,
     private val keySupport: KeyResolutionSupport,
     private val request: HttpServletRequest,
-    private val applicationContext: ApplicationContext,
+    private val resolver: AttemptLimitExceptionFactoryResolver,
 ) {
     private companion object {
         /**
@@ -221,9 +221,7 @@ class AttemptLimitAspect(
         cd: AttemptLimit,
         context: AttemptLimitContext,
     ): RuntimeException {
-        val factoryType = cd.factory.java
-        val factory = applicationContext.getBeanProvider(factoryType).ifAvailable
-            ?: factoryType.getDeclaredConstructor().newInstance()
+        val factory = resolver.resolve(cd)
         return factory.create(context)
     }
 }

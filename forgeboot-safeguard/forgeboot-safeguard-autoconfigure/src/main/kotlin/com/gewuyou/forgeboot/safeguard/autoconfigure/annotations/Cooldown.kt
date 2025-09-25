@@ -21,7 +21,6 @@
 package com.gewuyou.forgeboot.safeguard.autoconfigure.annotations
 
 import com.gewuyou.forgeboot.safeguard.core.factory.CooldownExceptionFactory
-import com.gewuyou.forgeboot.safeguard.core.factory.DefaultCooldownExceptionFactory
 import kotlin.reflect.KClass
 
 /**
@@ -36,6 +35,7 @@ import kotlin.reflect.KClass
  * @property resolverBean 解析器Bean名称，用于指定处理冷却逻辑的Bean
  * @property rollbackOn 指定在发生哪些异常时需要回滚冷却状态
  * @property factory 冷却异常工厂类，用于创建冷却期间的自定义异常
+ * @property factoryBean 冷却异常工厂Bean名称，用于指定创建冷却异常的工厂Bean
  * @since 2025-09-21 14:17:21
  * @author gewuyou
  */
@@ -50,6 +50,7 @@ annotation class Cooldown(
     val resolverBean: String = "",
     val rollbackOn: Array<KClass<out Throwable>> = [],
     val factory: KClass<out CooldownExceptionFactory> =
-        DefaultCooldownExceptionFactory::class,
+        CooldownExceptionFactory::class,
+    val factoryBean: String = "",
 )
 
