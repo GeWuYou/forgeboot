@@ -30,7 +30,7 @@ import kotlin.reflect.KClass
  *
  * @property key SpEL表达式，用于指定唯一标识符的来源，可以是header、参数或DTO中的requestId
  * @property ttlSeconds SpEL表达式，指定幂等记录的过期时间，单位为秒，例如"600"
- * @property template 模板字符串，用于生成幂等key的模板
+ * @param template key 的模板字符串，用于生成限流键，默认为空。
  * @property resolverBean 解析器bean名称，用于自定义key解析逻辑
  * @property scene 业务场景标识，用于区分不同的业务场景
  * @property infoCode 信息码，用于标识幂等性检查的相关信息

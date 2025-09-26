@@ -31,7 +31,7 @@ import kotlin.reflect.KClass
  * @property seconds SpEL表达式，用于指定冷却时间（秒）
  * @property scene 场景标识，用于区分不同的业务场景
  * @property infoCode 信息码，用于标识冷却相关的业务信息
- * @property template 模板字符串，用于生成冷却相关的提示信息
+ * @param template key 的模板字符串，用于生成限流键，默认为空。
  * @property resolverBean 解析器Bean名称，用于指定处理冷却逻辑的Bean
  * @property rollbackOn 指定在发生哪些异常时需要回滚冷却状态
  * @property factory 冷却异常工厂类，用于创建冷却期间的自定义异常

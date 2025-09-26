@@ -134,7 +134,7 @@ class SafeguardAutoConfiguration {
      * @return RateLimitExceptionFactoryResolver 限流异常工厂解析器实例
      */
     @Bean
-    @ConditionalOnBean
+    @ConditionalOnMissingBean
     fun rateLimitExceptionFactoryResolver(
         applicationContext: ApplicationContext,
         defaultFactoryProvider: ObjectProvider<RateLimitExceptionFactory>,
@@ -153,7 +153,7 @@ class SafeguardAutoConfiguration {
      * @return IdempotencyExceptionFactoryResolver 幂等性异常工厂解析器实例
      */
     @Bean
-    @ConditionalOnBean
+    @ConditionalOnMissingBean
     fun idempotencyExceptionFactoryResolver(
         applicationContext: ApplicationContext,
         defaultFactoryProvider: ObjectProvider<IdempotentExceptionFactory>,
@@ -172,7 +172,7 @@ class SafeguardAutoConfiguration {
      * @return CooldownExceptionFactoryResolver 冷却期异常工厂解析器实例
      */
     @Bean
-    @ConditionalOnBean
+    @ConditionalOnMissingBean
     fun cooldownExceptionFactoryResolver(
         applicationContext: ApplicationContext,
         defaultFactoryProvider: ObjectProvider<CooldownExceptionFactory>,
@@ -191,7 +191,7 @@ class SafeguardAutoConfiguration {
      * @return AttemptLimitExceptionFactoryResolver 尝试次数限制异常工厂解析器实例
      */
     @Bean
-    @ConditionalOnBean
+    @ConditionalOnMissingBean
     fun attemptLimitExceptionFactoryResolver(
         applicationContext: ApplicationContext,
         defaultFactoryProvider: ObjectProvider<AttemptLimitExceptionFactory>,
@@ -209,7 +209,7 @@ class SafeguardAutoConfiguration {
      * @return 幂等性返回值处理器实例
      */
     @Bean
-    @ConditionalOnBean
+    @ConditionalOnMissingBean
     fun idempotentReturnAdvice(codec: PayloadCodec): IdempotencyReturnAdvice {
         return IdempotencyReturnAdvice(codec)
     }
