@@ -34,7 +34,7 @@ import kotlin.reflect.KClass
  * @param escalate 阶梯式限制策略配置，格式为 "次数:时长,次数:时长"，例如 "10:PT12H,15:P7D"，默认为空。
  * @param mode 键处理模式，决定限流键的生成方式，默认为 IP_KEY，即使用客户端 IP 作为键前缀。
  * @param key SpEL 表达式，用于定义额外的限流维度，例如 "'phone:'+ #req.phone"，默认为空字符串。
- * @param template 异常信息模板，用于自定义触发限制时返回的错误信息，默认为空。
+ * @param template key 的模板字符串，用于生成限流键，默认为空。
  * @param resolverBean 用于解析 key 的 Spring Bean 名称，支持动态键生成，默认为空。
  * @param successReset 函数执行成功后是否重置失败计数器，默认为 true。
  * @param scene 场景标识符，可用于区分不同的业务场景，默认为空。

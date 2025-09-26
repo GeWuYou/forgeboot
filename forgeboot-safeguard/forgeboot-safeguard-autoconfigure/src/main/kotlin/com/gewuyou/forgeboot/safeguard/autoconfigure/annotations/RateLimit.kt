@@ -32,7 +32,7 @@ import kotlin.reflect.KClass
  * @property refillTokens 每次填充的令牌数量，支持SpEL表达式，如"10"
  * @property refillPeriodMs 令牌填充周期(毫秒)，支持SpEL表达式，如"1000"
  * @property requested 每次请求消耗的令牌数，默认为1，支持SpEL表达式
- * @property template 限流异常信息模板
+ * @param template key 的模板字符串，用于生成限流键，默认为空。
  * @property resolverBean 限流key解析器bean名称
  * @property refundOn 失败时触发令牌归还的异常类型数组，当方法抛出指定异常时会归还已消耗的令牌
  * @property scene 业务场景标识
