@@ -91,7 +91,7 @@ data class SuccessMessage(
     override val message: String,
     override val requestId: String?,
     override val extra: Map<String, Any?>,
-) : ApiResponse<Nothing>
+) : ApiResponse<Unit>
 
 /**
  * 失败响应数据类
@@ -110,4 +110,4 @@ data class Failure(
     val error: Any?,                 // 可承载错误细节（字段错误列表、异常码等）
     override val requestId: String?,
     override val extra: Map<String, Any?>,
-) : ApiResponse<Nothing>
+) : ApiResponse<Unit>
