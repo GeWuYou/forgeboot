@@ -26,9 +26,8 @@ package com.gewuyou.forgeboot.webmvc.dto.api.entities
  * 定义了API响应的基本结构，包括状态码、消息、请求ID和额外信息。
  * 所有API响应类型都必须实现此接口。
  *
- * @param T 响应数据的类型参数
  */
-sealed interface ApiResponse<out T> {
+sealed interface ApiResponse {
     /**
      * 状态码
      *
@@ -76,7 +75,7 @@ data class Success<T>(
     val data: T,
     override val requestId: String?,
     override val extra: Map<String, Any?>,
-) : ApiResponse<T>
+) : ApiResponse
 
 /**
  * SuccessMessage 数据类表示一个成功的API响应消息
@@ -91,7 +90,7 @@ data class SuccessMessage(
     override val message: String,
     override val requestId: String?,
     override val extra: Map<String, Any?>,
-) : ApiResponse<Unit>
+) : ApiResponse
 
 /**
  * 失败响应数据类
@@ -110,4 +109,4 @@ data class Failure(
     val error: Any?,                 // 可承载错误细节（字段错误列表、异常码等）
     override val requestId: String?,
     override val extra: Map<String, Any?>,
-) : ApiResponse<Unit>
+) : ApiResponse
