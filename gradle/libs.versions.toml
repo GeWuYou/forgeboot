@@ -18,13 +18,15 @@ redisson-version = "3.51.0"
 org-pf4j-version = "3.13.0"
 org-pf4j-spring-version = "0.10.0"
 org-yaml-snakeyaml-version = "2.4"
-jimmer-version = "0.9.105"
+jimmer-version = "0.9.111"
 ktor-version = "3.2.3"
 junit-jupiter-version = "5.13.4"
 okHttp-version = "4.12.0"
 bucket4j-version = "8.15.0"
+flywaydb-version = "11.11.2"
+minio-version = "8.6.0"
+software-amazon-awssdk-version = "2.35.0"
 [libraries]
-org-babyfish-jimmer-springBootStarter = { group = "org.babyfish.jimmer", name = "jimmer-spring-boot-starter", version.ref = "jimmer-version" }
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
 kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime-version" }
 kotlinxCorountinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version = "1.10.2" }
@@ -64,6 +66,10 @@ jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackso
 
 reactor-core = { group = "io.projectreactor", name = "reactor-core" }
 #org
+org-flywaydb-flywayCore = { group = "org.flywaydb", name = "flyway-core", version.ref = "flywaydb-version" }
+org-babyfish-jimmer-springBootStarter = { group = "org.babyfish.jimmer", name = "jimmer-spring-boot-starter", version.ref = "jimmer-version" }
+org-babyfish-jimmer-apt = { group = "org.babyfish.jimmer", name = "jimmer-apt", version.ref = "jimmer-version" }
+org-babyfish-jimmer-ksp = { group = "org.babyfish.jimmer", name = "jimmer-ksp", version.ref = "jimmer-version" }
 org-redisson-springBootStarter = { group = "org.redisson", name = "redisson-spring-boot-starter", version.ref = "redisson-version" }
 org-junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-jupiter-version" }
 org-junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-jupiter-version" }
@@ -82,15 +88,12 @@ com-bucket4-core = { module = "com.bucket4j:bucket4j_jdk17-core", version.ref = 
 com-bucket4-redis-redisson = { module = "com.bucket4j:bucket4j_jdk17-redisson", version.ref = "bucket4j-version" }
 # io
 io-micrometer-core = { module = "io.micrometer:micrometer-core" }
-io-ktor-clientCore = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor-version" }
-io-ktor-clientContentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor-version" }
-io-ktor-serializationKotlinxJson = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor-version" }
-io-ktor-clientLogging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor-version" }
-io-ktor-clientCio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor-version" }
-io-ktor-clientMock = { group = "io.ktor", name = "ktor-client-mock-jvm", version.ref = "ktor-version" }
+io-minio-minio = { module = "io.minio:minio", version.ref = "minio-version" }
 # OkHttp
 okHttp3-okHttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okHttp-version" }
 okHttp3-loggingInterceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okHttp-version" }
+# software
+software-amazon-awssdk-s3 = { module = "software.amazon.awssdk:s3", version.ref = "software-amazon-awssdk-version" }
 [bundles]
 kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines-core"]
 jacksonAll = [
@@ -119,4 +122,4 @@ kotlin-plugin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref 
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt" }
 forgeboot-i18n-keygen = { id = "i18n-key-gen" }
 gradleMavenPublishPlugin = { id = "com.vanniktech.maven.publish", version.ref = "gradleMavenPublishPlugin-version" }
-
+kotlin-ksp = { id = "com.google.devtools.ksp", version = "2.1.21-2.0.2" }
