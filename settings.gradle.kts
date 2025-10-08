@@ -181,7 +181,7 @@ project(":forgeboot-trace:forgeboot-trace-impl").name = "forgeboot-trace-impl"
 project(":forgeboot-trace:forgeboot-trace-autoconfigure").name = "forgeboot-trace-autoconfigure"
 //endregion
 
-//region module trace
+//region module demo
 /**
  * Includes and configures projects related to 'forgeboot-trace'
  * This module handles distributed tracing functionality.
@@ -236,4 +236,24 @@ project(":forgeboot-safeguard").name = "forgeboot-safeguard-spring-boot-starter"
 project(":forgeboot-safeguard:forgeboot-safeguard-core").name = "forgeboot-safeguard-core"
 project(":forgeboot-safeguard:forgeboot-safeguard-redis").name = "forgeboot-safeguard-redis"
 project(":forgeboot-safeguard:forgeboot-safeguard-autoconfigure").name = "forgeboot-safeguard-autoconfigure"
+//endregion
+
+//region module storage
+/**
+ * Includes and configures projects related to storage module in the multi-project build.
+ * This function sets up the storage module and its subprojects including API, implementation,
+ * and auto-configuration modules, along with a Spring Boot starter module.
+ */
+include(
+    "forgeboot-storage",
+    ":forgeboot-storage:forgeboot-storage-api",
+    ":forgeboot-storage:forgeboot-storage-impl",
+    ":forgeboot-storage:forgeboot-storage-autoconfigure",
+)
+
+// Configure project names for the storage module and its subprojects
+project(":forgeboot-storage").name = "forgeboot-storage-spring-boot-starter"
+project(":forgeboot-storage:forgeboot-storage-api").name = "forgeboot-storage-api"
+project(":forgeboot-storage:forgeboot-storage-impl").name = "forgeboot-storage-impl"
+project(":forgeboot-storage:forgeboot-storage-autoconfigure").name = "forgeboot-storage-autoconfigure"
 //endregion

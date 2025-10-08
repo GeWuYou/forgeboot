@@ -125,39 +125,6 @@ object Modules {
         const val AUTOCONFIGURE = ":forgeboot-banner:forgeboot-banner-autoconfigure"
     }
 
-    /**
-     * Security模块：安全认证与授权模块集合
-     * 包含认证(Authenticate)和授权(Authorize)两个子模块
-     */
-    object Security {
-        private const val SECURITY = ":forgeboot-security-spring-boot-starter"
-        private const val AUTHENTICATE = "${SECURITY}:forgeboot-security-authenticate-spring-boot-starter"
-        private const val AUTHORIZE = "${SECURITY}:forgeboot-security-authorize-spring-boot-starter"
-        const val CORE = "${SECURITY}:forgeboot-security-core"
-        /**
-         * Authenticate模块：身份认证支持模块
-         * 提供用户身份认证相关功能，包含API、实现及自动配置模块
-         */
-        object Authenticate {
-            const val STARTER = AUTHENTICATE
-            const val API = "${AUTHENTICATE}:forgeboot-security-authenticate-api"
-            const val IMPL = "${AUTHENTICATE}:forgeboot-security-authenticate-impl"
-            const val AUTOCONFIGURE =
-                "${AUTHENTICATE}:forgeboot-security-authenticate"
-        }
-
-        /**
-         * Authorize模块：权限控制支持模块
-         * 提供基于角色或策略的权限控制功能，包含API、实现及自动配置模块
-         */
-        object Authorize {
-            const val STARTER = AUTHORIZE
-            const val API = "${AUTHORIZE}:forgeboot-security-authorize-api"
-            const val IMPL =  "${AUTHORIZE}:forgeboot-security-authorize-impl"
-            const val AUTOCONFIGURE =
-                "${AUTHORIZE}:forgeboot-security-authorize-autoconfigure"
-        }
-    }
     object Plugin {
         const val STARTER = ":forgeboot-plugin-spring-boot-starter"
         const val CORE = "${STARTER}:forgeboot-plugin-core"
@@ -169,6 +136,12 @@ object Modules {
         const val CORE = "${STARTER}:forgeboot-safeguard-core"
         const val REDIS = "${STARTER}:forgeboot-safeguard-redis"
         const val AUTOCONFIGURE = "${STARTER}:forgeboot-safeguard-autoconfigure"
+    }
+    object Storage {
+        const val STARTER = ":forgeboot-storage-spring-boot-starter"
+        const val API = ":forgeboot-storage-spring-boot-starter:forgeboot-storage-api"
+        const val IMPL = ":forgeboot-storage-spring-boot-starter:forgeboot-storage-impl"
+        const val AUTOCONFIGURE = ":forgeboot-storage-spring-boot-starter:forgeboot-storage-autoconfigure"
     }
     object Demo{
         private const val ROOT = ":forgeboot-demo"

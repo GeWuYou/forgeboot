@@ -1,3 +1,23 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.core.extension
 
 /**
@@ -100,4 +120,61 @@ inline fun checkOrThrowDirect(
     if (!condition) {
         throw exception()
     }
+}
+
+/**
+ * 执行当前函数并包装可能抛出的异常
+ *
+ * @param T 函数返回值类型
+ * @param E 要抛出的异常类型
+ * @param errorMessage 用于生成错误消息的lambda表达式
+ * @param exceptionFactory 用于创建新异常的工厂函数，接收错误消息和原始异常
+ * @return 原始函数执行成功时的返回值
+ * @throws E 当原始函数执行失败时，使用exceptionFactory创建并抛出的新异常
+ */
+inline fun <T, E : Throwable> (() -> T).wrapWith(
+    errorMessage: () -> String,
+    exceptionFactory: (String, Throwable) -> E,
+): T = try {
+    // 尝试执行原始函数
+    invoke()
+} catch (cause: Throwable) {
+    // 捕获所有异常并使用工厂函数创建新的异常进行抛出
+    throw exceptionFactory(errorMessage(), cause)
+}
+
+/**
+ * 执行当前函数并包装可能抛出的异常（重载版本，支持静态错误消息）
+ *
+ * @param T 函数返回值类型
+ * @param E 要抛出的异常类型
+ * @param errorMessage 静态错误消息字符串
+ * @param exceptionFactory 用于创建新异常的工厂函数，接收错误消息和原始异常
+ * @return 原始函数执行成功时的返回值
+ * @throws E 当原始函数执行失败时，使用exceptionFactory创建并抛出的新异常
+ */
+inline fun <T, E : Throwable> (() -> T).wrapWith(
+    errorMessage: String,
+    exceptionFactory: (String, Throwable) -> E,
+): T = this.wrapWith({ errorMessage }, exceptionFactory)
+
+/**
+ * 执行当前挂起函数并包装可能抛出的异常
+ *
+ * @param T 函数返回值类型
+ * @param E 要抛出的异常类型
+ * @param errorMessage 用于生成错误消息的lambda表达式
+ * @param exceptionFactory 用于创建新异常的工厂函数，接收错误消息和原始异常
+ * @return 原始挂起函数执行成功时的返回值
+ * @throws E 当原始函数执行失败时，使用exceptionFactory创建并抛出的新异常
+ */
+suspend inline fun <T, E : Throwable> (suspend () -> T).wrapWith(
+    errorMessage: () -> String,
+    exceptionFactory: (String, Throwable) -> E,
+): T = try {
+    // 尝试执行原始挂起函数
+    invoke()
+} catch (cause: Throwable) {
+    // 捕获所有异常并使用工厂函数创建新的异常进行抛出
+    throw exceptionFactory(errorMessage(), cause)
 }
