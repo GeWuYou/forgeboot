@@ -22,6 +22,7 @@ package com.gewuyou.forgeboot.webmvc.exception.api.hook
 
 import com.gewuyou.forgeboot.webmvc.dto.api.entities.Failure
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.core.Ordered
 
 /**
  * 其他异常钩子
@@ -29,7 +30,7 @@ import jakarta.servlet.http.HttpServletRequest
  * @since 2025-09-23 21:05:04
  * @author gewuyou
  */
-fun interface OtherExceptionHook {
+interface OtherExceptionHook : Ordered {
     /**
      * 处理异常
      *
@@ -38,4 +39,6 @@ fun interface OtherExceptionHook {
      * @return 处理结果，如果处理成功则返回Failure对象，否则返回null
      */
     fun handle(e: Exception, request: HttpServletRequest?): Failure?
+
+    override fun getOrder(): Int = Ordered.LOWEST_PRECEDENCE
 }
