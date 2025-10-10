@@ -31,6 +31,7 @@ import com.gewuyou.forgeboot.webmvc.exception.api.hook.OtherExceptionHook
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
 import org.springframework.core.Ordered
+import org.springframework.core.annotation.AnnotationAwareOrderComparator
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -64,11 +65,15 @@ class GlobalExceptionAdvice(
      */
     @ExceptionHandler(Exception::class)
     fun handleOtherException(e: Exception, request: HttpServletRequest?): Failure {
-        // 1) 链式 SPI：谁先产出 Failure 用谁
-        for (hook in hooks.sortedBy { Ordered.HIGHEST_PRECEDENCE }) {
+        // 1) 链式 SPI：使用 Spring 的注解/接口顺序机制来排序 hooks
+        val sortedHooks = hooks.toMutableList()
+        AnnotationAwareOrderComparator.sort(sortedHooks)
+
+        for (hook in sortedHooks) {
             val out = hook.handle(e, request)
             if (out != null) return out
         }
+
         // 2) 默认逻辑
         log.error("other exception:", e)
         return Responses.fail(
