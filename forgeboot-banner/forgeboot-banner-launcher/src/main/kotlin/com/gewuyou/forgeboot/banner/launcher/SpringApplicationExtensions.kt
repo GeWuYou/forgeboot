@@ -24,7 +24,6 @@ import com.gewuyou.forgeboot.banner.api.config.entities.BannerProperties
 import com.gewuyou.forgeboot.banner.impl.ConfigurableBannerProvider
 import org.springframework.boot.Banner
 import org.springframework.boot.builder.SpringApplicationBuilder
-import org.springframework.boot.context.properties.bind.Bindable
 import org.springframework.boot.context.properties.bind.Binder
 import org.springframework.core.env.StandardEnvironment
 
@@ -35,21 +34,15 @@ import org.springframework.core.env.StandardEnvironment
  * @param args 命令行参数，传递给Spring应用
  */
 inline fun <reified T : Any> runApplicationWithForgeBanner(vararg args: String) {
+    // 创建并配置Spring应用的环境
     val env = StandardEnvironment()
+    // 获取配置属性绑定器
     val binder = Binder.get(env)
-
-    // 尝试绑定 forgeboot.banner
-    val binding = binder.bind("forgeboot.banner", Bindable.of(BannerProperties::class.java))
-
-    val banner: Banner = if (binding.isBound) {
-        // 有配置 → 使用自定义 Banner
-        val props = binding.get()
-        Banner { _, _, out -> ConfigurableBannerProvider(props).printBanner(out) }
-    } else {
-        // 没配置 → 回退到默认不显示 Banner 或自定义空 Banner
-        Banner { _, _, _ -> } // 空 Banner 实现，等价于禁用 Banner
-    }
-
+    // 从配置中绑定BannerProperties属性，如果没有找到，则使用默认值
+    val props = binder.bind("forgeboot.banner", BannerProperties::class.java).orElse(BannerProperties())
+    // 创建一个自定义的Banner实例
+    val banner = Banner { _, _, out -> ConfigurableBannerProvider(props).printBanner(out) }
+    // 构建并运行Spring应用
     SpringApplicationBuilder()
         .sources(T::class.java)
         .banner(banner)
