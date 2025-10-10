@@ -30,5 +30,5 @@ import com.gewuyou.forgeboot.banner.api.enums.BannerStrategy
  */
 class BannerProperties {
     var path: String = "banners/"
-    var  strategy: BannerStrategy = BannerStrategy.Random
+    var strategy: BannerStrategy = BannerStrategy.Random
 }
