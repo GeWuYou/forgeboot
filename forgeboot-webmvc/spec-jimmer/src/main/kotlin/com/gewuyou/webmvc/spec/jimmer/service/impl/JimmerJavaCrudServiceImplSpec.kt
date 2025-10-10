@@ -1,3 +1,23 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.webmvc.spec.jimmer.service.impl
 
 import com.gewuyou.webmvc.spec.jimmer.service.JimmerCrudServiceSpec
@@ -13,6 +33,16 @@ import org.babyfish.jimmer.sql.ast.mutation.SaveMode
 abstract class JimmerJavaCrudServiceImplSpec<Entity : Any, Id : Any>(
     open val repository: AbstractJavaRepository<Entity, Id>,
 ) : JimmerCrudServiceSpec<Entity, Id> {
+    /**
+     * 保存实体对象，如果该实体不存在的话
+     *
+     * @param entity 需要保存的实体对象
+     * @return 保存后的实体对象
+     */
+    override fun saveIfNotExist(entity: Entity): Entity {
+        return repository.save(entity, SaveMode.INSERT_IF_ABSENT).modifiedEntity
+    }
+
     /**
      * 根据ID获取实体
      *

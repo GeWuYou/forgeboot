@@ -90,7 +90,7 @@ open class JimmerKtCrudServiceImplSpec<Entity : Any, Id : Any>(
      * @return 返回保存后的实体
      */
     override fun save(entity: Entity): Entity {
-        return repository.save(entity)
+        return repository.save(entity, SaveMode.INSERT_ONLY)
     }
 
     /**
@@ -158,5 +158,15 @@ open class JimmerKtCrudServiceImplSpec<Entity : Any, Id : Any>(
             where(query.getSpecification())
             select(table)
         }.fetchSpringPage(pageable).toPageResult()
+    }
+
+    /**
+     * 保存实体对象，如果该实体不存在的话
+     *
+     * @param entity 需要保存的实体对象
+     * @return 保存后的实体对象
+     */
+    override fun saveIfNotExist(entity: Entity): Entity {
+        return repository.save(entity, SaveMode.INSERT_IF_ABSENT)
     }
 }

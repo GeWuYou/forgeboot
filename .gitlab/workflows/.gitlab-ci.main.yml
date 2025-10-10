@@ -73,7 +73,7 @@ tag:
 
     # 规则：patch +1，满 10 进位到 minor
     - PATCH=$((PATCH + 1))
-    - if [ "$PATCH" -ge 10 ]; then PATCH=0; MINOR=$((MINOR+1)); echo "🔁 patch 达 10 进位：MINOR=$MINOR, PATCH=$PATCH"; fi
+    - if [ "$PATCH" -ge 100 ]; then PATCH=0; MINOR=$((MINOR+1)); echo "🔁 patch 达 100 进位：MINOR=$MINOR, PATCH=$PATCH"; fi
     - NEW_TAG="${MAJOR}.${MINOR}.${PATCH}"
     - echo "🏷️ 新 tag -> $NEW_TAG"
 
