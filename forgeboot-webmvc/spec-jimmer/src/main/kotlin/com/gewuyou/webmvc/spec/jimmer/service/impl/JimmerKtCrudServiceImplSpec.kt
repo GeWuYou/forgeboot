@@ -29,9 +29,12 @@ import com.gewuyou.webmvc.spec.core.page.QueryComponent
 import com.gewuyou.webmvc.spec.jimmer.page.JimmerKFilterable
 import com.gewuyou.webmvc.spec.jimmer.service.JimmerCrudServiceSpec
 import org.babyfish.jimmer.View
-import org.babyfish.jimmer.spring.repository.KRepository
+import org.babyfish.jimmer.spring.repo.support.AbstractKotlinRepository
 import org.babyfish.jimmer.spring.repository.fetchSpringPage
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode
+import org.babyfish.jimmer.sql.kt.KSqlClient
+import java.util.*
+
 
 /**
  *JimmerCrud Kt 服务实现规范
@@ -40,7 +43,8 @@ import org.babyfish.jimmer.sql.ast.mutation.SaveMode
  * @author gewuyou
  */
 open class JimmerKtCrudServiceImplSpec<Entity : Any, Id : Any>(
-    open val repository: KRepository<Entity, Id>,
+    open val repository: AbstractKotlinRepository<Entity, Id>,
+    val sql: KSqlClient,
 ) : JimmerCrudServiceSpec<Entity, Id> {
     /**
      * 根据查询条件分页查询并返回指定视图类型的分页结果
@@ -57,7 +61,7 @@ open class JimmerKtCrudServiceImplSpec<Entity : Any, Id : Any>(
     ): PageResult<V>
             where Q : Pageable, Q : JimmerKFilterable<E>, Q : QueryComponent {
         val pageable = query.toPageRequest()
-        return repository.sql.createQuery(E::class) {
+        return sql.createQuery(E::class) {
             where(query.getSpecification())
             select(table.fetch(V::class))
         }.fetchSpringPage(pageable).toPageResult()
@@ -71,7 +75,7 @@ open class JimmerKtCrudServiceImplSpec<Entity : Any, Id : Any>(
      * @return 返回实体，如果不存在则返回null
      */
     override fun findById(id: Id): Entity? {
-        return repository.findById(id).orElse(null)
+        return repository.findById(id)
     }
 
     /**
@@ -90,7 +94,7 @@ open class JimmerKtCrudServiceImplSpec<Entity : Any, Id : Any>(
      * @return 返回保存后的实体
      */
     override fun save(entity: Entity): Entity {
-        return repository.save(entity, SaveMode.INSERT_ONLY)
+        return repository.save(entity, SaveMode.INSERT_ONLY).modifiedEntity
     }
 
     /**
@@ -100,7 +104,7 @@ open class JimmerKtCrudServiceImplSpec<Entity : Any, Id : Any>(
      * @return 返回更新后的实体
      */
     override fun update(entity: Entity): Entity {
-        return repository.save(entity, SaveMode.UPDATE_ONLY)
+        return repository.save(entity, SaveMode.UPDATE_ONLY).modifiedEntity
     }
 
     /**
@@ -128,7 +132,7 @@ open class JimmerKtCrudServiceImplSpec<Entity : Any, Id : Any>(
      * @return 如果实体存在返回true，否则返回false
      */
     override fun existsById(id: Id): Boolean {
-        return repository.existsById(id)
+        return Objects.nonNull(repository.findById(id))
     }
 
     /**
@@ -138,7 +142,8 @@ open class JimmerKtCrudServiceImplSpec<Entity : Any, Id : Any>(
      * @return 返回保存后的实体列表
      */
     override fun saveAll(entities: List<Entity>): List<Entity> {
-        return repository.saveAll(entities)
+        return repository.saveEntities(entities, SaveMode.INSERT_ONLY)
+            .items.map { it.modifiedEntity }
     }
 
     /**
@@ -154,7 +159,7 @@ open class JimmerKtCrudServiceImplSpec<Entity : Any, Id : Any>(
         val pageable = query.toPageRequest()
         @Suppress("UNCHECKED_CAST")
         query as JimmerKFilterable<Entity>
-        return repository.sql.createQuery(query.entityClass()) {
+        return sql.createQuery(query.entityClass()) {
             where(query.getSpecification())
             select(table)
         }.fetchSpringPage(pageable).toPageResult()
@@ -167,6 +172,6 @@ open class JimmerKtCrudServiceImplSpec<Entity : Any, Id : Any>(
      * @return 保存后的实体对象
      */
     override fun saveIfNotExist(entity: Entity): Entity {
-        return repository.save(entity, SaveMode.INSERT_IF_ABSENT)
+        return repository.save(entity, SaveMode.INSERT_IF_ABSENT).modifiedEntity
     }
 }
