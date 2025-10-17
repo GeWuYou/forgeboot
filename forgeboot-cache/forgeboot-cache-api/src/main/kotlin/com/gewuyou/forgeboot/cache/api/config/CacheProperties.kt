@@ -30,7 +30,7 @@ import java.time.Duration
  * 支持配置默认缓存过期时间（TTL）
  *
  * @property theDefaultCacheTTL 默认缓存过期时间（Time To Live），用于指定缓存项在未被访问后的最大存活时间，默认值为15分钟
- * @property nullValuePlaceholder 缓存项为null时使用的占位符，默认值为"__NULL__"
+ * @property nullValuePlaceholder 缓存项为null时使用的占位符，默认值为null
  * @property redis Redis缓存配置
  * @property caffeine Caffeine缓存配置
  * @since 2025-06-17 10:04:48
@@ -49,9 +49,9 @@ data class CacheProperties(
      * 缓存项为null时使用的占位符
      *
      * 用于在缓存项为null时返回的占位符
-     * 默认值为"__NULL__"
+     * 默认值为null
      */
-    var nullValuePlaceholder: String = "__NULL__",
+    var nullValuePlaceholder: String? = null,
     var redis: CacheConfig = CacheConfig(),
     var caffeine: CacheConfig = CacheConfig(),
 ) {

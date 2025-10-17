@@ -28,6 +28,7 @@ import com.gewuyou.forgeboot.cache.impl.contract.MultiPolicyCache
 import com.gewuyou.forgeboot.cache.impl.contract.PerEntryTtlCaffeineCache
 import com.gewuyou.forgeboot.cache.impl.contract.RedisCache
 import com.gewuyou.forgeboot.cache.impl.utils.RedisKeyScanner
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -56,6 +57,7 @@ class CacheImplConfig {
      * @return 返回一个基于 Redis 的 Cache 实例
      */
     @Bean("redisNullAwareCache")
+    @Qualifier("layerCache")
     @ConditionalOnProperty(name = ["forgeboot.cache.redis.enabled"], havingValue = "true", matchIfMissing = true)
     fun redisNullAwareCache(
         redisTemplate: StringRedisTemplate,
@@ -77,6 +79,7 @@ class CacheImplConfig {
      * @return 返回一个基于 Caffeine 的 Cache 实例
      */
     @Bean("perEntryTtlCaffeineNullAwareCache")
+    @Qualifier("layerCache")
     @ConditionalOnProperty(name = ["forgeboot.cache.caffeine.enabled"], havingValue = "true", matchIfMissing = false)
     fun perEntryTtlCaffeineNullAwareCache(
         keyGenerator: KeyGenerator,

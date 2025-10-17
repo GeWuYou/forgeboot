@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.springBootStarter.web)
     implementation(project(Modules.Core.EXTENSION))
     implementation(project(Modules.Safeguard.STARTER))
+    implementation(project(Modules.Cache.STARTER))
     implementation(libs.springBootStarter.redis)
     implementation(libs.jackson.module.kotlin)
 }

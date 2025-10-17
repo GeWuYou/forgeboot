@@ -24,6 +24,7 @@ import com.gewuyou.forgeboot.cache.api.contract.Cache
 import com.gewuyou.forgeboot.cache.api.customizer.CacheLayerCustomizer
 import com.gewuyou.forgeboot.cache.api.entities.CacheLayer
 import org.springframework.beans.factory.ObjectProvider
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -40,25 +41,25 @@ import org.springframework.context.annotation.Configuration
  */
 @Configuration
 class CacheLayerConfig {
-
     /**
-     * 定义缓存层级结构，Caffeine 缓存在第一层，Redis 缓存在第二层
+     * 创建缓存层列表的Bean定义
      *
-     * 该方法创建并返回一个包含两个缓存层的列表。每层缓存都与一个具体的缓存实现绑定，
-     * 并指定其在整体架构中的优先级顺序。第一层使用本地的 Caffeine 缓存以提高访问速度，
-     * 第二层使用 Redis 缓存来保证数据的共享和持久性。
-     *
-     * @return 包含两个缓存层的列表，按优先级排序
+     * @param caches 缓存实例列表，用于创建缓存层
+     * @param customizer 缓存层自定义器提供者，可选地对默认缓存层进行自定义
+     * @return 缓存层列表，经过自定义器处理后的结果或默认缓存层列表
      */
     @Bean
     @ConditionalOnMissingBean
     fun cacheLayers(
+        @Qualifier("layerCache")
         caches: List<Cache>,
         customizer: ObjectProvider<CacheLayerCustomizer>,
     ): List<CacheLayer> {
+        // 排除 CompositeCache 实例
         val defaultLayers = caches.mapIndexed { index, cache ->
             CacheLayer(cache, index)
         }
         return customizer.getIfAvailable()?.customize(defaultLayers) ?: defaultLayers
     }
+
 }
