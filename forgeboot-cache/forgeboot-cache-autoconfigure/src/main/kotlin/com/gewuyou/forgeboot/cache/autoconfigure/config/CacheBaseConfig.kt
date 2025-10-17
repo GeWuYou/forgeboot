@@ -27,8 +27,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
-import org.springframework.data.redis.core.StringRedisTemplate
 
 /**
  * 缓存基础配置类，用于定义缓存相关的基础 Bean。
@@ -38,34 +36,6 @@ import org.springframework.data.redis.core.StringRedisTemplate
  */
 @Configuration(proxyBeanMethods = false)
 class CacheBaseConfig {
-    /**
-     * 创建 StringRedisTemplate Bean。
-     *
-     * StringRedisTemplate 是 Spring Data Redis 提供的模板类，
-     * 专门用于操作 Redis 中的字符串类型数据。
-     *
-     * @return 配置好的 StringRedisTemplate 实例
-     */
-    @Bean
-    @ConditionalOnMissingBean
-    fun redisTemplate(): StringRedisTemplate {
-        return StringRedisTemplate()
-    }
-
-    /**
-     * 创建 RedisConnectionFactory Bean。
-     *
-     * RedisConnectionFactory 是连接 Redis 数据库的基础组件，
-     * 使用 Lettuce 客户端实现连接。
-     *
-     * @return 配置好的 LettuceConnectionFactory 实例
-     */
-    @Bean
-    @ConditionalOnMissingBean
-    fun redisConnectionFactory(): RedisConnectionFactory {
-        return LettuceConnectionFactory()
-    }
-
     /**
      * 创建 RedisKeyScanner Bean。
      *
