@@ -1,3 +1,23 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.cache.impl.contract
 
 import com.gewuyou.forgeboot.cache.api.contract.Cache
@@ -19,7 +39,7 @@ class MultiPolicyCache(
     private val delegate: Cache,
     private val nullValuePolicy: NullValuePolicy,
     private val policies: List<CachePolicy>,
-) : Cache {
+) : Cache by delegate {
 
     init {
         // 排序
@@ -64,40 +84,5 @@ class MultiPolicyCache(
             return
         }
         delegate.put(key, processedValue, ttl)
-    }
-
-    /**
-     * 移除指定缓存项
-     *
-     * 将移除操作直接委托给底层缓存实现。
-     *
-     * @param key 要移除的缓存键
-     * @return 移除成功返回 true，否则返回 false
-     */
-    override fun remove(key: String): Boolean {
-        return delegate.remove(key)
-    }
-
-    /**
-     * 检查指定缓存项是否存在
-     *
-     * 将存在性检查操作直接委托给底层缓存实现。
-     *
-     * @param key 要检查的缓存键
-     * @return 存在返回 true，否则返回 false
-     */
-    override fun exists(key: String): Boolean {
-        return delegate.exists(key)
-    }
-
-    /**
-     * 清除指定命名空间下的所有缓存
-     *
-     * 将清除操作直接委托给底层缓存实现。
-     *
-     * @param namespace 要清除的命名空间
-     */
-    override fun clear(namespace: String) {
-        delegate.clear(namespace)
     }
 }

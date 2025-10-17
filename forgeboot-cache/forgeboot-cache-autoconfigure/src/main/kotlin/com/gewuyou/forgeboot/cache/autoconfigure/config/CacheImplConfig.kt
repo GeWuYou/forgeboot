@@ -1,3 +1,23 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.cache.autoconfigure.config
 
 import com.gewuyou.forgeboot.cache.api.contract.Cache
@@ -8,6 +28,7 @@ import com.gewuyou.forgeboot.cache.impl.contract.MultiPolicyCache
 import com.gewuyou.forgeboot.cache.impl.contract.PerEntryTtlCaffeineCache
 import com.gewuyou.forgeboot.cache.impl.contract.RedisCache
 import com.gewuyou.forgeboot.cache.impl.utils.RedisKeyScanner
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -35,6 +56,7 @@ class CacheImplConfig {
      * @return 返回一个基于 Redis 的 Cache 实例
      */
     @Bean("redisNullAwareCache")
+    @ConditionalOnProperty(name = ["forgeboot.cache.redis.enabled"], havingValue = "true", matchIfMissing = true)
     fun redisNullAwareCache(
         redisTemplate: StringRedisTemplate,
         redisKeyScanner: RedisKeyScanner,
@@ -55,6 +77,7 @@ class CacheImplConfig {
      * @return 返回一个基于 Caffeine 的 Cache 实例
      */
     @Bean("perEntryTtlCaffeineNullAwareCache")
+    @ConditionalOnProperty(name = ["forgeboot.cache.caffeine.enabled"], havingValue = "true", matchIfMissing = false)
     fun perEntryTtlCaffeineNullAwareCache(
         keyGenerator: KeyGenerator,
         nullCachePolicy: NullValuePolicy,

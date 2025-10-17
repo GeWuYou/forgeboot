@@ -1,8 +1,30 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.cache.autoconfigure.config
 
 import com.gewuyou.forgeboot.cache.api.contract.Cache
+import com.gewuyou.forgeboot.cache.api.customizer.CacheLayerCustomizer
 import com.gewuyou.forgeboot.cache.api.entities.CacheLayer
-import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.ObjectProvider
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -26,18 +48,17 @@ class CacheLayerConfig {
      * 并指定其在整体架构中的优先级顺序。第一层使用本地的 Caffeine 缓存以提高访问速度，
      * 第二层使用 Redis 缓存来保证数据的共享和持久性。
      *
-     * @param redisNullAwareCache 第二层缓存，基于 Redis 的 Null-aware 缓存实现
-     * @param perEntryTtlCaffeineNullAwareCache 第一层缓存，基于 Caffeine 的 Null-aware 缓存实现，支持每个缓存条目独立的 TTL 设置
      * @return 包含两个缓存层的列表，按优先级排序
      */
     @Bean
+    @ConditionalOnMissingBean
     fun cacheLayers(
-        @Qualifier("redisNullAwareCache") redisNullAwareCache: Cache,
-        @Qualifier("perEntryTtlCaffeineNullAwareCache") perEntryTtlCaffeineNullAwareCache: Cache,
+        caches: List<Cache>,
+        customizer: ObjectProvider<CacheLayerCustomizer>,
     ): List<CacheLayer> {
-        return listOf(
-            CacheLayer(perEntryTtlCaffeineNullAwareCache, 1), // 第一层：Caffeine 缓存，速度快，适合高频访问数据
-            CacheLayer(redisNullAwareCache, 2) // 第二层：Redis 缓存，用于持久化存储和跨节点共享数据
-        )
+        val defaultLayers = caches.mapIndexed { index, cache ->
+            CacheLayer(cache, index)
+        }
+        return customizer.getIfAvailable()?.customize(defaultLayers) ?: defaultLayers
     }
 }
