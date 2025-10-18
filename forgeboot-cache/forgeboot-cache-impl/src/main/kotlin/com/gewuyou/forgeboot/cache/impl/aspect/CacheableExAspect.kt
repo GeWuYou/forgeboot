@@ -1,8 +1,28 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.cache.impl.aspect
 
 import com.gewuyou.forgeboot.cache.api.annotations.CacheableEx
 import com.gewuyou.forgeboot.cache.api.generator.KeyGenerator
-import com.gewuyou.forgeboot.cache.api.manager.CacheManager
+import com.gewuyou.forgeboot.cache.api.manager.CacheServiceManager
 import com.gewuyou.forgeboot.cache.impl.utils.SpELResolver
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
@@ -16,13 +36,13 @@ import java.time.Duration
  * 用于处理带有 @CacheableEx 注解的方法，实现方法结果的缓存逻辑。
  * 通过 AOP 拦截注解方法，根据配置生成缓存键并操作缓存服务。
  *
- * @property cacheManager 缓存管理器，用于操作缓存服务
+ * @property cacheServiceManager 缓存管理器，用于操作缓存服务
  * @property keyGenerator 缓存键生成器，用于生成完整的缓存键
  */
 @Aspect
 class CacheableExAspect(
-    private val cacheManager: CacheManager,
-    private val keyGenerator: KeyGenerator
+    private val cacheServiceManager: CacheServiceManager,
+    private val keyGenerator: KeyGenerator,
 ) {
 
     /**
@@ -57,7 +77,7 @@ class CacheableExAspect(
 
         // 生成完整缓存键
         val fullKey = keyGenerator.generateKey(namespace, key)
-        val cacheService = cacheManager.getCache(namespace)
+        val cacheService = cacheServiceManager.getCache(namespace)
         // 尝试从缓存获取数据
         val cached = cacheService.retrieve(fullKey, type)
 
