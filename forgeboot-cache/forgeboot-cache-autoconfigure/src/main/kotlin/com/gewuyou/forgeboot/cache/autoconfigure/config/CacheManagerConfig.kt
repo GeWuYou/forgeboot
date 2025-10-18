@@ -61,7 +61,7 @@ class CacheManagerConfig {
      */
     @Bean
     @ConditionalOnMissingBean
-    fun cacheManager(
+    fun cacheServiceManager(
         cacheProperties: CacheProperties,
         cache: Cache,
         serializer: ValueSerializer,
