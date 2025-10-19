@@ -1,8 +1,28 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.cache.impl.aspect
 
 import com.gewuyou.forgeboot.cache.api.annotations.CachePutEx
 import com.gewuyou.forgeboot.cache.api.generator.KeyGenerator
-import com.gewuyou.forgeboot.cache.api.manager.CacheManager
+import com.gewuyou.forgeboot.cache.api.manager.CacheServiceManager
 import com.gewuyou.forgeboot.cache.impl.support.CacheSpELHelper
 import com.gewuyou.forgeboot.cache.impl.utils.SpELResolver
 import org.aspectj.lang.JoinPoint
@@ -15,7 +35,7 @@ import java.time.Duration
  *
  * 该切面用于处理带有 [CachePutEx] 注解的方法，将方法执行结果根据指定的命名空间和键存储到缓存中，并设置过期时间。
  *
- * @property cacheManager 缓存管理器，用于获取缓存服务实例。
+ * @property cacheServiceManager 缓存管理器，用于获取缓存服务实例。
  * @property keyGenerator 缓存键生成器，用于生成完整的缓存键。
  *
  * @since 2025-06-18 20:57:27
@@ -23,15 +43,15 @@ import java.time.Duration
  */
 @Aspect
 class CachePutExAspect(
-    private val cacheManager: CacheManager,
-    private val keyGenerator: KeyGenerator
+    private val cacheServiceManager: CacheServiceManager,
+    private val keyGenerator: KeyGenerator,
 ) {
 
     /**
      * 处理带有 [CachePutEx] 注解的方法返回后逻辑。
      *
      * 通过 AOP 获取方法参数、注解配置的命名空间、键表达式和过期时间，
-     * 使用 [SpELResolver] 解析出最终的缓存键，并调用 [cacheManager] 将结果写入缓存。
+     * 使用 [SpELResolver] 解析出最终的缓存键，并调用 [cacheServiceManager] 将结果写入缓存。
      *
      * @param joinPoint 切点信息，包含目标方法及其参数。
      * @param cachePutEx 方法上的 [CachePutEx] 注解实例，定义缓存行为配置。
@@ -50,6 +70,6 @@ class CachePutExAspect(
         )
         // 获取缓存过期时间（单位：秒）
         val ttl = cachePutEx.ttl
-        cacheManager.getCache(namespace).put(fullKey, result, Duration.ofSeconds(ttl))
+        cacheServiceManager.getCache(namespace).put(fullKey, result, Duration.ofSeconds(ttl))
     }
 }

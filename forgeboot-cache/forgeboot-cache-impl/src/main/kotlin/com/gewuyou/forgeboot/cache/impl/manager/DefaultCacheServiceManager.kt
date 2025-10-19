@@ -1,9 +1,29 @@
+/*
+ *
+ *  * Copyright (c) 2025
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  *
+ *
+ *
+ */
+
 package com.gewuyou.forgeboot.cache.impl.manager
 
 import com.gewuyou.forgeboot.cache.api.config.CacheProperties
 import com.gewuyou.forgeboot.cache.api.contract.Cache
 import com.gewuyou.forgeboot.cache.api.generator.KeyGenerator
-import com.gewuyou.forgeboot.cache.api.manager.CacheManager
+import com.gewuyou.forgeboot.cache.api.manager.CacheServiceManager
 import com.gewuyou.forgeboot.cache.api.service.CacheService
 import com.gewuyou.forgeboot.cache.impl.service.DefaultCacheService
 import com.gewuyou.forgeboot.core.serialization.serializer.ValueSerializer
@@ -18,12 +38,12 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 2025-06-18 13:39:07
  * @author gewuyou
  */
-class DefaultCacheManager(
+class DefaultCacheServiceManager(
     private val cacheProperties: CacheProperties,
     private val cache: Cache,
     private val serializer: ValueSerializer,
-    private val keyGenerator: KeyGenerator
-) : CacheManager {
+    private val keyGenerator: KeyGenerator,
+) : CacheServiceManager {
 
     /**
      * 缓存服务实例的线程安全映射表，键为命名空间，值为对应的 CacheService 实例。
