@@ -53,7 +53,7 @@ import java.time.Instant
  */
 @Aspect
 @Order(0)
-class CooldownAspect(
+class ForgeBootCooldownAspect(
     private val guard: CooldownGuard,
     private val beanFactory: BeanFactory,
     private val metrics: SafeguardMetrics = NoopSafeguardMetrics,

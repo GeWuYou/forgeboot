@@ -55,7 +55,7 @@ import java.time.Instant
  */
 @Aspect
 @Order(0)
-class RateLimitAspect(
+class ForgeBootRateLimitAspect(
     private val limiter: RateLimiter,
     private val beanFactory: BeanFactory,
     private val metrics: SafeguardMetrics = NoopSafeguardMetrics,

@@ -53,7 +53,7 @@ import java.time.Instant
  */
 @Aspect
 @Order(10)
-class AttemptLimitAspect(
+class ForgeBootAttemptLimitAspect(
     private val attemptManager: AttemptLimitManager,
     private val metrics: SafeguardMetrics,
     private val keySupport: KeyResolutionSupport,

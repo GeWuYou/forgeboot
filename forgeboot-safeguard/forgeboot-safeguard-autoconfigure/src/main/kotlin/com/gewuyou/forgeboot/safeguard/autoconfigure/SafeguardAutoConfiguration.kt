@@ -22,10 +22,10 @@ package com.gewuyou.forgeboot.safeguard.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.gewuyou.forgeboot.core.extension.log
-import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.AttemptLimitAspect
-import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.CooldownAspect
-import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.IdempotentAspect
-import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.RateLimitAspect
+import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.ForgeBootAttemptLimitAspect
+import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.ForgeBootCooldownAspect
+import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.ForgeBootIdempotentAspect
+import com.gewuyou.forgeboot.safeguard.autoconfigure.aop.ForgeBootRateLimitAspect
 import com.gewuyou.forgeboot.safeguard.autoconfigure.key.KeyResolutionSupport
 import com.gewuyou.forgeboot.safeguard.autoconfigure.resolver.AttemptLimitExceptionFactoryResolver
 import com.gewuyou.forgeboot.safeguard.autoconfigure.resolver.CooldownExceptionFactoryResolver
@@ -398,16 +398,16 @@ class SafeguardAutoConfiguration {
      * @return AttemptLimitAspect 实例，用于实现尝试限制逻辑的切面
      */
     @Bean
-    @ConditionalOnMissingBean(AttemptLimitAspect::class)
+    @ConditionalOnMissingBean(ForgeBootAttemptLimitAspect::class)
     fun attemptLimitAspect(
         limiter: AttemptLimitManager,
         metrics: SafeguardMetrics,
         keyResolutionSupport: KeyResolutionSupport,
         request: HttpServletRequest,
         resolver: AttemptLimitExceptionFactoryResolver,
-    ): AttemptLimitAspect {
+    ): ForgeBootAttemptLimitAspect {
         log.info("已启用尝试限制切面...")
-        return AttemptLimitAspect(limiter, metrics, keyResolutionSupport, request, resolver)
+        return ForgeBootAttemptLimitAspect(limiter, metrics, keyResolutionSupport, request, resolver)
     }
 
     /**
@@ -421,7 +421,7 @@ class SafeguardAutoConfiguration {
      * @return CooldownAspect 实例，用于实现冷却时间控制逻辑的切面
      */
     @Bean
-    @ConditionalOnMissingBean(CooldownAspect::class)
+    @ConditionalOnMissingBean(ForgeBootCooldownAspect::class)
     @ConditionalOnBean(CooldownGuard::class)
     fun cooldownAspect(
         guard: CooldownGuard,
@@ -429,9 +429,9 @@ class SafeguardAutoConfiguration {
         metrics: SafeguardMetrics,
         keyResolutionSupport: KeyResolutionSupport,
         resolver: CooldownExceptionFactoryResolver,
-    ): CooldownAspect {
+    ): ForgeBootCooldownAspect {
         log.info("已启用冷却时间切面...")
-        return CooldownAspect(guard, beanFactory, metrics, keyResolutionSupport, resolver)
+        return ForgeBootCooldownAspect(guard, beanFactory, metrics, keyResolutionSupport, resolver)
     }
 
     /**
@@ -447,7 +447,7 @@ class SafeguardAutoConfiguration {
      * @return IdempotentAspect 实例，用于实现幂等逻辑的切面
      */
     @Bean
-    @ConditionalOnMissingBean(IdempotentAspect::class)
+    @ConditionalOnMissingBean(ForgeBootIdempotentAspect::class)
     fun idempotentAspect(
         idem: IdempotencyManager,
         codec: PayloadCodec,
@@ -456,9 +456,9 @@ class SafeguardAutoConfiguration {
         metrics: SafeguardMetrics,
         keyResolutionSupport: KeyResolutionSupport,
         resolver: IdempotentExceptionFactoryResolver,
-    ): IdempotentAspect {
+    ): ForgeBootIdempotentAspect {
         log.info("已启用幂等切面...")
-        return IdempotentAspect(idem, codec, props, beanFactory, metrics, keyResolutionSupport, resolver)
+        return ForgeBootIdempotentAspect(idem, codec, props, beanFactory, metrics, keyResolutionSupport, resolver)
     }
 
     /**
@@ -472,7 +472,7 @@ class SafeguardAutoConfiguration {
      * @return RateLimitAspect 实例，用于实现限流逻辑的切面
      */
     @Bean
-    @ConditionalOnMissingBean(RateLimitAspect::class)
+    @ConditionalOnMissingBean(ForgeBootRateLimitAspect::class)
     @ConditionalOnBean(RateLimiter::class)
     fun rateLimitAspect(
         limiter: RateLimiter,
@@ -480,9 +480,9 @@ class SafeguardAutoConfiguration {
         metrics: SafeguardMetrics,
         keyResolutionSupport: KeyResolutionSupport,
         resolver: RateLimitExceptionFactoryResolver,
-    ): RateLimitAspect {
+    ): ForgeBootRateLimitAspect {
         log.info("已启用限流切面...")
-        return RateLimitAspect(limiter, beanFactory, metrics, keyResolutionSupport, resolver)
+        return ForgeBootRateLimitAspect(limiter, beanFactory, metrics, keyResolutionSupport, resolver)
     }
 
 }

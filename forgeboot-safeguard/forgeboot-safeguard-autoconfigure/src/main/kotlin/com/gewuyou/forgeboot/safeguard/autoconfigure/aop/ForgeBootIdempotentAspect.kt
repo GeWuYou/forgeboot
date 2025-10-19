@@ -58,7 +58,7 @@ import java.time.Instant
  */
 @Aspect
 @Order(0)
-class IdempotentAspect(
+class ForgeBootIdempotentAspect(
     private val idem: IdempotencyManager,
     private val codec: PayloadCodec,
     private val props: SafeguardProperties,
