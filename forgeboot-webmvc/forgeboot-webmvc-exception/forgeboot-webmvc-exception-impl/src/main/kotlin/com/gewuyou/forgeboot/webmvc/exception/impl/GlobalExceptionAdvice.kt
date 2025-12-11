@@ -64,7 +64,7 @@ class GlobalExceptionAdvice(
      * @since 2024/4/13 上午12:29
      */
     @ExceptionHandler(Exception::class)
-    fun handleOtherException(e: Exception, request: HttpServletRequest?): Failure {
+    fun handleOtherException(e: Exception, request: HttpServletRequest): Failure {
         // 1) 链式 SPI：使用 Spring 的注解/接口顺序机制来排序 hooks
         val sortedHooks = hooks.toMutableList()
         AnnotationAwareOrderComparator.sort(sortedHooks)
