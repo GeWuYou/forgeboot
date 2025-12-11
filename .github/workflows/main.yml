@@ -25,8 +25,8 @@ permissions:
 env:
   # 设置 Gradle 用户主目录路径，避免缓存冲突
   GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
-  ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALUSERNAME }}
-  ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALPASSWORD }}
+  ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALUSERNAME }}
+  ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALPASSWORD }}
   ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEY }}
   ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID }}
   ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYPASSWORD }}
@@ -182,8 +182,8 @@ jobs:
       # 步骤六：调用 Gradle 命令分别发布到两个仓库
       - name: Publish to Maven Repositories
         run: |
-          ./gradlew publishMavenPublicationToMavenCentralRepository --no-configuration-cache
           ./gradlew publishMavenPublicationToGitHubRepository
+          ./gradlew publishMavenPublicationToMavenCentralRepository --no-configuration-cache
   create-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
