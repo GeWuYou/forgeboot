@@ -20,11 +20,14 @@ on:
 # 权限设置：允许使用 GITHUB_TOKEN 推送 tag 和提交内容
 permissions:
   contents: write
+  packages: write
 
 # 环境变量定义
 env:
   # 设置 Gradle 用户主目录路径，避免缓存冲突
   GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
+  GITHUB_USERNAME: ${{ github.actor }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALUSERNAME }}
   ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALPASSWORD }}
   ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEY }}
