@@ -184,7 +184,27 @@ jobs:
         run: |
           ./gradlew publishMavenPublicationToMavenCentralRepository --no-configuration-cache
           ./gradlew publishMavenPublicationToGitHubRepository
-
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [ skip-check, tag, publish ]
+    if: needs.skip-check.outputs.should_skip == 'false'
+    steps:
+      - name: Checkout (to read changelog if needed)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: "Release ${{ github.ref_name }}"
+          body: "Release created by CI for tag ${{ github.ref_name }} (package version ${{ steps.get_version.outputs.version }})"
+          draft: false
+          prerelease: false
   # 作业名称：Reset Test Branch
   # 功能描述：
   #   将 test 分支强制更新为当前 main 分支的状态，便于测试分支保持干净一致。
