@@ -35,10 +35,10 @@ interface OtherExceptionHook : Ordered {
      * 处理异常
      *
      * @param e 异常对象
-     * @param request HTTP请求对象，可能为null
+     * @param request HTTP请求对象
      * @return 处理结果，如果处理成功则返回Failure对象，否则返回null
      */
-    fun handle(e: Exception, request: HttpServletRequest?): Failure?
+    fun handle(e: Exception, request: HttpServletRequest): Failure?
 
     override fun getOrder(): Int = Ordered.LOWEST_PRECEDENCE
 }
