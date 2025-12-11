@@ -1,0 +1,212 @@
+# 工作流名称：Main Branch CI/CD
+# 功能描述：
+#   此工作流在向 main 分支推送代码时触发，执行以下任务：
+#   1. 自动打语义化版本标签（tag）
+#   2. 发布 Java 包到 Maven Central 和 GitHub Packages
+#   3. 强制重置 test 分支为当前 main 的最新状态
+#
+# 触发条件：
+#   - 推送到 main 分支
+#   - 手动触发 (workflow_dispatch)
+
+name: Main Branch CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# 权限设置：允许使用 GITHUB_TOKEN 推送 tag 和提交内容
+permissions:
+  contents: write
+
+# 环境变量定义
+env:
+  # 设置 Gradle 用户主目录路径，避免缓存冲突
+  GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
+  ORG_GRADLE_PROJECT_MAVENCENTRALUSERNAME: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALUSERNAME }}
+  ORG_GRADLE_PROJECT_MAVENCENTRALPASSWORD: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALPASSWORD }}
+  ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEY }}
+  ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID }}
+  ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYPASSWORD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYPASSWORD }}
+
+jobs:
+  skip-check:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.check.outputs.should_skip }}
+    steps:
+      - name: Check skip keywords
+        id: check
+        run: |
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          echo "🔍 Commit message: $COMMIT_MSG"
+          
+          SKIP_KEYWORDS=("ci" "[skip ci]" "[skip]" "skip-ci")
+          
+          SHOULD_SKIP=false
+          for key in "${SKIP_KEYWORDS[@]}"; do
+            if echo "$COMMIT_MSG" | grep -qi "$key"; then
+              SHOULD_SKIP=true
+              echo "⏭️ 发现跳过关键字: $key"
+              break
+            fi
+          done
+          
+          echo "should_skip=$SHOULD_SKIP" >> $GITHUB_OUTPUT
+          echo "📌 最终 should_skip = $SHOULD_SKIP"
+  # 作业名称：Auto Tag Version
+  # 功能描述：
+  #   根据最新的语义化版本标签自动生成并推送新的 patch 版本标签。
+  # 参数说明：
+  #   无显式参数，依赖 Git 提交历史与现有 tag 列表。
+  # 返回值说明：
+  #   成功后会在远程仓库创建一个新的带有 v 前缀的语义化版本标签。
+  tag:
+    name: Auto Tag Version
+    runs-on: ubuntu-latest
+    needs: skip-check
+    if: needs.skip-check.outputs.should_skip == 'false'
+
+    steps:
+      # 步骤一：检出源码，并获取完整的 Git 历史记录用于 tag 操作
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 步骤二：清理本地 tag 并强制同步远程 tag 及 main 分支
+      - name: Delete all local tags and fetch remote tags
+        run: |
+          set -euo pipefail
+          echo "🧹 删除所有本地 tag..."
+          git tag -l | xargs -r git tag -d || true
+
+          echo "🔍 拉取远程 tag 和 main"
+          git fetch --tags --force --prune
+          git fetch origin main --force
+          MAIN_COMMIT=$(git rev-parse origin/main)
+          echo "🔗 当前 main commit -> $MAIN_COMMIT"
+
+      # 步骤三：根据已有 tag 自动生成下一个 patch 版本号并推送到远端
+      - name: Create and push new semantic version tag
+        run: |
+          set -euo pipefail
+
+          echo "📦 获取最新 semver tag（支持 v 前缀）..."
+          LATEST_TAG=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n1 || true)
+          if [ -z "$LATEST_TAG" ]; then
+            LATEST_TAG=$(git tag --list '[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n1 || true)
+          fi
+          if [ -z "$LATEST_TAG" ]; then
+            LATEST_TAG="0.0.0"
+          fi
+          echo "🔖 最新 tag -> $LATEST_TAG"
+
+          VERSION=$(echo "$LATEST_TAG" | sed 's/^v//')
+          if ! echo "$VERSION" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' >/dev/null; then
+            echo "⚠️ 非标准 semver，回退到 0.0.0"
+            VERSION="0.0.0"
+          fi
+
+          MAJOR=$(echo "$VERSION" | cut -d. -f1)
+          MINOR=$(echo "$VERSION" | cut -d. -f2)
+          PATCH=$(echo "$VERSION" | cut -d. -f3)
+          PATCH=$((PATCH + 1))
+          if [ "$PATCH" -ge 100 ]; then
+            PATCH=0
+            MINOR=$((MINOR + 1))
+          fi
+
+          NEW_TAG="v${MAJOR}.${MINOR}.${PATCH}"
+          echo "🏷️ 新 tag -> $NEW_TAG"
+
+          if git tag --points-at "$MAIN_COMMIT" | grep -E "^(v)?[0-9]+\.[0-9]+\.[0-9]+$" >/dev/null; then
+            echo "⏭️ 当前 commit 已有 tag，跳过"
+            exit 0
+          fi
+
+          git tag "$NEW_TAG" "$MAIN_COMMIT"
+          git push origin "$NEW_TAG"
+          echo "✅ tag $NEW_TAG 已推送"
+
+  # 作业名称：Publish Packages
+  # 功能描述：
+  #   使用 Gradle 构建项目并将构建产物发布至 Maven Central 和 GitHub Packages。
+  # 参数说明：
+  #   - 需要配置环境变量 MAVEN_USERNAME 和 MAVEN_PASSWORD 以进行认证
+  # 返回值说明：
+  #   成功将包上传至两个目标仓库；失败则中断流程。
+  publish:
+    name: Publish Packages
+    runs-on: ubuntu-latest
+    # 表示此 job 必须等待 tag job 完成后再运行
+    needs: [ skip-check, tag ]
+    # 同样排除含 ci 关键字的提交
+    if: needs.skip-check.outputs.should_skip == 'false'
+
+    steps:
+      # 步骤一：检出源码
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 步骤二：安装 JDK 21 运行环境
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      # 步骤三：初始化 Gradle 环境
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      # 步骤四：赋予 gradlew 执行权限
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 步骤五：调试输出 JVM 和 Gradle 相关信息
+      - name: Debug JVM and Gradle
+        run: |
+          java -version
+          ./gradlew --version
+          echo "---- Gradle wrapper properties ----"
+          sed -n '1,120p' gradle/wrapper/gradle-wrapper.properties || true
+
+      # 步骤六：调用 Gradle 命令分别发布到两个仓库
+      - name: Publish to Maven Repositories
+        run: |
+          ./gradlew publishMavenPublicationToMavenCentralRepository --no-configuration-cache
+          ./gradlew publishMavenPublicationToGitHubRepository
+
+  # 作业名称：Reset Test Branch
+  # 功能描述：
+  #   将 test 分支强制更新为当前 main 分支的状态，便于测试分支保持干净一致。
+  # 参数说明：
+  #   无需额外参数，直接操作 Git 分支。
+  # 返回值说明：
+  #   test 分支被重新创建并强制推送到远程。
+  reset-test:
+    name: Reset Test Branch
+    runs-on: ubuntu-latest
+    steps:
+      # 步骤一：检出源码
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # 步骤二：切换到 test 分支并强制推送覆盖远程分支
+      - name: Recreate test branch without bot identity
+        run: |
+          set -euo pipefail
+          echo "🔄 重建 test 分支..."
+
+          git checkout -B test
+
+          # GitHub 会自动使用 github-actions[bot] 身份推送，但这不需要我们手动配置
+          git push origin test --force
+
+          echo "✅ test 分支已重建完成"
