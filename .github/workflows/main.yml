@@ -122,7 +122,7 @@ jobs:
             MINOR=$((MINOR + 1))
           fi
 
-          NEW_TAG="v${MAJOR}.${MINOR}.${PATCH}"
+          NEW_TAG="${MAJOR}.${MINOR}.${PATCH}"
           echo "🏷️ 新 tag -> $NEW_TAG"
 
           if git tag --points-at "$MAIN_COMMIT" | grep -E "^(v)?[0-9]+\.[0-9]+\.[0-9]+$" >/dev/null; then
