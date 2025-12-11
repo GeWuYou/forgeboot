@@ -42,20 +42,22 @@ jobs:
         run: |
           COMMIT_MSG="${{ github.event.head_commit.message }}"
           echo "🔍 Commit message: $COMMIT_MSG"
-          
-          SKIP_KEYWORDS=("ci" "[skip ci]" "[skip]" "skip-ci")
-          
+
+          # 合理的 skip 前缀
+          SKIP_KEYWORDS=("[skip ci]" "[ci skip]" "[skip]" "skip-ci")
+
           SHOULD_SKIP=false
           for key in "${SKIP_KEYWORDS[@]}"; do
-            if echo "$COMMIT_MSG" | grep -qi "$key"; then
+            if echo "$COMMIT_MSG" | grep -Fqi "$key"; then
               SHOULD_SKIP=true
               echo "⏭️ 发现跳过关键字: $key"
               break
             fi
           done
-          
+
           echo "should_skip=$SHOULD_SKIP" >> $GITHUB_OUTPUT
           echo "📌 最终 should_skip = $SHOULD_SKIP"
+
   # 作业名称：Auto Tag Version
   # 功能描述：
   #   根据最新的语义化版本标签自动生成并推送新的 patch 版本标签。
