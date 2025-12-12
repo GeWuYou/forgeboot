@@ -197,17 +197,24 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: "Release ${{ github.ref_name }}"
-          body: "Release created by CI for tag ${{ github.ref_name }} (package version ${{ steps.get_version.outputs.version }})"
+          tag_name: ${{ steps.get_tag.outputs.tag }}
+          release_name: "Release ${{ steps.get_tag.outputs.tag }}"
+          body: "Release created by CI for tag ${{ steps.get_tag.outputs.tag }}"
           draft: false
           prerelease: false
+
   # 作业名称：Reset Test Branch
   # 功能描述：
   #   将 test 分支强制更新为当前 main 分支的状态，便于测试分支保持干净一致。
