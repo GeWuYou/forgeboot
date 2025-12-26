@@ -21,6 +21,7 @@
 package com.gewuyou.forgeboot.webmvc.exception.api
 
 import com.gewuyou.forgeboot.i18n.api.InfoLike
+import com.gewuyou.forgeboot.webmvc.exception.api.enums.ExceptionLogPolicy
 import com.gewuyou.forgeboot.webmvc.exception.api.shared.BaseException
 
 /**
@@ -39,5 +40,6 @@ open class PromptException(
 ) : BaseException(
     info,
     cause,
-    extras
+    extras,
+    logPolicy = ExceptionLogPolicy.BRIEF_LOCATION
 )

@@ -27,6 +27,7 @@ import com.gewuyou.forgeboot.webmvc.dto.api.entities.SimpleInfo
 import com.gewuyou.forgeboot.webmvc.dto.impl.Responses
 import com.gewuyou.forgeboot.webmvc.exception.api.PromptException
 import com.gewuyou.forgeboot.webmvc.exception.api.config.ExceptionAdviceProperties
+import com.gewuyou.forgeboot.webmvc.exception.api.enums.ExceptionLogPolicy
 import com.gewuyou.forgeboot.webmvc.exception.api.hook.OtherExceptionHook
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
@@ -155,6 +156,27 @@ class GlobalExceptionAdvice(
      */
     @ExceptionHandler(PromptException::class)
     fun handlePromptException(e: PromptException): Failure {
+        when (e.logPolicy) {
+            ExceptionLogPolicy.NONE -> {
+                // 什么都不做
+            }
+
+            ExceptionLogPolicy.BRIEF_LOCATION -> {
+                e.businessStack()?.let {
+                    log.warn(
+                        "[{}] {}({}:{})",
+                        e::class.simpleName,
+                        it.className,
+                        it.methodName,
+                        it.lineNumber
+                    )
+                }
+            }
+
+            ExceptionLogPolicy.FULL_STACK -> {
+                log.error("[{}]", e::class.simpleName, e)
+            }
+        }
         return e.toFailure()
     }
 }
