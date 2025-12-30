@@ -262,8 +262,9 @@ project(":forgeboot-storage:forgeboot-storage-autoconfigure").name = "forgeboot-
 
 
 // >>> Gradle Buddy: On-Demand Modules (DO NOT EDIT THIS BLOCK) >>>
-// Generated at: 2025-12-30T12:44:49.618384100
-// Loaded: 2, Excluded: 0, Total: 2
+// Generated at: 2025-12-30T13:18:49.049289400
+// Loaded: 3, Excluded: 0, Total: 3
 include(":forgeboot-context:forgeboot-context-api")
+include(":forgeboot-context:forgeboot-context-autoconfigure")
 include(":forgeboot-context:forgeboot-context-impl")
 // <<< Gradle Buddy: End Of Block <<<

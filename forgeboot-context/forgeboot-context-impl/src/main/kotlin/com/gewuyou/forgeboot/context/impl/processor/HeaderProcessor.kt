@@ -1,3 +1,25 @@
+/*
+ *
+ *  *
+ *  *  * Copyright (c) 2025 GeWuYou
+ *  *  *
+ *  *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  *  * you may not use this file except in compliance with the License.
+ *  *  * You may obtain a copy of the License at
+ *  *  *
+ *  *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *  *
+ *  *  * Unless required by applicable law or agreed to in writing, software
+ *  *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  *  * See the License for the specific language governing permissions and
+ *  *  * limitations under the License.
+ *  *  *
+ *  *
+ *  *
+ *
+ */
+
 package com.gewuyou.forgeboot.context.impl.processor
 
 import com.gewuyou.forgeboot.context.api.ContextProcessor
@@ -36,11 +58,19 @@ class HeaderProcessor(private val reg: FieldRegistry) : ContextProcessor {
         when (carrier) {
             is ServerWebExchange -> reg.all().forEach { def ->
                 // 从ServerWebExchange请求头中提取指定字段并存入上下文
-                carrier.request.headers[def.header]?.firstOrNull()?.let { ctx[def.key] = it }
+                carrier.request.headers[def.header]?.firstOrNull()?.let { value ->
+                    if (value.isNotBlank()) {
+                        ctx[def.key] = value
+                    }
+                }
             }
             is HttpServletRequest -> reg.all().forEach { def ->
                 // 从HttpServletRequest请求头中提取指定字段并存入上下文
-                carrier.getHeader(def.header)?.let { ctx[def.key] = it }
+                carrier.getHeader(def.header)?.let { value ->
+                    if (value.isNotBlank()) {
+                        ctx[def.key] = value
+                    }
+                }
             }
         }
     }
@@ -58,14 +88,20 @@ class HeaderProcessor(private val reg: FieldRegistry) : ContextProcessor {
             is ServerWebExchange.Builder -> reg.all().forEach { def ->
                 // 向ServerWebExchange构建器中注入请求头字段
                 ctx[def.key]?.let { value ->
-                    carrier.request { reqBuilder ->
-                        reqBuilder.header(def.header, value)
+                    if (value.isNotBlank()) {
+                        carrier.request { reqBuilder ->
+                            reqBuilder.header(def.header, value)
+                        }
                     }
                 }
             }
             is HttpServletResponse -> reg.all().forEach { def ->
                 // 向HttpServletResponse中设置对应的响应头字段
-                ctx[def.key]?.let { carrier.setHeader(def.header, it) }
+                ctx[def.key]?.let { value ->
+                    if (value.isNotBlank()) {
+                        carrier.setHeader(def.header, value)
+                    }
+                }
             }
         }
     }

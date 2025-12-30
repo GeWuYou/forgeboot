@@ -25,6 +25,7 @@ dependencies {
     compileOnly(project(Modules.Core.SERIALIZATION))
     compileOnly(libs.springBootStarter.web)
     compileOnly(libs.springBootStarter.webflux)
+    implementation(project(Modules.Core.EXTENSION))
     implementation(platform(libs.springBootDependencies.bom))
     implementation(libs.springBoot.autoconfigure)
     implementation(libs.jackson.databind)
