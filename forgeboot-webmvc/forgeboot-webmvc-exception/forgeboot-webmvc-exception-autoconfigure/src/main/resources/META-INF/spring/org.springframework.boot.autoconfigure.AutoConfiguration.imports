@@ -19,3 +19,4 @@
 #
 
 com.gewuyou.forgeboot.webmvc.exception.autoconfigure.ExceptionAutoConfiguration
+com.gewuyou.forgeboot.webmvc.exception.autoconfigure.ValidationExceptionAutoConfiguration
