@@ -157,24 +157,29 @@ class GlobalExceptionAdvice(
     @ExceptionHandler(PromptException::class)
     fun handlePromptException(e: PromptException): Failure {
         when (e.logPolicy) {
-            ExceptionLogPolicy.NONE -> {
-                // 什么都不做
-            }
+            ExceptionLogPolicy.NONE -> Unit
 
             ExceptionLogPolicy.BRIEF_LOCATION -> {
                 e.businessStack()?.let {
                     log.warn(
-                        "[{}] {}({}:{})",
+                        "[{}] code:{} message:{} Business stack:{} by ({}:{})",
                         e::class.simpleName,
-                        it.className,
+                        e.info.code,
+                        e.info.defaultMessage,
                         it.methodName,
+                        it.className,
                         it.lineNumber
                     )
                 }
             }
 
             ExceptionLogPolicy.FULL_STACK -> {
-                log.error("[{}]", e::class.simpleName, e)
+                log.error(
+                    "[{}] {}",
+                    e::class.simpleName,
+                    e.info.code,
+                    e
+                )
             }
         }
         return e.toFailure()

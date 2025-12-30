@@ -24,8 +24,10 @@ import com.gewuyou.forgeboot.context.api.ContextProcessor
 import com.gewuyou.forgeboot.context.impl.coroutine.ContextAwareCoroutineScope
 import com.gewuyou.forgeboot.core.extension.log
 import com.gewuyou.forgeboot.trace.api.RequestIdProvider
+import com.gewuyou.forgeboot.webmvc.dto.api.Infos
 import com.gewuyou.forgeboot.webmvc.dto.api.entities.SuccessMessage
 import com.gewuyou.forgeboot.webmvc.dto.impl.Responses
+import com.gewuyou.forgeboot.webmvc.exception.api.PromptException
 import com.gewuyou.forgeboot.webmvc.logger.api.annotation.MethodRecording
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -60,6 +62,7 @@ class TraceTestController(
     @GetMapping("/servlet")
     fun servlet(): String {
         val requestId = requestIdProvider.getRequestId()
+        throw PromptException(Infos.BAD_REQUEST)
         log.info("Servlet requestId: $requestId")
         return "Servlet OK: $requestId"
     }

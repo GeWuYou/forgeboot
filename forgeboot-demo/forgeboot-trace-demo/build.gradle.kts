@@ -19,10 +19,13 @@
  */
 
 dependencies {
+    implementation(libs.kotlinReflect)
+    implementation(libs.springBootStarter.validation)
     implementation(libs.springBootStarter.web)
     implementation(project(Modules.TRACE.STARTER))
     implementation(project(Modules.Context.STARTER))
     implementation(project(Modules.Webmvc.DTO.STARTER))
+    implementation(project(Modules.Webmvc.EXCEPTION.STARTER))
     implementation(project(Modules.Webmvc.LOGGER.STARTER))
     implementation(project(Modules.Banner.ALL))
     implementation(libs.kotlinxCoroutines.reactor)
