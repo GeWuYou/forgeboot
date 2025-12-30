@@ -1,20 +1,22 @@
 /*
  *
- *  * Copyright (c) 2025
  *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
+ *  *  * Copyright (c) 2025 GeWuYou
+ *  *  *
+ *  *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  *  * you may not use this file except in compliance with the License.
+ *  *  * You may obtain a copy of the License at
+ *  *  *
+ *  *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *  *
+ *  *  * Unless required by applicable law or agreed to in writing, software
+ *  *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  *  * See the License for the specific language governing permissions and
+ *  *  * limitations under the License.
+ *  *  *
  *  *
- *  *     http://www.apache.org/licenses/LICENSE-2.0
  *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
- *  *
- *
  *
  */
 
@@ -24,6 +26,7 @@ import com.gewuyou.forgeboot.context.ContextHolders
 import com.gewuyou.forgeboot.context.api.ContextProcessor
 import com.gewuyou.forgeboot.context.impl.element.CoroutineContextMapElement
 import kotlinx.coroutines.*
+import kotlinx.coroutines.slf4j.MDCContext
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -57,7 +60,11 @@ class ContextAwareCoroutineScope(
         block: suspend CoroutineScope.() -> Unit,
     ): Job {
         val snapshot = ContextHolders.snapshot().toMutableMap()
-        return launch(dispatcher + CoroutineContextMapElement(snapshot)) {
+        return launch(
+            dispatcher +
+                    CoroutineContextMapElement(snapshot) +
+                    MDCContext(snapshot)
+        ) {
             try {
                 // 注入上下文数据到当前协程
                 processors.forEach { it.inject(Unit, snapshot) }

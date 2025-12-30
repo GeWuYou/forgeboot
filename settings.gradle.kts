@@ -262,10 +262,8 @@ project(":forgeboot-storage:forgeboot-storage-autoconfigure").name = "forgeboot-
 
 
 // >>> Gradle Buddy: On-Demand Modules (DO NOT EDIT THIS BLOCK) >>>
-// Generated at: 2025-12-30T12:39:33.537959900
-// Loaded: 4, Excluded: 0, Total: 4
-include(":forgeboot-demo:forgeboot-trace-demo")
-include(":forgeboot-webmvc:forgeboot-webmvc-exception:forgeboot-webmvc-exception-api")
-include(":forgeboot-webmvc:forgeboot-webmvc-exception:forgeboot-webmvc-exception-autoconfigure")
-include(":forgeboot-webmvc:forgeboot-webmvc-exception:forgeboot-webmvc-exception-impl")
+// Generated at: 2025-12-30T12:44:49.618384100
+// Loaded: 2, Excluded: 0, Total: 2
+include(":forgeboot-context:forgeboot-context-api")
+include(":forgeboot-context:forgeboot-context-impl")
 // <<< Gradle Buddy: End Of Block <<<
