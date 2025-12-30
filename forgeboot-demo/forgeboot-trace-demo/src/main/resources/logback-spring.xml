@@ -8,7 +8,7 @@
     <property name="MAX_HISTORY" value="10"/>
     <!--彩色日志格式-->
     <property name="CONSOLE_PATTERN"
-              value="时间:[%red(%d{yyyy-MM-dd HH:mm:ss})] 请求ID:[%highlight(%X{requestId})] 线程:[%green(%thread)] 日志级别:[%highlight(%-5level)] 调用位置:[%boldMagenta(%logger{50}) 参见:%blue(\(%F:%L\))] 日志信息:[%cyan(%msg%n)]"/>
+              value="时间:[%red(%d{yyyy-MM-dd HH:mm:ss})] 请求ID:[%highlight(%X{requestId})] 线程:[%green(%thread)] 日志级别:[%highlight(%-5level)] 调用位置:[%boldMagenta(%logger{50}) 参见:%blue(\(%F:%L\))] 日志信息: %cyan(%msg%n)"/>
     <!--文件日志格式-->
     <property name="FILE_PATTERN"
               value="时间:[%d{yyyy-MM-dd HH:mm:ss}] 请求ID:[%X{requestId}] 线程:[%thread] 日志级别:[%-5level] 调用位置:[%logger{50} 参见:(%F:%L)] 日志信息:[%msg%n]"/>

@@ -162,13 +162,11 @@ class GlobalExceptionAdvice(
             ExceptionLogPolicy.BRIEF_LOCATION -> {
                 e.businessStack()?.let {
                     log.warn(
-                        "[{}] code:{} message:{} Business stack:{} by ({}:{})",
+                        "[{}] code:{} message:{} Business stack:\n\t{}",
                         e::class.simpleName,
                         e.info.code,
                         e.info.defaultMessage,
-                        it.methodName,
-                        it.className,
-                        it.lineNumber
+                        it
                     )
                 }
             }
